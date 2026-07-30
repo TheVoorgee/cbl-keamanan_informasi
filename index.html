@@ -1,0 +1,3494 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CBL-1 | DES Round 1 – Lembar Kerja Interaktif | STIK3051</title>
+  <meta name="description"
+    content="Lembar Kerja Interaktif dan Auto-Grader algoritma enkripsi DES Ronde 1 untuk mata kuliah Keamanan Informasi STIK3051." />
+
+  <!-- html2pdf.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <style>
+    /* =============================================
+       DESIGN TOKENS & RESET
+    ============================================= */
+    :root {
+      --navy: #0d2b55;
+      --navy-dark: #081a38;
+      --navy-mid: #163d73;
+      --accent: #2563eb;
+      --accent-light: #3b82f6;
+      --gold: #f59e0b;
+      --white: #ffffff;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-300: #cbd5e1;
+      --gray-400: #94a3b8;
+      --gray-600: #475569;
+      --gray-800: #1e293b;
+      --green: #16a34a;
+      --green-light: #dcfce7;
+      --red: #dc2626;
+      --red-light: #fee2e2;
+      --yellow-light: #fef9c3;
+      --font-sans: 'Inter', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+      --radius: 8px;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, .12);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, .15);
+      --shadow-lg: 0 8px 30px rgba(0, 0, 0, .18);
+      --transition: all .2s ease;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--gray-100);
+      color: var(--gray-800);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+    /* =============================================
+       HEADER
+    ============================================= */
+    header {
+      background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy-mid) 60%, var(--accent) 100%);
+      color: var(--white);
+      padding: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    .header-inner {
+      position: relative;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 36px 32px 28px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .header-logo {
+      width: 64px;
+      height: 64px;
+      background: rgba(255, 255, 255, .12);
+      border: 2px solid rgba(255, 255, 255, .25);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+      backdrop-filter: blur(4px);
+    }
+
+    .header-text h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -.3px;
+      line-height: 1.2;
+    }
+
+    .header-text .subtitle {
+      font-size: 13px;
+      color: rgba(255, 255, 255, .7);
+      margin-top: 4px;
+    }
+
+    .header-badge {
+      margin-left: auto;
+      background: var(--gold);
+      color: var(--navy-dark);
+      font-weight: 700;
+      font-size: 11px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* =============================================
+       MAIN LAYOUT
+    ============================================= */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 20px 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* =============================================
+       SECTION CARDS
+    ============================================= */
+    .card {
+      background: var(--white);
+      border-radius: 12px;
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      border: 1px solid var(--gray-200);
+      transition: var(--transition);
+    }
+
+    .card.locked {
+      opacity: .55;
+      pointer-events: none;
+      filter: grayscale(.3);
+    }
+
+    .card-header {
+      background: linear-gradient(90deg, var(--navy) 0%, var(--navy-mid) 100%);
+      color: var(--white);
+      padding: 14px 22px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .card-header .step-badge {
+      background: rgba(255, 255, 255, .18);
+      border: 1px solid rgba(255, 255, 255, .3);
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .card-header .step-badge.done-badge {
+      background: var(--green);
+      border-color: var(--green);
+    }
+
+    .card-header h2 {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: .1px;
+    }
+
+    .card-header .lock-icon {
+      margin-left: auto;
+      font-size: 18px;
+      opacity: .8;
+    }
+
+    .card-body {
+      padding: 22px;
+    }
+
+    /* =============================================
+       IDENTITY SECTION
+    ============================================= */
+    .identity-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 600px) {
+      .identity-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-600);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      border: 1.5px solid var(--gray-300);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      color: var(--gray-800);
+      transition: var(--transition);
+      outline: none;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 72px;
+    }
+
+    /* =============================================
+       INPUT SECTION (Plaintext / Key)
+    ============================================= */
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .input-row label {
+      font-weight: 600;
+      font-size: 13px;
+      min-width: 90px;
+      color: var(--gray-800);
+    }
+
+    .input-row input.hex-input {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      padding: 8px 12px;
+      border: 1.5px solid var(--gray-300);
+      border-radius: var(--radius);
+      width: 200px;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .input-row input.hex-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+    }
+
+    .hint-text {
+      font-size: 11px;
+      color: var(--gray-400);
+      font-style: italic;
+    }
+
+    /* =============================================
+       BIT GRID (INPUT BOXES FOR BINARY)
+    ============================================= */
+    .bit-section-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--navy);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      margin-bottom: 8px;
+      padding-bottom: 4px;
+      border-bottom: 2px solid var(--gray-200);
+    }
+
+    .bit-grid-wrapper {
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .bit-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
+      font-family: var(--font-mono);
+    }
+
+    .bit-grid.group-8 .bit-cell:nth-child(8n) {
+      margin-right: 10px;
+    }
+
+    .bit-grid.group-4 .bit-cell:nth-child(4n) {
+      margin-right: 6px;
+    }
+
+    .bit-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .bit-cell .bit-index {
+      font-size: 9px;
+      color: var(--gray-400);
+      margin-bottom: 1px;
+      font-family: var(--font-mono);
+    }
+
+    .bit-cell input {
+      width: 28px;
+      height: 28px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      border: 1.5px solid var(--gray-300);
+      border-radius: 4px;
+      padding: 0;
+      outline: none;
+      transition: var(--transition);
+      color: var(--navy-dark);
+      background: var(--white);
+      cursor: text;
+    }
+
+    .bit-cell input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, .2);
+      z-index: 1;
+      position: relative;
+    }
+
+    .bit-cell input.correct {
+      background: var(--green-light);
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .bit-cell input.wrong {
+      background: var(--red-light);
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    .bit-cell input[readonly] {
+      background: var(--gray-100);
+      cursor: default;
+      color: var(--gray-600);
+    }
+
+    /* =============================================
+       HEX ANSWER CELLS
+    ============================================= */
+    .hex-answer-grid {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      font-family: var(--font-mono);
+    }
+
+    .hex-answer-grid input {
+      width: 36px;
+      height: 32px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      border: 1.5px solid var(--gray-300);
+      border-radius: 4px;
+      padding: 0;
+      outline: none;
+      transition: var(--transition);
+      color: var(--navy-dark);
+    }
+
+    .hex-answer-grid input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, .2);
+    }
+
+    .hex-answer-grid input.correct {
+      background: var(--green-light);
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .hex-answer-grid input.wrong {
+      background: var(--red-light);
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    /* =============================================
+       SBOX TABLE DISPLAY
+    ============================================= */
+    .sbox-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 800px) {
+      .sbox-container {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .sbox-unit {
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .sbox-unit-header {
+      background: var(--navy);
+      color: var(--white);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 10px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .sbox-unit-body {
+      padding: 10px;
+    }
+
+    .sbox-input-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .sbox-input-row label {
+      font-size: 11px;
+      color: var(--gray-600);
+      font-weight: 600;
+    }
+
+    .sbox-input-row input {
+      width: 100%;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      padding: 6px 8px;
+      border: 1.5px solid var(--gray-300);
+      border-radius: 4px;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .sbox-input-row input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, .12);
+    }
+
+    .sbox-input-row input.correct {
+      background: var(--green-light);
+      border-color: var(--green);
+    }
+
+    .sbox-input-row input.wrong {
+      background: var(--red-light);
+      border-color: var(--red);
+    }
+
+    /* =============================================
+       BUTTONS
+    ============================================= */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: var(--transition);
+      letter-spacing: .2px;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--white);
+      box-shadow: 0 2px 8px rgba(37, 99, 235, .3);
+    }
+
+    .btn-primary:hover {
+      background: var(--navy);
+      box-shadow: 0 4px 16px rgba(37, 99, 235, .4);
+      transform: translateY(-1px);
+    }
+
+    .btn-check {
+      background: var(--navy);
+      color: var(--white);
+    }
+
+    .btn-check:hover {
+      background: var(--navy-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      color: var(--white);
+      box-shadow: 0 2px 12px rgba(22, 163, 74, .4);
+      font-size: 15px;
+      padding: 14px 32px;
+    }
+
+    .btn-success:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(22, 163, 74, .5);
+    }
+
+    .btn-section {
+      margin-top: 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    /* =============================================
+       ALERTS / FEEDBACK
+    ============================================= */
+    .feedback {
+      display: none;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 6px;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .feedback.show {
+      display: inline-flex;
+    }
+
+    .feedback.ok {
+      background: var(--green-light);
+      color: var(--green);
+    }
+
+    .feedback.err {
+      background: var(--red-light);
+      color: var(--red);
+    }
+
+    /* =============================================
+       DIVIDERS & LABELS
+    ============================================= */
+    .section-divider {
+      border: none;
+      border-top: 2px dashed var(--gray-200);
+      margin: 20px 0;
+    }
+
+    .row-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--navy-mid);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 6px;
+    }
+
+    .sub-section {
+      margin-bottom: 20px;
+    }
+
+    .info-box {
+      background: var(--gray-50);
+      border-left: 4px solid var(--accent);
+      border-radius: 0 6px 6px 0;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--gray-600);
+      margin-bottom: 14px;
+      line-height: 1.7;
+    }
+
+    .info-box strong {
+      color: var(--navy);
+    }
+
+    /* =============================================
+       KEY SCHEDULE TABLE
+    ============================================= */
+    .key-shift-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    .key-shift-table th {
+      background: var(--navy);
+      color: var(--white);
+      padding: 7px 10px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 11px;
+      letter-spacing: .3px;
+    }
+
+    .key-shift-table td {
+      padding: 6px 10px;
+      text-align: center;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .key-shift-table tr:nth-child(even) td {
+      background: var(--gray-50);
+    }
+
+    /* =============================================
+       PROGRESS BAR
+    ============================================= */
+    .progress-bar-wrap {
+      background: var(--gray-200);
+      border-radius: 999px;
+      height: 8px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      background: linear-gradient(90deg, var(--accent), var(--green));
+      height: 100%;
+      border-radius: 999px;
+      transition: width .4s ease;
+      width: 0%;
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--gray-600);
+      margin-top: 6px;
+    }
+
+    /* =============================================
+       FINAL RESULT SECTION
+    ============================================= */
+    .result-box {
+      background: linear-gradient(135deg, var(--navy-dark), var(--navy-mid));
+      color: var(--white);
+      border-radius: 12px;
+      padding: 28px;
+      text-align: center;
+      display: none;
+    }
+
+    .result-box.show {
+      display: block;
+    }
+
+    .result-box h3 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .result-box .cipher-display {
+      font-family: var(--font-mono);
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 6px;
+      color: var(--gold);
+      margin: 16px 0;
+      text-shadow: 0 0 20px rgba(245, 158, 11, .4);
+    }
+
+    .result-box p {
+      font-size: 13px;
+      opacity: .8;
+      margin-bottom: 20px;
+    }
+
+    /* =============================================
+       XOR TABLE
+    ============================================= */
+    .xor-visual {
+      display: grid;
+      gap: 6px;
+    }
+
+    .xor-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .xor-row-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gray-600);
+      width: 60px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .xor-divider-line {
+      height: 2px;
+      background: var(--gray-300);
+      margin: 2px 0;
+    }
+
+    /* =============================================
+       PRINT / PDF HIDE
+    ============================================= */
+    @media print {
+
+      .btn,
+      .btn-section,
+      .no-print {
+        display: none !important;
+      }
+
+      .card {
+        box-shadow: none;
+        border: 1px solid #ccc;
+      }
+
+      header {
+        print-color-adjust: exact;
+      }
+    }
+
+    /* =============================================
+       RESPONSIVE
+    ============================================= */
+    @media (max-width: 700px) {
+      .header-inner {
+        flex-wrap: wrap;
+        padding: 20px 16px;
+      }
+
+      main {
+        padding: 16px 10px 40px;
+      }
+
+      .card-body {
+        padding: 14px;
+      }
+
+      .sbox-container {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    /* =============================================
+       STICKY PROGRESS
+    ============================================= */
+    .sticky-progress {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 10px 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .sticky-progress-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .sticky-progress-inner .prog-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--navy);
+      white-space: nowrap;
+    }
+
+    /* =============================================
+       SAVE INDICATOR
+    ============================================= */
+    .save-indicator {
+      font-size: 11px;
+      color: var(--green);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      opacity: 0;
+      transition: opacity .4s ease;
+      white-space: nowrap;
+    }
+
+    .save-indicator.visible {
+      opacity: 1;
+    }
+
+    .btn-reset {
+      background: transparent;
+      border: 1.5px solid var(--red);
+      color: var(--red);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: var(--transition);
+    }
+
+    .btn-reset:hover {
+      background: var(--red);
+      color: var(--white);
+    }
+
+    /* =============================================
+       ANIMATIONS
+    ============================================= */
+    @keyframes pulse-success {
+      0% {
+        box-shadow: 0 0 0 0 rgba(22, 163, 74, .4);
+      }
+
+      70% {
+        box-shadow: 0 0 0 10px rgba(22, 163, 74, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(22, 163, 74, 0);
+      }
+    }
+
+    .pulse-anim {
+      animation: pulse-success .6s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fade-in {
+      animation: fadeIn .4s ease-out;
+    }
+
+    /* =============================================
+       ADMIN MODE STYLES
+    ============================================= */
+    /* Hidden trigger on logo */
+    .header-logo {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    /* Admin modal overlay */
+    .admin-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .65);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+
+    .admin-modal-overlay.open {
+      display: flex;
+    }
+
+    .admin-modal {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 36px 32px 28px;
+      width: 360px;
+      max-width: 95vw;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .4);
+      position: relative;
+      animation: fadeIn .25s ease-out;
+    }
+
+    .admin-modal h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--navy-dark);
+      margin-bottom: 6px;
+    }
+
+    .admin-modal p {
+      font-size: 12px;
+      color: var(--gray-600);
+      margin-bottom: 20px;
+    }
+
+    .admin-modal input[type="password"] {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid var(--gray-300);
+      border-radius: var(--radius);
+      font-size: 14px;
+      outline: none;
+      margin-bottom: 14px;
+      transition: var(--transition);
+    }
+
+    .admin-modal input[type="password"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+    }
+
+    .admin-modal .btn-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .admin-modal .admin-err {
+      font-size: 12px;
+      color: var(--red);
+      font-weight: 600;
+      margin-bottom: 10px;
+      display: none;
+    }
+
+    .admin-modal .admin-err.show {
+      display: block;
+    }
+
+    .admin-modal-close {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      color: var(--gray-400);
+      line-height: 1;
+    }
+
+    .admin-modal-close:hover {
+      color: var(--gray-800);
+    }
+
+    /* Admin badge in header */
+    .admin-badge {
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      display: none;
+      align-items: center;
+      gap: 4px;
+      animation: fadeIn .3s ease-out;
+    }
+
+    .admin-badge.visible {
+      display: inline-flex;
+    }
+
+    /* Admin panel (floating) */
+    .admin-panel {
+      display: none;
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 8888;
+      background: linear-gradient(135deg, #1e1b4b, #312e81);
+      color: #fff;
+      border-radius: 16px;
+      padding: 20px 22px;
+      width: 300px;
+      box-shadow: 0 12px 40px rgba(79, 70, 229, .5);
+      animation: fadeIn .3s ease-out;
+    }
+
+    .admin-panel.visible {
+      display: block;
+    }
+
+    .admin-panel h3 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .admin-panel .ap-btn {
+      display: block;
+      width: 100%;
+      padding: 9px 14px;
+      border-radius: 8px;
+      border: none;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 8px;
+      text-align: left;
+      transition: var(--transition);
+    }
+
+    .admin-panel .ap-btn:last-child {
+      margin-bottom: 0;
+    }
+
+    .admin-panel .ap-btn-fill {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff;
+    }
+
+    .admin-panel .ap-btn-fill:hover {
+      background: linear-gradient(135deg, #059669, #047857);
+      transform: translateX(2px);
+    }
+
+    .admin-panel .ap-btn-pdf {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #fff;
+    }
+
+    .admin-panel .ap-btn-pdf:hover {
+      background: linear-gradient(135deg, #d97706, #b45309);
+      transform: translateX(2px);
+    }
+
+    .admin-panel .ap-btn-key {
+      background: rgba(255, 255, 255, .12);
+      color: #e0e7ff;
+      border: 1px solid rgba(255, 255, 255, .2);
+    }
+
+    .admin-panel .ap-btn-key:hover {
+      background: rgba(255, 255, 255, .2);
+      transform: translateX(2px);
+    }
+
+    .admin-panel .ap-btn-logout {
+      background: rgba(239, 68, 68, .2);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, .3);
+    }
+
+    .admin-panel .ap-btn-logout:hover {
+      background: rgba(239, 68, 68, .35);
+    }
+
+    .admin-panel-toggle {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 8889;
+      display: none;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
+      color: #fff;
+      font-size: 20px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(79, 70, 229, .5);
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .admin-panel-toggle.visible {
+      display: flex;
+    }
+
+    .admin-panel-toggle:hover {
+      transform: scale(1.08);
+      box-shadow: 0 6px 24px rgba(79, 70, 229, .6);
+    }
+
+    /* Answer key modal */
+    .answer-key-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .7);
+      z-index: 9998;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 16px;
+      overflow-y: auto;
+      backdrop-filter: blur(4px);
+    }
+
+    .answer-key-modal.open {
+      display: flex;
+    }
+
+    .answer-key-inner {
+      background: #fff;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 720px;
+      padding: 28px 28px 36px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .4);
+      position: relative;
+      animation: fadeIn .25s ease-out;
+    }
+
+    .answer-key-inner h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--navy-dark);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .answer-key-inner .ak-close {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: var(--gray-400);
+    }
+
+    .answer-key-inner .ak-close:hover {
+      color: var(--gray-800);
+    }
+
+    .ak-section {
+      margin-bottom: 16px;
+      padding: 14px;
+      background: var(--gray-50);
+      border-radius: 8px;
+      border-left: 4px solid var(--accent);
+    }
+
+    .ak-section h4 {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--navy);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 8px;
+    }
+
+    .ak-value {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--gray-800);
+      word-break: break-all;
+      line-height: 1.8;
+      background: #fff;
+      border: 1px solid var(--gray-200);
+      border-radius: 6px;
+      padding: 8px 10px;
+    }
+
+    /* =============================================
+       LOADING & UPLOAD OVERLAY
+    ============================================= */
+    .upload-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+
+    .upload-overlay.active {
+      display: flex;
+    }
+
+    .upload-modal {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .upload-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid var(--gray-200);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .upload-message {
+      font-size: 14px;
+      color: var(--navy);
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ============================================================
+     HEADER
+============================================================ -->
+  <!-- ADMIN LOGIN MODAL -->
+  <div class="admin-modal-overlay" id="adminModalOverlay">
+    <div class="admin-modal">
+      <button class="admin-modal-close" onclick="closeAdminModal()" title="Tutup">✕</button>
+      <h2>🔐 Admin Login</h2>
+      <p>Masukkan password admin untuk mengakses panel kontrol.</p>
+      <div class="admin-err" id="adminErr">❌ Password salah. Coba lagi.</div>
+      <input type="password" id="adminPassInput" placeholder="Masukkan password admin"
+        onkeydown="if(event.key==='Enter') verifyAdmin()" />
+      <div class="btn-row">
+        <button class="btn btn-primary" style="flex:1" onclick="verifyAdmin()">Masuk</button>
+        <button class="btn" style="background:var(--gray-200);color:var(--gray-800)"
+          onclick="closeAdminModal()">Batal</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANSWER KEY MODAL -->
+  <div class="answer-key-modal" id="answerKeyModal">
+    <div class="answer-key-inner">
+      <button class="ak-close" onclick="closeAnswerKey()">✕</button>
+      <h2>🗝️ Kunci Jawaban – Admin View</h2>
+      <div id="answerKeyContent"></div>
+    </div>
+  </div>
+
+  <header>
+    <div class="header-inner">
+      <div class="header-logo" id="adminTrigger" title="" onclick="adminLogoClick()">🔐</div>
+      <div class="header-text">
+        <h1>CBL-1 – Data Encryption Standard (DES) Ronde 1</h1>
+        <div class="subtitle">Lembar Kerja Interaktif &amp; Auto-Grader · Keamanan Informasi STIK3051</div>
+      </div>
+      <span class="admin-badge" id="adminBadge">🛡️ Admin</span>
+      <div class="header-badge">Auto-Grader</div>
+    </div>
+  </header>
+
+  <!-- STICKY PROGRESS BAR -->
+  <div class="sticky-progress no-print" id="stickyProgress">
+    <div class="sticky-progress-inner">
+      <span class="prog-label">🎯 Progress Pengerjaan</span>
+      <div class="progress-bar-wrap" style="flex:1">
+        <div class="progress-bar-fill" id="progressFill"></div>
+      </div>
+      <span class="prog-label" id="progressText">0 / 10 Selesai</span>
+      <span class="save-indicator" id="saveIndicator">💾 Tersimpan</span>
+      <button class="btn-reset no-print" id="btnReset" onclick="resetAllData()"
+        title="Hapus semua data yang tersimpan">🗑️ Reset</button>
+    </div>
+  </div>
+
+  <main id="mainContent">
+
+    <!-- ==================================================
+       SECTION 0: IDENTITAS MAHASISWA
+  ================================================== -->
+    <div class="card" id="card-identity">
+      <div class="card-header">
+        <div class="step-badge" id="badge-0">✎</div>
+        <h2>Identitas Kelompok</h2>
+      </div>
+      <div class="card-body">
+        <div class="identity-grid">
+          <div class="form-group">
+            <label for="namaKelompok">Nama Kelompok</label>
+            <input type="text" id="namaKelompok" placeholder="contoh: Kelompok 3" />
+          </div>
+          <div class="form-group">
+            <label for="namaNIM">Nama &amp; NIM Anggota</label>
+            <textarea id="namaNIM"
+              placeholder="contoh:&#10;1. Budi Santoso / 12340001&#10;2. Ani Putri / 12340002"></textarea>
+          </div>
+        </div>
+        <div class="btn-section">
+          <button class="btn btn-primary" onclick="submitIdentity()">✔ Konfirmasi Identitas</button>
+          <span class="feedback" id="fb-identity"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================================================
+       SECTION 1: INPUT PLAINTEXT & KEY + KONVERSI HEX & BINER
+  ================================================== -->
+    <div class="card locked" id="card-s1">
+      <div class="card-header">
+        <div class="step-badge" id="badge-1">1</div>
+        <h2>Konversi Plaintext &amp; Kunci → Hexadesimal &amp; Biner (64-bit)</h2>
+        <span class="lock-icon" id="lock-1">🔒</span>
+      </div>
+      <div class="card-body">
+        <div class="info-box">
+          <strong>Petunjuk:</strong> Masukkan Plaintext (8 karakter ASCII) dan Kunci (8 karakter ASCII).
+          Sistem akan menggunakan nilai ini sebagai dasar penghitungan. Kemudian isi kolom Hexadesimal
+          dan Biner di bawah berdasarkan perhitungan manual Anda.
+        </div>
+
+        <!-- Input Plaintext dan Key -->
+        <div class="sub-section">
+          <div class="row-label">Input Nilai Awal</div>
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <div class="input-row">
+              <label>Plaintext</label>
+              <input type="text" id="inputPlaintext" class="hex-input" maxlength="8" placeholder="8 karakter"
+                style="text-transform:none; letter-spacing:1px;" oninput="clearAllComputed()" />
+              <span class="hint-text">8 karakter ASCII</span>
+            </div>
+            <div class="input-row">
+              <label>Kunci (Key)</label>
+              <input type="text" id="inputKey" class="hex-input" maxlength="8" placeholder="8 karakter"
+                style="text-transform:none; letter-spacing:1px;" oninput="clearAllComputed()" />
+              <span class="hint-text">8 karakter ASCII</span>
+            </div>
+          </div>
+          <div class="btn-section">
+            <button class="btn btn-primary" onclick="initCompute()">⚙ Hitung &amp; Mulai Pengerjaan</button>
+          </div>
+        </div>
+
+        <hr class="section-divider" id="convDivider" style="display:none">
+
+        <!-- Konversi Plaintext -->
+        <div id="convSection" style="display:none">
+          <div class="sub-section">
+            <div class="bit-section-label">Plaintext – Hexadesimal (isi per karakter)</div>
+            <div class="info-box">Ubah setiap karakter Plaintext ke nilai hexadesimal 2-digit (mis. 'M' → 4D)</div>
+            <div class="hex-answer-grid" id="grid-pt-hex"></div>
+          </div>
+
+          <div class="sub-section">
+            <div class="bit-section-label">Plaintext – Biner 64-bit (isi per bit)</div>
+            <div class="info-box">Ubah setiap karakter ke 8 bit biner (mis. 'M'=0x4D → 01001101)</div>
+            <div class="bit-grid-wrapper">
+              <div class="bit-grid group-8" id="grid-pt-bin"></div>
+            </div>
+          </div>
+
+          <hr class="section-divider">
+
+          <div class="sub-section">
+            <div class="bit-section-label">Kunci – Hexadesimal (isi per karakter)</div>
+            <div class="info-box">Ubah setiap karakter Kunci ke nilai hexadesimal 2-digit</div>
+            <div class="hex-answer-grid" id="grid-key-hex"></div>
+          </div>
+
+          <div class="sub-section">
+            <div class="bit-section-label">Kunci – Biner 64-bit (isi per bit)</div>
+            <div class="info-box">Ubah setiap karakter kunci ke 8 bit biner</div>
+            <div class="bit-grid-wrapper">
+              <div class="bit-grid group-8" id="grid-key-bin"></div>
+            </div>
+          </div>
+
+          <div class="btn-section">
+            <button class="btn btn-check" onclick="checkSection(1)">🔍 Cek Jawaban Bagian 1</button>
+            <span class="feedback" id="fb-1"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================================================
+       SECTION 2: INITIAL PERMUTATION (IP)
+  ================================================== -->
+    <div class="card locked" id="card-s2">
+      <div class="card-header">
+        <div class="step-badge" id="badge-2">2</div>
+        <h2>Initial Permutation (IP) – 64-bit</h2>
+        <span class="lock-icon" id="lock-2">🔒</span>
+      </div>
+      <div class="card-body">
+        <div class="info-box">
+          <strong>Tabel IP:</strong> {58,50,42,34,26,18,10,2, 60,52,44,36,28,20,12,4,
+          62,54,46,38,30,22,14,6, 64,56,48,40,32,24,16,8,
+          57,49,41,33,25,17,9,1, 59,51,43,35,27,19,11,3,
+          61,53,45,37,29,21,13,5, 63,55,47,39,31,23,15,7}<br />
+          Gunakan tabel di atas untuk mempermutasi 64-bit Plaintext Anda.
+          Isi hasil IP bit per bit.
+        </div>
+        <div class="bit-section-label">Hasil IP (64 bit)</div>
+        <div class="bit-grid-wrapper">
+          <div class="bit-grid group-8" id="grid-ip"></div>
+        </div>
+        <div class="btn-section">
+          <button class="btn btn-check" onclick="checkSection(2)">🔍 Cek Jawaban Bagian 2</button>
+          <span class="feedback" id="fb-2"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================================================
+       SECTION 3: L0 DAN R0
+  ================================================== -->
+    <div class="card locked" id="card-s3">
+      <div class="card-header">
+        <div class="step-badge" id="badge-3">3</div>
+        <h2>Pembagian L₀ dan R₀ (masing-masing 32-bit)</h2>
+        <span class="lock-icon" id="lock-3">🔒</span>
+      </div>
+      <div class="card-body">
+        <div class="info-box">
+          Hasil IP 64-bit dibagi dua: <strong>L₀</strong> = 32 bit pertama, <strong>R₀</strong> = 32 bit terakhir.
+          Isi kolom berikut sesuai pembagian yang Anda hitung.
+        </div>
+
+        <div class="sub-section">
+          <div class="bit-section-label">L₀ (bit 1–32)</div>
+          <div class="bit-grid-wrapper">
+            <div class="bit-grid group-8" id="grid-l0"></div>
+          </div>
+        </div>
+
+        <div class="sub-section">
+          <div class="bit-section-label">R₀ (bit 33–64)</div>
+          <div class="bit-grid-wrapper">
+            <div class="bit-grid group-8" id="grid-r0"></div>
+          </div>
+        </div>
+
+        <div class="btn-section">
+          <button class="btn btn-check" onclick="checkSection(3)">🔍 Cek Jawaban Bagian 3</button>
+          <span class="feedback" id="fb-3"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================================================
+       SECTION 4: KEY SCHEDULE (PC-1, Shift, PC-2)
+  ================================================== -->
+    <div class="card locked" id="card-s4">
+      <div class="card-header">
+        <div class="step-badge" id="badge-4">4</div>
+        <h2>Key Schedule – PC-1 → Shift → PC-2 (Round Key K₁)</h2>
+        <span class="lock-icon" id="lock-4">🔒</span>
+      </div>
+      <div class="card-body">
+
+        <!-- PC-1 -->
+        <div class="sub-section">
+          <div class="bit-section-label">Langkah 4a: Hasil PC-1 (56-bit)</div>
+          <div class="info-box">
+            <strong>Tabel PC-1:</strong><br />
+            C₀ (28-bit): {57,49,41,33,25,17,9, 1,58,50,42,34,26,18, 10,2,59,51,43,35,27, 19,11,3,60,52,44,36}<br />
+            D₀ (28-bit): {63,55,47,39,31,23,15, 7,62,54,46,38,30,22, 14,6,61,53,45,37,29, 21,13,5,28,20,12,4}
+          </div>
+          <div class="row-label" style="margin-bottom:6px;">C₀ (28 bit)</div>
+          <div class="bit-grid-wrapper">
+            <div class="bit-grid group-4" id="grid-c0"></div>
+          </div>
+          <div class="row-label" style="margin-top:12px; margin-bottom:6px;">D₀ (28 bit)</div>
+          <div class="bit-grid-wrapper">
+            <div class="bit-grid group-4" id="grid-d0"></div>
+          </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <!-- Shift -->
+        <div class="sub-section">
+          <div class="bit-section-label">Langkah 4b: Left Shift (Ronde 1 = 1 posisi)</div>
+          <div class="info-box">
+            Geser C₀ dan D₀ masing-masing 1 posisi ke kiri (circular). Hasilnya adalah C₁ dan D₁.
+          </div>
+          <div class="row-label" style="margin-bottom:6px;">C₁ (28 bit)</div>
+          <div class="bit-grid-wrapper">
+            <div class="bit-grid group-4" id="grid-c1"></div>
+          </div>
+          <div class="row-label" style="margin-top:12px; margin-bottom:6px;">D₁ (28 bit)</div>
+          <div class="bit-grid-wrapper">
+            <div class="bit-grid group-4" id="grid-d1"></div>
+          </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <!-- PC-2 -->
+        <div class="sub-section">
+          <div class="bit-section-label">Langkah 4c: Hasil PC-2 – Round Key K₁ (48-bit)</div>
+          <div class="info-box">
+            <strong>Tabel PC-2:</strong> {14,17,11,24,1,5, 3,28,15,6,21,10, 23,19,12,4,26,8, 16,7,27,20,13,2,
+            41,52,31,37,47,55, 30,40,51,45,33,48, 44,49,39,56,34,53, 46,42,50,36,29,32}<br />
+            Aplikasikan PC-2 ke gabungan C₁+D₁ (56-bit) untuk mendapatkan K₁.
+          </div>
+          <div class="bit-grid-wrapper">
+            <div class="bit-grid group-6" id="grid-k1"></div>
+          </div>
+        </div>
+
+        <div class="btn-section">
+          <button class="btn btn-check" onclick="checkSection(4)">🔍 Cek Jawaban Bagian 4</button>
+          <span class="feedback" id="fb-4"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================================================
+       SECTION 5: EXPANSION PERMUTATION (E) R0 → 48-bit
+  ================================================== -->
+    <div class="card locked" id="card-s5">
+      <div class="card-header">
+        <div class="step-badge" id="badge-5">5</div>
+        <h2>Expansion Permutation (E) – R₀ menjadi 48-bit</h2>
+        <span class="lock-icon" id="lock-5">🔒</span>
+      </div>
+      <div class="card-body">
+        <div class="info-box">
+          <strong>Tabel Expansion E:</strong><br />
+          {32,1,2,3,4,5, 4,5,6,7,8,9, 8,9,10,11,12,13, 12,13,14,15,16,17,
+          16,17,18,19,20,21, 20,21,22,23,24,25, 24,25,26,27,28,29, 28,29,30,31,32,1}<br />
+          Ekspansi R₀ (32-bit) menjadi 48-bit menggunakan tabel di atas. Isi bit per bit.
+        </div>
+        <div class="bit-section-label">E(R₀) – Hasil Expansion (48 bit)</div>
+        <div class="bit-grid-wrapper">
+          <div class="bit-grid group-6" id="grid-er0"></div>
+        </div>
+        <div class="btn-section">
+          <button class="btn btn-check" onclick="checkSection(5)">🔍 Cek Jawaban Bagian 5</button>
+          <span class="feedback" id="fb-5"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================================================
+       SECTION 6: XOR E(R0) dengan K1
+  ================================================== -->
+    <div class="card locked" id="card-s6">
+      <div class="card-header">
+        <div class="step-badge" id="badge-6">6</div>
+        <h2>XOR: E(R₀) ⊕ K₁ = 48-bit</h2>
+        <span class="lock-icon" id="lock-6">🔒</span>
+      </div>
+      <div class="card-body">
+        <div class="info-box">
+          XOR-kan setiap bit E(R₀) dengan bit K₁ yang bersesuaian (posisi demi posisi).
+          Hasil XOR adalah 48 bit yang akan menjadi input S-Box.
+        </div>
+        <div class="bit-section-label">Hasil XOR: E(R₀) ⊕ K₁ (48 bit)</div>
+        <div class="bit-grid-wrapper">
+          <div class="bit-grid group-6" id="grid-xor1"></div>
+        </div>
+        <div class="btn-section">
+          <button class="btn btn-check" onclick="checkSection(6)">🔍 Cek Jawaban Bagian 6</button>
+          <span class="feedback" id="fb-6"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================================================
+       SECTION 7: SUBSTITUSI S-BOX
+  ================================================== -->
+    <div class="card locked" id="card-s7">
+      <div class="card-header">
+        <div class="step-badge" id="badge-7">7</div>
+        <h2>Substitusi S-Box (S1 – S8) → 32-bit</h2>
+        <span class="lock-icon" id="lock-7">🔒</span>
+      </div>
+      <div class="card-body">
+        <div class="info-box">
+          Bagi 48-bit hasil XOR menjadi 8 kelompok 6-bit. Untuk tiap kelompok:<br />
+          • <strong>Baris</strong> = bit ke-1 dan ke-6 (gabungkan → desimal 0–3)<br />
+          • <strong>Kolom</strong> = bit ke-2 sampai ke-5 (gabungkan → desimal 0–15)<br />
+          Cari nilai dari tabel S-Box yang sesuai, tulis dalam 4-bit biner.
+        </div>
+
+        <div class="sbox-container" id="sbox-container"></div>
+
+        <!-- Gabungan Output S-Box -->
+        <div class="sub-section" style="margin-top:20px;">
+          <div class="bit-section-label">Gabungan Output S-Box (32-bit)</div>
+          <div class="info-box">Gabungkan seluruh output 4-bit dari S1–S8 menjadi 32-bit.</div>
+          <div class="bit-grid-wrapper">
+            <div class="bit-grid group-8" id="grid-sbox-out"></div>
+          </div>
+        </div>
+
+        <div class="btn-section">
+          <button class="btn btn-check" onclick="checkSection(7)">🔍 Cek Jawaban Bagian 7</button>
+          <span class="feedback" id="fb-7"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================================================
+       SECTION 8: PERMUTASI P-BOX
+  ================================================== -->
+    <div class="card locked" id="card-s8">
+      <div class="card-header">
+        <div class="step-badge" id="badge-8">8</div>
+        <h2>Permutasi P-Box – 32-bit</h2>
+        <span class="lock-icon" id="lock-8">🔒</span>
+      </div>
+      <div class="card-body">
+        <div class="info-box">
+          <strong>Tabel P-Box:</strong><br />
+          {16,7,20,21,29,12,28,17, 1,15,23,26,5,18,31,10, 2,8,24,14,32,27,3,9, 19,13,30,6,22,11,4,25}<br />
+          Permutasikan 32-bit output S-Box menggunakan tabel di atas.
+        </div>
+        <div class="bit-section-label">Hasil P-Box (32 bit)</div>
+        <div class="bit-grid-wrapper">
+          <div class="bit-grid group-8" id="grid-pbox"></div>
+        </div>
+        <div class="btn-section">
+          <button class="btn btn-check" onclick="checkSection(8)">🔍 Cek Jawaban Bagian 8</button>
+          <span class="feedback" id="fb-8"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================================================
+       SECTION 9: XOR AKHIR → L1 = P(S) XOR L0
+  ================================================== -->
+    <div class="card locked" id="card-s9">
+      <div class="card-header">
+        <div class="step-badge" id="badge-9">9</div>
+        <h2>XOR Akhir: P(S) ⊕ L₀ = R₁ (Ciphertext Ronde 1)</h2>
+        <span class="lock-icon" id="lock-9">🔒</span>
+      </div>
+      <div class="card-body">
+        <div class="info-box">
+          XOR-kan hasil P-Box dengan L₀ untuk mendapatkan <strong>R₁</strong>.<br />
+          <em>L₁ = R₀</em> (tidak berubah). Bersama R₁, inilah output Ronde 1 DES (64-bit).
+        </div>
+
+        <div class="sub-section">
+          <div class="bit-section-label">R₁ = P(S) ⊕ L₀ (32 bit)</div>
+          <div class="bit-grid-wrapper">
+            <div class="bit-grid group-8" id="grid-r1"></div>
+          </div>
+        </div>
+
+        <div class="sub-section" style="margin-top:16px;">
+          <div class="bit-section-label">L₁ = R₀ (32 bit – salin dari R₀)</div>
+          <div class="bit-grid-wrapper">
+            <div class="bit-grid group-8" id="grid-l1"></div>
+          </div>
+        </div>
+
+        <div class="btn-section">
+          <button class="btn btn-check" onclick="checkSection(9)">🔍 Cek Jawaban Bagian 9</button>
+          <span class="feedback" id="fb-9"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================================================
+       SECTION 10: HASIL AKHIR & INVERSE IP (IP-1)
+  ================================================== -->
+    <div class="card locked" id="card-s10">
+      <div class="card-header">
+        <div class="step-badge" id="badge-10">10</div>
+        <h2>Inverse Initial Permutation (IP⁻¹) – Output Ronde 1</h2>
+        <span class="lock-icon" id="lock-10">🔒</span>
+      </div>
+      <div class="card-body">
+        <div class="info-box">
+          <strong>Tabel IP⁻¹:</strong><br />
+          {40,8,48,16,56,24,64,32, 39,7,47,15,55,23,63,31, 38,6,46,14,54,22,62,30,
+          37,5,45,13,53,21,61,29, 36,4,44,12,52,20,60,28, 35,3,43,11,51,19,59,27,
+          34,2,42,10,50,18,58,26, 33,1,41,9,49,17,57,25}<br />
+          Gabungkan L₁+R₁ (64-bit) dan aplikasikan IP⁻¹ untuk mendapatkan output akhir Ronde 1.
+        </div>
+
+        <div class="sub-section">
+          <div class="bit-section-label">Gabungan L₁R₁ (64 bit)</div>
+          <div class="bit-grid-wrapper">
+            <div class="bit-grid group-8" id="grid-l1r1"></div>
+          </div>
+        </div>
+
+        <div class="sub-section" style="margin-top:14px;">
+          <div class="bit-section-label">Hasil IP⁻¹ – Output Ronde 1 (64 bit)</div>
+          <div class="bit-grid-wrapper">
+            <div class="bit-grid group-8" id="grid-ipm1"></div>
+          </div>
+        </div>
+
+        <div class="sub-section" style="margin-top:14px;">
+          <div class="bit-section-label">Output Ronde 1 dalam Hexadesimal (16 karakter)</div>
+          <div class="hex-answer-grid" id="grid-final-hex"></div>
+        </div>
+
+        <div class="btn-section">
+          <button class="btn btn-check" onclick="checkSection(10)">🔍 Cek Jawaban Bagian 10</button>
+          <span class="feedback" id="fb-10"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================================================
+       RESULT BOX & SUBMIT
+  ================================================== -->
+    <div class="result-box fade-in" id="resultBox">
+      <h3>🎉 Selamat! Semua Tahapan Selesai dengan Benar!</h3>
+      <div class="cipher-display" id="finalCipherDisplay">????????????????????????</div>
+      
+      <div class="form-group" style="text-align: left; margin: 20px 0; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+        <label for="analisaMahasiswa" style="color: var(--white); font-size: 14px; margin-bottom: 8px; display: block;">📝 Analisa Hasil (Wajib diisi untuk Laporan)</label>
+        <p style="font-size: 12px; color: rgba(255,255,255,0.8); margin-bottom: 12px; margin-top: 0; line-height: 1.5;">Buatkan analisis berdasarkan penerapan input plaintext dan kunci pada proses enkripsi untuk menghasilkan ciphertext Ronde-1 pada algoritma DES.</p>
+        <textarea id="analisaMahasiswa" placeholder="Ketikkan analisa kelompok Anda di sini..." style="width: 100%; min-height: 120px; background: var(--white); color: var(--navy-dark); padding: 12px; border-radius: 8px; border: none; font-family: var(--font-sans); resize: vertical; box-sizing: border-box;" oninput="lsSaveLater()"></textarea>
+      </div>
+
+      <p>Output Ronde 1 DES berhasil dihitung. Pastikan Analisa sudah diisi sebelum mengunduh / mengirim laporan.</p>
+      <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
+        <button class="btn" style="background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.35);"
+          onclick="previewReport()" title="Buka preview laporan di tab baru">
+          👁️ Preview Laporan
+        </button>
+        <button class="btn btn-success" onclick="submitReport()" id="btnSubmitReport">
+          📥 Unduh PDF &amp; Kirim ke Drive
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- LOADING UPLOAD OVERLAY -->
+  <div class="upload-overlay" id="uploadOverlay">
+    <div class="upload-modal">
+      <div class="upload-spinner" id="uploadSpinner"></div>
+      <div class="upload-message" id="uploadMessage">Membuat PDF & Mengirim ke Server...</div>
+      <button class="btn btn-primary" id="uploadCloseBtn" style="display:none; margin: 0 auto;"
+        onclick="closeUploadOverlay()">Tutup</button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+     JAVASCRIPT
+============================================================ -->
+  <!-- ADMIN FLOATING PANEL TOGGLE -->
+  <button class="admin-panel-toggle" id="adminPanelToggle" onclick="toggleAdminPanel()" title="Admin Panel">🛡️</button>
+
+  <!-- ADMIN FLOATING PANEL -->
+  <div class="admin-panel" id="adminPanel">
+    <h3>🛡️ Admin Panel</h3>
+    <button class="ap-btn ap-btn-fill" onclick="adminFillAll()">⚡ Auto-Fill Semua Jawaban</button>
+    <button class="ap-btn ap-btn-fill" onclick="adminFillSection()"
+      style="background:linear-gradient(135deg,#2563eb,#1d4ed8)">📌 Fill Section Aktif Saja</button>
+    <button class="ap-btn ap-btn-key" onclick="showAnswerKey()">🗝️ Lihat Kunci Jawaban</button>
+    <button class="ap-btn ap-btn-pdf" onclick="adminPreviewPDF()">📄 Preview / Unduh PDF</button>
+    <button class="ap-btn ap-btn-logout" onclick="adminLogout()">🚪 Keluar Admin Mode</button>
+  </div>
+
+  <script>
+    // ============================================================
+    // KONFIGURASI URL GOOGLE APPS SCRIPT (ISI SEBELUM DEPLOY)
+    // ============================================================
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzTVt6_2BEfgENDEX67n37jB1xblSmHaiIxei2kBHYRTnQO83aJAoz9wTkfyH74dymNeQ/exec"; // <-- isi URL Google Apps Script di sini
+
+    // ============================================================
+    // TABEL DES (GLOBAL CONSTANTS)
+    // ============================================================
+    const IP_TABLE = [
+      58, 50, 42, 34, 26, 18, 10, 2,
+      60, 52, 44, 36, 28, 20, 12, 4,
+      62, 54, 46, 38, 30, 22, 14, 6,
+      64, 56, 48, 40, 32, 24, 16, 8,
+      57, 49, 41, 33, 25, 17, 9, 1,
+      59, 51, 43, 35, 27, 19, 11, 3,
+      61, 53, 45, 37, 29, 21, 13, 5,
+      63, 55, 47, 39, 31, 23, 15, 7
+    ];
+
+    const IP_INV_TABLE = [
+      40, 8, 48, 16, 56, 24, 64, 32,
+      39, 7, 47, 15, 55, 23, 63, 31,
+      38, 6, 46, 14, 54, 22, 62, 30,
+      37, 5, 45, 13, 53, 21, 61, 29,
+      36, 4, 44, 12, 52, 20, 60, 28,
+      35, 3, 43, 11, 51, 19, 59, 27,
+      34, 2, 42, 10, 50, 18, 58, 26,
+      33, 1, 41, 9, 49, 17, 57, 25
+    ];
+
+    const PC1_C = [57, 49, 41, 33, 25, 17, 9, 1, 58, 50, 42, 34, 26, 18, 10, 2, 59, 51, 43, 35, 27, 19, 11, 3, 60, 52, 44, 36];
+    const PC1_D = [63, 55, 47, 39, 31, 23, 15, 7, 62, 54, 46, 38, 30, 22, 14, 6, 61, 53, 45, 37, 29, 21, 13, 5, 28, 20, 12, 4];
+
+    const PC2_TABLE = [
+      14, 17, 11, 24, 1, 5,
+      3, 28, 15, 6, 21, 10,
+      23, 19, 12, 4, 26, 8,
+      16, 7, 27, 20, 13, 2,
+      41, 52, 31, 37, 47, 55,
+      30, 40, 51, 45, 33, 48,
+      44, 49, 39, 56, 34, 53,
+      46, 42, 50, 36, 29, 32
+    ];
+
+    const E_TABLE = [
+      32, 1, 2, 3, 4, 5,
+      4, 5, 6, 7, 8, 9,
+      8, 9, 10, 11, 12, 13,
+      12, 13, 14, 15, 16, 17,
+      16, 17, 18, 19, 20, 21,
+      20, 21, 22, 23, 24, 25,
+      24, 25, 26, 27, 28, 29,
+      28, 29, 30, 31, 32, 1
+    ];
+
+    const P_TABLE = [
+      16, 7, 20, 21, 29, 12, 28, 17,
+      1, 15, 23, 26, 5, 18, 31, 10,
+      2, 8, 24, 14, 32, 27, 3, 9,
+      19, 13, 30, 6, 22, 11, 4, 25
+    ];
+
+    const SBOX = [
+      // S1
+      [[14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7],
+      [0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8],
+      [4, 1, 14, 8, 13, 6, 2, 11, 15, 12, 9, 7, 3, 10, 5, 0],
+      [15, 12, 8, 2, 4, 9, 1, 7, 5, 11, 3, 14, 10, 0, 6, 13]],
+      // S2
+      [[15, 1, 8, 14, 6, 11, 3, 4, 9, 7, 2, 13, 12, 0, 5, 10],
+      [3, 13, 4, 7, 15, 2, 8, 14, 12, 0, 1, 10, 6, 9, 11, 5],
+      [0, 14, 7, 11, 10, 4, 13, 1, 5, 8, 12, 6, 9, 3, 2, 15],
+      [13, 8, 10, 1, 3, 15, 4, 2, 11, 6, 7, 12, 0, 5, 14, 9]],
+      // S3
+      [[10, 0, 9, 14, 6, 3, 15, 5, 1, 13, 12, 7, 11, 4, 2, 8],
+      [13, 7, 0, 9, 3, 4, 6, 10, 2, 8, 5, 14, 12, 11, 15, 1],
+      [13, 6, 4, 9, 8, 15, 3, 0, 11, 1, 2, 12, 5, 10, 14, 7],
+      [1, 10, 13, 0, 6, 9, 8, 7, 4, 15, 14, 3, 11, 5, 2, 12]],
+      // S4
+      [[7, 13, 14, 3, 0, 6, 9, 10, 1, 2, 8, 5, 11, 12, 4, 15],
+      [13, 8, 11, 5, 6, 15, 0, 3, 4, 7, 2, 12, 1, 10, 14, 9],
+      [10, 6, 9, 0, 12, 11, 7, 13, 15, 1, 3, 14, 5, 2, 8, 4],
+      [3, 15, 0, 6, 10, 1, 13, 8, 9, 4, 5, 11, 12, 7, 2, 14]],
+      // S5
+      [[2, 12, 4, 1, 7, 10, 11, 6, 8, 5, 3, 15, 13, 0, 14, 9],
+      [14, 11, 2, 12, 4, 7, 13, 1, 5, 0, 15, 10, 3, 9, 8, 6],
+      [4, 2, 1, 11, 10, 13, 7, 8, 15, 9, 12, 5, 6, 3, 0, 14],
+      [11, 8, 12, 7, 1, 14, 2, 13, 6, 15, 0, 9, 10, 4, 5, 3]],
+      // S6
+      [[12, 1, 10, 15, 9, 2, 6, 8, 0, 13, 3, 4, 14, 7, 5, 11],
+      [10, 15, 4, 2, 7, 12, 9, 5, 6, 1, 13, 14, 0, 11, 3, 8],
+      [9, 14, 15, 5, 2, 8, 12, 3, 7, 0, 4, 10, 1, 13, 11, 6],
+      [4, 3, 2, 12, 9, 5, 15, 10, 11, 14, 1, 7, 6, 0, 8, 13]],
+      // S7
+      [[4, 11, 2, 14, 15, 0, 8, 13, 3, 12, 9, 7, 5, 10, 6, 1],
+      [13, 0, 11, 7, 4, 9, 1, 10, 14, 3, 5, 12, 2, 15, 8, 6],
+      [1, 4, 11, 13, 12, 3, 7, 14, 10, 15, 6, 8, 0, 5, 9, 2],
+      [6, 11, 13, 8, 1, 4, 10, 7, 9, 5, 0, 15, 14, 2, 3, 12]],
+      // S8
+      [[13, 2, 8, 4, 6, 15, 11, 1, 10, 9, 3, 14, 5, 0, 12, 7],
+      [1, 15, 13, 8, 10, 3, 7, 4, 12, 5, 6, 11, 0, 14, 9, 2],
+      [7, 11, 4, 1, 9, 12, 14, 2, 0, 6, 10, 13, 15, 3, 5, 8],
+      [2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11]]
+    ];
+
+    // ============================================================
+    // STATE MANAGEMENT
+    // ============================================================
+    let GT = {}; // ground truth object
+    let sectionDone = new Array(11).fill(false); // index 0 = identity
+    sectionDone[0] = false;
+
+    let computedInput = { plaintext: "", key: "" };
+
+    // ============================================================
+    // LOCAL STORAGE AUTO-SAVE
+    // ============================================================
+    const LS_KEY = 'cbl1_des_save_v1';
+    let _saveTimer = null;
+
+    function lsSave() {
+      // Collect all current input values from the DOM
+      const data = {
+        identity: {
+          namaKelompok: document.getElementById('namaKelompok')?.value || '',
+          namaNIM: document.getElementById('namaNIM')?.value || ''
+        },
+        plaintext: document.getElementById('inputPlaintext')?.value || '',
+        key: document.getElementById('inputKey')?.value || '',
+        inputs: {}
+      };
+
+      // Collect all named inputs with an id pattern we track
+      document.querySelectorAll('input[id], textarea[id]').forEach(inp => {
+        const id = inp.id;
+        // Skip buttons and unnamed/system inputs, also skip namaNIM as it's saved separately
+        if (inp.type === 'button' || inp.type === 'submit' || id === 'namaNIM') return;
+        if (inp.value !== '') data.inputs[id] = inp.value;
+      });
+
+      try {
+        localStorage.setItem(LS_KEY, JSON.stringify(data));
+        showSaveIndicator();
+      } catch (e) { /* storage full or unavailable */ }
+    }
+
+    function lsSaveLater() {
+      clearTimeout(_saveTimer);
+      _saveTimer = setTimeout(lsSave, 600);
+    }
+
+    function showSaveIndicator() {
+      const el = document.getElementById('saveIndicator');
+      if (!el) return;
+      el.classList.add('visible');
+      clearTimeout(el._hideTimer);
+      el._hideTimer = setTimeout(() => el.classList.remove('visible'), 2000);
+    }
+
+    function lsRestore() {
+      let saved;
+      try {
+        const raw = localStorage.getItem(LS_KEY);
+        if (!raw) return;
+        saved = JSON.parse(raw);
+      } catch (e) { return; }
+
+      // Restore identity
+      if (saved.identity) {
+        const namaEl = document.getElementById('namaKelompok');
+        const nimEl = document.getElementById('namaNIM');
+        if (namaEl && saved.identity.namaKelompok) namaEl.value = saved.identity.namaKelompok;
+        if (nimEl && saved.identity.namaNIM) nimEl.value = saved.identity.namaNIM;
+      }
+
+      // Restore plaintext & key
+      const ptEl = document.getElementById('inputPlaintext');
+      const keyEl = document.getElementById('inputKey');
+      if (ptEl && saved.plaintext) ptEl.value = saved.plaintext;
+      if (keyEl && saved.key) keyEl.value = saved.key;
+
+      // If both plaintext and key were saved, re-run computation and restore answers
+      if (saved.plaintext && saved.key &&
+        saved.plaintext.length === 8 && saved.key.length === 8) {
+        // Re-init without alert
+        const pt = saved.plaintext;
+        const key = saved.key;
+        clearAllComputed();
+        GT = computeDES(pt, key);
+        computedInput = { plaintext: pt, key: key };
+
+        // Rebuild all grids
+        buildHexGrid('grid-pt-hex', 8, 'pt-hex');
+        buildBitGrid('grid-pt-bin', 64, 'pt-bin', 'group-8');
+        buildHexGrid('grid-key-hex', 8, 'key-hex');
+        buildBitGrid('grid-key-bin', 64, 'key-bin', 'group-8');
+        buildBitGrid('grid-ip', 64, 'ip', 'group-8');
+        buildBitGrid('grid-l0', 32, 'l0', 'group-8');
+        buildBitGrid('grid-r0', 32, 'r0', 'group-8');
+        buildBitGrid('grid-c0', 28, 'c0', 'group-4');
+        buildBitGrid('grid-d0', 28, 'd0', 'group-4');
+        buildBitGrid('grid-c1', 28, 'c1', 'group-4');
+        buildBitGrid('grid-d1', 28, 'd1', 'group-4');
+        buildBitGrid('grid-k1', 48, 'k1', 'group-6');
+        buildBitGrid('grid-er0', 48, 'er0', 'group-6');
+        buildBitGrid('grid-xor1', 48, 'xor1', 'group-6');
+        buildSBoxSection();
+        buildBitGrid('grid-sbox-out', 32, 'sout', 'group-8');
+        buildBitGrid('grid-pbox', 32, 'pbox', 'group-8');
+        buildBitGrid('grid-r1', 32, 'r1', 'group-8');
+        buildBitGrid('grid-l1', 32, 'l1', 'group-8');
+        buildBitGrid('grid-l1r1', 64, 'l1r1', 'group-8');
+        buildBitGrid('grid-ipm1', 64, 'ipm1', 'group-8');
+        buildHexGrid('grid-final-hex', 16, 'final-hex');
+
+        document.getElementById('convSection').style.display = 'block';
+        document.getElementById('convDivider').style.display = 'block';
+
+        // Now restore saved answers into all grid inputs and textareas
+        if (saved.inputs) {
+          Object.entries(saved.inputs).forEach(([id, val]) => {
+            const el = document.getElementById(id);
+            if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') && el.type !== 'button' && el.type !== 'submit') {
+              el.value = val;
+            }
+          });
+        }
+
+        // Restore identity confirm status
+        if (saved.identity?.namaKelompok && saved.identity?.namaNIM) {
+          sectionDone[0] = true;
+          showFeedback('identity', true, 'Identitas terkonfirmasi!');
+          unlockSection(1);
+        }
+
+        updateProgress();
+      }
+    }
+
+    function resetAllData() {
+      if (!confirm('Yakin ingin menghapus semua data yang tersimpan? Semua jawaban akan hilang.')) return;
+      localStorage.removeItem(LS_KEY);
+      location.reload();
+    }
+
+    // ============================================================
+    // UTILITY FUNCTIONS
+    // ============================================================
+    function strToBin64(str) {
+      let bits = [];
+      for (let i = 0; i < 8; i++) {
+        const code = str.charCodeAt(i);
+        for (let b = 7; b >= 0; b--) {
+          bits.push((code >> b) & 1);
+        }
+      }
+      return bits; // array of 0/1, length 64
+    }
+
+    function strToHexArr(str) {
+      return Array.from(str).map(c => c.charCodeAt(0).toString(16).toUpperCase().padStart(2, '0'));
+    }
+
+    function permute(bits, table) {
+      return table.map(pos => bits[pos - 1]);
+    }
+
+    function xorBits(a, b) {
+      return a.map((bit, i) => bit ^ b[i]);
+    }
+
+    function leftShift(arr, n) {
+      return [...arr.slice(n), ...arr.slice(0, n)];
+    }
+
+    function bitsToInt(bits) {
+      return parseInt(bits.join(''), 2);
+    }
+
+    function intTo4Bits(n) {
+      return [(n >> 3) & 1, (n >> 2) & 1, (n >> 1) & 1, n & 1];
+    }
+
+    function bitsToHex(bits) {
+      // bits is array of 0/1 length multiple of 4
+      let hex = '';
+      for (let i = 0; i < bits.length; i += 4) {
+        hex += bitsToInt(bits.slice(i, i + 4)).toString(16).toUpperCase();
+      }
+      return hex;
+    }
+
+    // ============================================================
+    // DES ROUND 1 COMPUTATION (GROUND TRUTH)
+    // ============================================================
+    function computeDES(plaintext, key) {
+      const ptBin = strToBin64(plaintext);
+      const keyBin = strToBin64(key);
+
+      // Hex representations
+      const ptHex = strToHexArr(plaintext);
+      const keyHex = strToHexArr(key);
+
+      // IP
+      const ip = permute(ptBin, IP_TABLE);
+      const L0 = ip.slice(0, 32);
+      const R0 = ip.slice(32, 64);
+
+      // Key Schedule
+      const C0 = permute(keyBin, PC1_C);
+      const D0 = permute(keyBin, PC1_D);
+      const C1 = leftShift(C0, 1);
+      const D1 = leftShift(D0, 1);
+      const CD1 = [...C1, ...D1];
+      const K1 = permute(CD1, PC2_TABLE);
+
+      // Expansion
+      const ER0 = permute(R0, E_TABLE);
+
+      // XOR with K1
+      const xor1 = xorBits(ER0, K1);
+
+      // S-Box substitution
+      let sboxInputGroups = [];
+      let sboxRowArr = [];
+      let sboxColArr = [];
+      let sboxOutBits = [];
+
+      for (let i = 0; i < 8; i++) {
+        const group = xor1.slice(i * 6, i * 6 + 6);
+        sboxInputGroups.push(group);
+        const row = bitsToInt([group[0], group[5]]);
+        const col = bitsToInt(group.slice(1, 5));
+        sboxRowArr.push(row);
+        sboxColArr.push(col);
+        const val = SBOX[i][row][col];
+        const fourBits = intTo4Bits(val);
+        sboxOutBits.push(...fourBits);
+      }
+
+      // P-Box
+      const pbox = permute(sboxOutBits, P_TABLE);
+
+      // Final XOR
+      const R1 = xorBits(pbox, L0);
+      const L1 = [...R0];
+
+      // Combined L1R1
+      const L1R1 = [...L1, ...R1];
+
+      // IP inverse
+      const ipm1 = permute(L1R1, IP_INV_TABLE);
+
+      // Final hex
+      const finalHex = bitsToHex(ipm1);
+
+      return {
+        ptBin, ptHex,
+        keyBin, keyHex,
+        ip, L0, R0,
+        C0, D0, C1, D1, K1,
+        ER0, xor1,
+        sboxInputGroups, sboxRowArr, sboxColArr, sboxOutBits,
+        pbox,
+        R1, L1, L1R1, ipm1,
+        finalHex
+      };
+    }
+
+    // ============================================================
+    // DOM BUILDER HELPERS
+    // ============================================================
+    function buildBitGrid(containerId, count, idPrefix, groupClass) {
+      const container = document.getElementById(containerId);
+      container.className = `bit-grid ${groupClass}`;
+      container.innerHTML = '';
+      for (let i = 0; i < count; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'bit-cell';
+        const idx = document.createElement('div');
+        idx.className = 'bit-index';
+        idx.textContent = i + 1;
+        const inp = document.createElement('input');
+        inp.type = 'text';
+        inp.maxLength = 1;
+        inp.id = `${idPrefix}_${i}`;
+        inp.setAttribute('autocomplete', 'off');
+        inp.addEventListener('input', (e) => {
+          const v = e.target.value;
+          if (!/^[01]$/.test(v)) e.target.value = '';
+          else moveFocusNext(e.target, idPrefix, count);
+        });
+        inp.addEventListener('keydown', (e) => {
+          if (e.key === 'Backspace' && e.target.value === '') moveFocusPrev(e.target, idPrefix);
+        });
+        cell.appendChild(idx);
+        cell.appendChild(inp);
+        container.appendChild(cell);
+      }
+    }
+
+    function moveFocusNext(inp, prefix, max) {
+      const id = inp.id; // prefix_i
+      const i = parseInt(id.split('_').pop());
+      if (i < max - 1) {
+        const next = document.getElementById(`${prefix}_${i + 1}`);
+        if (next) next.focus();
+      }
+    }
+
+    function moveFocusPrev(inp, prefix) {
+      const i = parseInt(inp.id.split('_').pop());
+      if (i > 0) {
+        const prev = document.getElementById(`${prefix}_${i - 1}`);
+        if (prev) { prev.focus(); prev.select(); }
+      }
+    }
+
+    function buildHexGrid(containerId, count, idPrefix) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      for (let i = 0; i < count; i++) {
+        const inp = document.createElement('input');
+        inp.type = 'text';
+        inp.maxLength = 2;
+        inp.id = `${idPrefix}_${i}`;
+        inp.style.textTransform = 'uppercase';
+        inp.setAttribute('autocomplete', 'off');
+        inp.addEventListener('input', (e) => {
+          if (e.target.value.length === 2) {
+            const next = document.getElementById(`${idPrefix}_${parseInt(e.target.id.split('_').pop()) + 1}`);
+            if (next) next.focus();
+          }
+        });
+        container.appendChild(inp);
+      }
+    }
+
+    // ============================================================
+    // SECTION UNLOCK / LOCK
+    // ============================================================
+    function unlockSection(n) {
+      const card = document.getElementById(`card-s${n}`);
+      if (!card) return;
+      card.classList.remove('locked');
+      const lock = document.getElementById(`lock-${n}`);
+      if (lock) lock.textContent = '🔓';
+    }
+
+    function markSectionDone(n) {
+      sectionDone[n] = true;
+      const badge = document.getElementById(`badge-${n}`);
+      if (badge) {
+        badge.textContent = '✔';
+        badge.classList.add('done-badge');
+      }
+      updateProgress();
+      if (n < 10) unlockSection(n + 1);
+      if (n === 10) showResult();
+    }
+
+    function updateProgress() {
+      const done = sectionDone.slice(1).filter(Boolean).length; // sections 1-10
+      const pct = (done / 10) * 100;
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressText').textContent = `${done} / 10 Selesai`;
+    }
+
+    // ============================================================
+    // FEEDBACK HELPERS
+    // ============================================================
+    function showFeedback(id, ok, msg) {
+      const el = document.getElementById(`fb-${id}`);
+      el.className = `feedback show ${ok ? 'ok' : 'err'}`;
+      el.textContent = ok ? `✔ ${msg}` : `✘ ${msg}`;
+    }
+
+    // ============================================================
+    // VALIDATE BIT GRID
+    // ============================================================
+    function validateBitGrid(idPrefix, groundTruth) {
+      let allOk = true;
+      groundTruth.forEach((bit, i) => {
+        const inp = document.getElementById(`${idPrefix}_${i}`);
+        if (!inp) return;
+        const val = inp.value.trim();
+        const ok = val === String(bit);
+        inp.classList.toggle('correct', ok);
+        inp.classList.toggle('wrong', !ok);
+        if (!ok) allOk = false;
+      });
+      return allOk;
+    }
+
+    function validateHexGrid(idPrefix, groundTruth, charsPerCell = 2) {
+      // groundTruth: array of hex strings (2-char each)
+      let allOk = true;
+      groundTruth.forEach((hexVal, i) => {
+        const inp = document.getElementById(`${idPrefix}_${i}`);
+        if (!inp) return;
+        const val = inp.value.trim().toUpperCase().padStart(charsPerCell, '0');
+        const ok = val === hexVal.toUpperCase();
+        inp.classList.toggle('correct', ok);
+        inp.classList.toggle('wrong', !ok);
+        if (!ok) allOk = false;
+      });
+      return allOk;
+    }
+
+    // ============================================================
+    // IDENTITY SUBMIT
+    // ============================================================
+    function submitIdentity() {
+      const nama = document.getElementById('namaKelompok').value.trim();
+      const nim = document.getElementById('namaNIM').value.trim();
+      if (!nama || !nim) {
+        showFeedback('identity', false, 'Isi Nama Kelompok dan Nama/NIM terlebih dahulu.');
+        return;
+      }
+      sectionDone[0] = true;
+      showFeedback('identity', true, 'Identitas terkonfirmasi!');
+      unlockSection(1);
+    }
+
+    // ============================================================
+    // INIT COMPUTE (after plaintext + key entry)
+    // ============================================================
+    function clearAllComputed() {
+      // When plaintext/key changes, reset all sections
+      for (let i = 1; i <= 10; i++) {
+        sectionDone[i] = false;
+        const card = document.getElementById(`card-s${i}`);
+        if (i > 1 && card) card.classList.add('locked');
+        const badge = document.getElementById(`badge-${i}`);
+        if (badge) { badge.textContent = i; badge.classList.remove('done-badge'); }
+        const lock = document.getElementById(`lock-${i}`);
+        if (lock) lock.textContent = '🔒';
+        const fb = document.getElementById(`fb-${i}`);
+        if (fb) { fb.className = 'feedback'; fb.textContent = ''; }
+      }
+      document.getElementById('convSection').style.display = 'none';
+      document.getElementById('convDivider').style.display = 'none';
+      document.getElementById('resultBox').classList.remove('show');
+      updateProgress();
+      GT = {};
+    }
+
+    function initCompute() {
+      const pt = document.getElementById('inputPlaintext').value;
+      const key = document.getElementById('inputKey').value;
+      if (pt.length !== 8 || key.length !== 8) {
+        alert('Plaintext dan Kunci harus tepat 8 karakter ASCII!');
+        return;
+      }
+      clearAllComputed();
+      GT = computeDES(pt, key);
+      computedInput = { plaintext: pt, key: key };
+
+      // Build grids
+      buildHexGrid('grid-pt-hex', 8, 'pt-hex');
+      buildBitGrid('grid-pt-bin', 64, 'pt-bin', 'group-8');
+      buildHexGrid('grid-key-hex', 8, 'key-hex');
+      buildBitGrid('grid-key-bin', 64, 'key-bin', 'group-8');
+      buildBitGrid('grid-ip', 64, 'ip', 'group-8');
+      buildBitGrid('grid-l0', 32, 'l0', 'group-8');
+      buildBitGrid('grid-r0', 32, 'r0', 'group-8');
+      buildBitGrid('grid-c0', 28, 'c0', 'group-4');
+      buildBitGrid('grid-d0', 28, 'd0', 'group-4');
+      buildBitGrid('grid-c1', 28, 'c1', 'group-4');
+      buildBitGrid('grid-d1', 28, 'd1', 'group-4');
+      buildBitGrid('grid-k1', 48, 'k1', 'group-6');
+      buildBitGrid('grid-er0', 48, 'er0', 'group-6');
+      buildBitGrid('grid-xor1', 48, 'xor1', 'group-6');
+      buildSBoxSection();
+      buildBitGrid('grid-sbox-out', 32, 'sout', 'group-8');
+      buildBitGrid('grid-pbox', 32, 'pbox', 'group-8');
+      buildBitGrid('grid-r1', 32, 'r1', 'group-8');
+      buildBitGrid('grid-l1', 32, 'l1', 'group-8');
+      buildBitGrid('grid-l1r1', 64, 'l1r1', 'group-8');
+      buildBitGrid('grid-ipm1', 64, 'ipm1', 'group-8');
+      buildHexGrid('grid-final-hex', 16, 'final-hex');
+
+      document.getElementById('convSection').style.display = 'block';
+      document.getElementById('convDivider').style.display = 'block';
+    }
+
+    // ============================================================
+    // BUILD S-BOX SECTION
+    // ============================================================
+    function buildSBoxSection() {
+      const container = document.getElementById('sbox-container');
+      container.innerHTML = '';
+      for (let s = 0; s < 8; s++) {
+        const unit = document.createElement('div');
+        unit.className = 'sbox-unit';
+        unit.innerHTML = `
+      <div class="sbox-unit-header">S${s + 1} – Kelompok ${s + 1} (bit ${s * 6 + 1}–${s * 6 + 6})</div>
+      <div class="sbox-unit-body">
+        <div class="sbox-input-row">
+          <label>Input 6-bit (mis: 101010)</label>
+          <input type="text" id="sbox-in-${s}" maxlength="6"
+                 placeholder="000000" style="font-family:var(--font-mono); letter-spacing:2px;"
+                 oninput="this.value=this.value.replace(/[^01]/g,'')"
+          />
+        </div>
+        <div class="sbox-input-row" style="margin-top:8px;">
+          <label>Baris (bit 1+6, desimal)</label>
+          <input type="text" id="sbox-row-${s}" maxlength="1" placeholder="0–3" />
+        </div>
+        <div class="sbox-input-row" style="margin-top:6px;">
+          <label>Kolom (bit 2–5, desimal)</label>
+          <input type="text" id="sbox-col-${s}" maxlength="2" placeholder="0–15" />
+        </div>
+        <div class="sbox-input-row" style="margin-top:6px;">
+          <label>Output 4-bit S${s + 1}</label>
+          <input type="text" id="sbox-out-${s}" maxlength="4" placeholder="0000"
+                 style="font-family:var(--font-mono); letter-spacing:2px;"
+                 oninput="this.value=this.value.replace(/[^01]/g,'')"
+          />
+        </div>
+      </div>`;
+        container.appendChild(unit);
+      }
+    }
+
+    // ============================================================
+    // CHECK SECTION LOGIC
+    // ============================================================
+    function checkSection(n) {
+      if (!GT || !GT.ptBin) { alert('Klik "Hitung & Mulai Pengerjaan" terlebih dahulu!'); return; }
+
+      let ok = false;
+
+      switch (n) {
+        case 1:
+          ok = validateHexGrid('pt-hex', GT.ptHex) &&
+            validateBitGrid('pt-bin', GT.ptBin) &&
+            validateHexGrid('key-hex', GT.keyHex) &&
+            validateBitGrid('key-bin', GT.keyBin);
+          break;
+        case 2:
+          ok = validateBitGrid('ip', GT.ip);
+          break;
+        case 3:
+          ok = validateBitGrid('l0', GT.L0) && validateBitGrid('r0', GT.R0);
+          break;
+        case 4:
+          ok = validateBitGrid('c0', GT.C0) &&
+            validateBitGrid('d0', GT.D0) &&
+            validateBitGrid('c1', GT.C1) &&
+            validateBitGrid('d1', GT.D1) &&
+            validateBitGrid('k1', GT.K1);
+          break;
+        case 5:
+          ok = validateBitGrid('er0', GT.ER0);
+          break;
+        case 6:
+          ok = validateBitGrid('xor1', GT.xor1);
+          break;
+        case 7:
+          ok = checkSBoxSection();
+          break;
+        case 8:
+          ok = validateBitGrid('pbox', GT.pbox);
+          break;
+        case 9:
+          ok = validateBitGrid('r1', GT.R1) && validateBitGrid('l1', GT.L1);
+          break;
+        case 10:
+          ok = checkSection10();
+          break;
+      }
+
+      if (ok) {
+        showFeedback(n, true, 'Semua jawaban benar! Bagian ini selesai ✓');
+        markSectionDone(n);
+        // Scroll to next section
+        const nextCard = document.getElementById(`card-s${n + 1}`);
+        if (nextCard) setTimeout(() => nextCard.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
+      } else {
+        showFeedback(n, false, 'Ada jawaban yang salah. Periksa kolom berwarna merah.');
+      }
+    }
+
+    function checkSBoxSection() {
+      let allOk = true;
+      for (let s = 0; s < 8; s++) {
+        const inpIn = document.getElementById(`sbox-in-${s}`);
+        const inpRow = document.getElementById(`sbox-row-${s}`);
+        const inpCol = document.getElementById(`sbox-col-${s}`);
+        const inpOut = document.getElementById(`sbox-out-${s}`);
+
+        const expectedIn = GT.sboxInputGroups[s].join('');
+        const expectedRow = String(GT.sboxRowArr[s]);
+        const expectedCol = String(GT.sboxColArr[s]);
+        const expectedOut = GT.sboxOutBits.slice(s * 4, s * 4 + 4).join('');
+
+        const okIn = inpIn.value.trim() === expectedIn;
+        const okRow = inpRow.value.trim() === expectedRow;
+        const okCol = inpCol.value.trim() === expectedCol;
+        const okOut = inpOut.value.trim() === expectedOut;
+
+        [inpIn, inpRow, inpCol, inpOut].forEach((el, idx) => {
+          const ok = [okIn, okRow, okCol, okOut][idx];
+          el.classList.toggle('correct', ok);
+          el.classList.toggle('wrong', !ok);
+        });
+
+        if (!okIn || !okRow || !okCol || !okOut) allOk = false;
+      }
+
+      // Also check combined sbox output
+      const sboxOutOk = validateBitGrid('sout', GT.sboxOutBits);
+      if (!sboxOutOk) allOk = false;
+
+      return allOk;
+    }
+
+    function checkSection10() {
+      const l1r1ok = validateBitGrid('l1r1', GT.L1R1);
+      const ipm1ok = validateBitGrid('ipm1', GT.ipm1);
+
+      // final hex: GT.finalHex is a 16-char hex string, split into 16 single chars
+      const hexArr = GT.finalHex.split('');
+      let hexOk = true;
+      hexArr.forEach((ch, i) => {
+        const inp = document.getElementById(`final-hex_${i}`);
+        if (!inp) return;
+        const val = inp.value.trim().toUpperCase();
+        const ok = val === ch;
+        inp.classList.toggle('correct', ok);
+        inp.classList.toggle('wrong', !ok);
+        if (!ok) hexOk = false;
+      });
+
+      return l1r1ok && ipm1ok && hexOk;
+    }
+
+    // ============================================================
+    // SHOW RESULT
+    // ============================================================
+    function showResult() {
+      const box = document.getElementById('resultBox');
+      box.classList.add('show');
+      document.getElementById('finalCipherDisplay').textContent = GT.finalHex || '????????????????';
+      box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // ============================================================
+    // SUBMIT REPORT (DRIVE UPLOAD / PREVIEW)
+    // ============================================================
+    // Konfigurasi html2pdf yang stabil untuk 10 halaman
+    function _getPdfOptions(filename) {
+      return {
+        margin:      [0, 0, 0, 0],
+        filename:    filename,
+        image:       { type: 'jpeg', quality: 0.95 },
+        html2canvas: {
+          scale:           2,
+          useCORS:         true,
+          letterRendering: true,
+          logging:         false
+        },
+        jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        // 'after' memaksa page-break tepat setelah setiap div.page
+        pagebreak:   { mode: 'css', after: '.page' }
+      };
+    }
+
+    async function submitReport() {
+      const nama = document.getElementById('namaKelompok').value.trim();
+      const nim  = document.getElementById('namaNIM').value.trim();
+      if (!nama || !nim) { alert('Isi identitas kelompok terlebih dahulu!'); return; }
+      if (!GT || !GT.ptBin) { alert('Selesaikan pengerjaan terlebih dahulu!'); return; }
+
+      const filename = `Laporan_CBL1_${nama.replace(/[^a-z0-9]/gi, '_')}.pdf`;
+
+      showUploadOverlay('Sedang membuat PDF laporan... (mohon tunggu)');
+
+      try {
+        // Buat HTML laporan (forPdf=true: min-height dihapus, posisi absolute→relative)
+        const htmlContent = generateAcademicReportHTML(nama, nim, true);
+
+        const opt = _getPdfOptions(filename);
+
+        // html2pdf().from(string) — html2pdf buat container-nya sendiri di body (VISIBLE),
+        // lalu html2canvas ambil screenshot, lalu hapus container. Ini cara yang benar.
+        if (GOOGLE_SCRIPT_URL) {
+          // === MODE: Download lokal + Upload ke Drive ===
+          const pdfBlob = await html2pdf().set(opt).from(htmlContent).output('blob');
+
+          // 2a. Simpan ke laptop user
+          const blobUrl = URL.createObjectURL(pdfBlob);
+          const a = document.createElement('a');
+          a.href = blobUrl;
+          a.download = filename;
+          a.click();
+          setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
+
+          // 2b. Upload ke Google Drive
+          showUploadOverlay('Mengirim laporan ke server (Google Drive)...');
+          const base64data = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror  = reject;
+            reader.readAsDataURL(pdfBlob);
+          });
+
+          const payload = { nama, nim, filename, pdfBase64: base64data };
+          try {
+            const response = await fetch(GOOGLE_SCRIPT_URL, {
+              method:  'POST',
+              headers: { 'Content-Type': 'text/plain' },
+              body:    JSON.stringify(payload)
+            });
+            const result = await response.json();
+            if (result.ok) {
+              showUploadOverlay(
+                `✅ PDF berhasil diunduh &amp; terkirim ke Drive!<br><br>` +
+                `<a href="${result.fileUrl}" target="_blank" style="color:var(--accent);">` +
+                `Buka File di Drive</a>`,
+                true
+              );
+            } else {
+              showUploadOverlay(`❌ PDF diunduh, tapi gagal kirim ke server: ${result.error}`, true);
+            }
+          } catch (netErr) {
+            console.error(netErr);
+            showUploadOverlay('❌ PDF diunduh, tapi gagal mengirim ke jaringan.', true);
+          }
+
+        } else {
+          // === MODE: Hanya Download lokal ===
+          await html2pdf().set(opt).from(htmlContent).save();
+          showUploadOverlay('✅ PDF berhasil diunduh ke laptop Anda!', true);
+        }
+
+      } catch (err) {
+        console.error(err);
+        showUploadOverlay(`❌ Terjadi kesalahan: ${err.message}`, true);
+      }
+    }
+
+    function showUploadOverlay(msg, isDone = false) {
+      document.getElementById('uploadOverlay').classList.add('active');
+      document.getElementById('uploadMessage').innerHTML = msg;
+
+      if (isDone) {
+        document.getElementById('uploadSpinner').style.display = 'none';
+        document.getElementById('uploadCloseBtn').style.display = 'block';
+      } else {
+        document.getElementById('uploadSpinner').style.display = 'block';
+        document.getElementById('uploadCloseBtn').style.display = 'none';
+      }
+    }
+
+    function closeUploadOverlay() {
+      document.getElementById('uploadOverlay').classList.remove('active');
+    }
+
+    function generateAcademicReportHTML(nama, nim, forPdf = false) {
+      const ptStr = computedInput.plaintext || "        ";
+      const keyStr = computedInput.key || "        ";
+      const ptChars = Array.from(ptStr);
+      const keyChars = Array.from(keyStr);
+      const analisaText = document.getElementById('analisaMahasiswa') ? document.getElementById('analisaMahasiswa').value : "";
+
+      const css = `
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Times New Roman',Times,serif;font-size:11pt;color:#000;background:#fff;line-height:1.5}
+.page{width:210mm;min-height:297mm;padding:15mm 20mm 15mm 20mm;background:#fff;position:relative;page-break-after:always;margin:0 auto}
+.page:last-child{page-break-after:auto}
+.pg-header,.pg-footer{position:absolute;left:20mm;right:20mm;font-family:Arial,sans-serif;font-size:9pt}
+.pg-header{top:12mm;display:flex;justify-content:space-between;align-items:flex-start;font-weight:bold}
+.pg-header-left{text-align:left;font-style:italic}
+.pg-footer{bottom:12mm;text-align:left}
+.pg-footer i{font-style:italic}
+.content{margin-top:20mm;margin-bottom:15mm}
+.cover-title{text-align:center;font-weight:bold;font-size:14pt;margin-bottom:25px;line-height:1.3}
+.logo{width:140px;height:140px;display:block;margin:40px auto}
+.cover-table{width:100%;border-collapse:collapse;margin-top:30px;font-size:12pt}
+.cover-table td{border:1px solid #000;padding:8px 12px;vertical-align:top}
+.cover-table td:first-child{width:35%}
+.cover-bottom{text-align:center;font-weight:bold;font-size:12pt;position:absolute;bottom:30mm;left:0;right:0;line-height:1.4}
+h3{font-size:11pt;font-weight:bold;margin:15px 0 5px}
+.title-sec{text-align:center;font-size:14pt;font-weight:bold;margin-bottom:20px;line-height:1.3}
+.sec-hdr{font-weight:bold;margin-top:15px;margin-bottom:10px}
+.wk-table{border-collapse:collapse;margin-bottom:15px;text-align:center;width:100%;table-layout:fixed}
+.wk-table th,.wk-table td{border:1px solid #000;padding:4px;font-family:Arial,sans-serif;font-size:10pt;height:26px}
+.wk-table th{background:transparent;font-weight:normal}
+.char-span{font-weight:bold;color:#0070c0}
+.key-char-span{font-weight:bold;color:#00b050}
+.xor-label{width:40px;text-align:left;border-right:1px solid #000;padding-left:8px;font-weight:bold}
+.block-table-container{display:flex;flex-direction:column;gap:5px;margin-bottom:15px}
+.block-table-container .wk-table{margin-bottom:0;width:auto;min-width:300px}
+.sbox-row{margin-bottom:5px;font-family:'Times New Roman',Times,serif}
+.sbox-indent{margin-left:20px;font-family:'Times New Roman',Times,serif;line-height:1.3}
+.analysis-box{border:1px solid #000;width:100%;height:600px;margin-top:10px}
+.print-btn{position:fixed;top:12px;right:12px;background:#1e3a5f;color:#fff;border:none;padding:10px 22px;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer;z-index:999}
+.print-btn:hover{background:#2563eb}
+@media print{.print-btn{display:none!important}}
+      `;
+
+      function headerFooter(pageNum) {
+        return `
+        <div class="pg-header">
+          <div class="pg-header-left">
+            <i>STIK3051 – Keamanan Informasi</i><br>
+            <i>CBL-1: Penerapan dan Analisis Enkripsi dan Dekripsi Informasi menggunakan Algoritma DES</i>
+          </div>
+          <div>${pageNum}</div>
+        </div>
+        <div class="pg-footer">
+          <i>Program Studi Teknik Komputer - DTEK – FT – USK</i><br>
+          <i>Copyright: yuliar@usk.ac.id</i>
+        </div>`;
+      }
+
+      function escHtml(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+      function makeAsciiTable(chars, isPt) {
+        let colorCls = isPt ? 'char-span' : 'key-char-span';
+        let html = `<table class="wk-table" style="width:auto; min-width:300px;"><tr>`;
+        for (let i = 1; i <= 8; i++) html += `<th>${i}</th>`;
+        html += `</tr><tr>`;
+        for (let i = 0; i < 8; i++) html += `<td class="${colorCls}">${chars[i] || ''}</td>`;
+        html += `</tr></table>`;
+        return html;
+      }
+
+      function makeHexTable(chars, hexArr, isPt) {
+        let colorCls = isPt ? 'char-span' : 'key-char-span';
+        let html = `<table class="wk-table"><tr>`;
+        for (let i = 1; i <= 16; i++) html += `<th>${i}</th>`;
+        html += `</tr><tr>`;
+        for (let i = 0; i < 8; i++) html += `<td colspan="2" class="${colorCls}">${chars[i] || ''}</td>`;
+        html += `</tr><tr>`;
+        for (let i = 0; i < 16; i++) html += `<td>${hexArr[i] || ''}</td>`;
+        html += `</tr></table>`;
+        return html;
+      }
+
+      function makeBitTable(startIdx, charArr, valuesArr, isPt) {
+        let colorCls = isPt ? 'char-span' : 'key-char-span';
+        let html = `<table class="wk-table"><tr>`;
+        for (let i = startIdx; i < startIdx + 16; i++) html += `<th>${i}</th>`;
+        html += `</tr><tr>`;
+        html += `<td colspan="8" class="${colorCls}">${charArr[0] || ''}</td>`;
+        html += `<td colspan="8" class="${colorCls}">${charArr[1] || ''}</td>`;
+        html += `</tr><tr>`;
+        for (let i = 0; i < 16; i++) html += `<td>${valuesArr[i] !== undefined ? valuesArr[i] : ''}</td>`;
+        html += `</tr></table>`;
+        return html;
+      }
+
+      function makeMultiBlockTable(indices, values, blockSize) {
+        let html = `<div class="block-table-container">`;
+        let numBlocks = Math.ceil(indices.length / blockSize);
+        for (let b = 0; b < numBlocks; b++) {
+          let chunkIndices = indices.slice(b * blockSize, (b + 1) * blockSize);
+          let chunkValues = values.slice(b * blockSize, (b + 1) * blockSize);
+          html += `<table class="wk-table" style="width:auto; min-width:${blockSize * 25}px;"><tr>`;
+          for (let i of chunkIndices) html += `<th style="width:25px">${i}</th>`;
+          html += `</tr><tr>`;
+          for (let v of chunkValues) html += `<td>${v !== undefined ? v : ''}</td>`;
+          html += `</tr></table>`;
+        }
+        html += `</div>`;
+        return html;
+      }
+
+      function makeXorTableP(label, val1, val2, xorVal, l1, l2) {
+        let html = `<div style="margin-bottom:5px">${label}</div><table class="wk-table" style="width:auto; min-width:400px; margin-left:20px;">`;
+        html += `<tr><td class="xor-label">${l1}</td>`;
+        for (let i = 0; i < 16; i++) html += `<td>${val1[i] !== undefined ? val1[i] : ''}</td>`;
+        html += `</tr><tr><td class="xor-label">${l2}</td>`;
+        for (let i = 0; i < 16; i++) html += `<td>${val2[i] !== undefined ? val2[i] : ''}</td>`;
+        html += `</tr><tr><td class="xor-label">XOR</td>`;
+        for (let i = 0; i < 16; i++) html += `<td>${xorVal[i] !== undefined ? xorVal[i] : ''}</td>`;
+        html += `</tr></table>`;
+        return html;
+      }
+
+      function makeHexTableCipher(hexStr) {
+        const hexArr = (hexStr || '').replace(/\s/g, '').split('');
+        let html = `<table class="wk-table"><tr>`;
+        for (let i = 1; i <= 16; i++) html += `<th>${i}</th>`;
+        html += `</tr><tr>`;
+        for (let i = 0; i < 16; i++) html += `<td>${hexArr[i] || ''}</td>`;
+        html += `</tr></table>`;
+        return html;
+      }
+
+      // Generate NIM list 1. 2. 3. 4. 5.
+      const nimLines = nim.split('\n').filter(l => l.trim().length > 0);
+      let nimHtml = '';
+      for (let i = 0; i < 5; i++) {
+        nimHtml += `${i + 1}. ${i < nimLines.length ? escHtml(nimLines[i]) : ''}<br>`;
+      }
+
+      // Arrays
+      const inputKeyIndices = [];
+      const inputKeyValues = [];
+      for (let i = 0; i < 64; i++) {
+        if ((i + 1) % 8 !== 0) {
+          inputKeyIndices.push(i + 1);
+          inputKeyValues.push(GT.keyBin ? GT.keyBin[i] : '');
+        }
+      }
+      const pc1Indices = PC1_C.concat(PC1_D);
+      const shifted_C_indices = PC1_C.slice(1).concat(PC1_C[0]);
+      const shifted_D_indices = PC1_D.slice(1).concat(PC1_D[0]);
+
+      // SBox output
+      let sboxDetails = '';
+      for (let s = 0; s < 8; s++) {
+        const row = GT.sboxRowArr ? GT.sboxRowArr[s] : '';
+        const col = GT.sboxColArr ? GT.sboxColArr[s] : '';
+        const out = GT.sboxOutBits ? GT.sboxOutBits.slice(s * 4, s * 4 + 4).join('') : '';
+        const nth = ['pertama', 'ke-dua', 'ke-tiga', 'ke-empat', 'ke-lima', 'ke-enam', 'ke-tujuh', 'ke-delapan'][s];
+        sboxDetails += `<div class="sbox-row">Bagian 6-bit yang ${nth} :<div class="sbox-indent">Indek baris &nbsp;&nbsp;&nbsp;&nbsp;: = ${row}<br>Indek kolom &nbsp;&nbsp;&nbsp;: = ${col}<br>4-bit Output S${s + 1} : = ${out}</div></div>`;
+      }
+
+      const logoSVG = `<svg class="logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <g fill="#D4A017" stroke="#8B6914" stroke-width="1.5">
+          <ellipse cx="100" cy="44" rx="17" ry="38"/>
+          <ellipse cx="100" cy="44" rx="17" ry="38" transform="rotate(72 100 100)"/>
+          <ellipse cx="100" cy="44" rx="17" ry="38" transform="rotate(144 100 100)"/>
+          <ellipse cx="100" cy="44" rx="17" ry="38" transform="rotate(216 100 100)"/>
+          <ellipse cx="100" cy="44" rx="17" ry="38" transform="rotate(288 100 100)"/>
+        </g>
+        <circle cx="100" cy="100" r="33" fill="#D4A017" stroke="#8B6914" stroke-width="2"/>
+        <rect x="94" y="82" width="12" height="28" fill="#8B6914" rx="1"/>
+        <polygon points="100,70 89,82 111,82" fill="#8B6914"/>
+        <rect x="96" y="100" width="8" height="7" fill="#D4A017"/>
+        <rect x="88" y="110" width="24" height="4" fill="#8B6914" rx="1"/>
+      </svg>`;
+
+      const contentHtml = `
+<!-- Halaman 1 -->
+<div class="page">
+  ${headerFooter(1)}
+  <div class="content" style="margin-top: 40px">
+    <div class="cover-title">
+      STIK3051 – KEAMANAN INFORMASI<br><br>
+      CBL-1<br><br>
+      PENERAPAN DAN ANALISIS ENKRIPSI DAN DEKRIPSI INFORMASI<br>
+      MENGGUNAKAN ALGORITMA DES
+    </div>
+    ${logoSVG}
+    <table class="cover-table">
+      <tr><td>KELOMPOK</td><td>${escHtml(nama)}</td></tr>
+      <tr><td>NAMA/NIM</td><td>${nimHtml}</td></tr>
+      <tr><td>DOSEN PENGAMPU</td><td>Prof. Dr. Ir. Teuku Yuliar Arif, ST., M.Kom</td></tr>
+    </table>
+  </div>
+  <div class="cover-bottom">
+    PROGRAM STUDI TEKNIK KOMPUTER<br>
+    DEPARTEMEN TEKNIK ELEKTRO DAN KOMPUTER<br>
+    FAKULTAS TEKNIK<br>
+    UNIVERSITAS SYIAH KUALA<br>
+    2025
+  </div>
+</div>
+
+<!-- Halaman 2 -->
+<div class="page">
+  ${headerFooter(2)}
+  <div class="content">
+    <div class="title-sec">
+      CBL-1<br>
+      Penerapan dan Analisis Enkripsi dan Dekripsi Informasi<br>
+      menggunakan Algoritma DES
+    </div>
+    <div class="sec-hdr">1.1 Penerapan input plaintext dan kunci pada proses enkripsi untuk menghasilkan ciphertext Ronde-1 pada algoritma DES.</div>
+    <div>Lakukan langkah-langkah sebagai berikut:</div>
+    <div style="margin-left: 20px; text-indent: -20px; margin-top:5px;">
+       1. Kelompok Anda diberikan informasi (plaintext) yang terdiri dari 8 karakter ASCII (ubah X menjadi nomor kelompok Anda).
+    </div>
+    <div style="margin-left: 20px; margin-top: 10px;">
+      Plaintext kelompok Anda (ASCII) :<br>
+      ${makeAsciiTable(ptChars, true)}
+      <br>Plaintext kelompok Anda (Hexadecimal) :<br>
+      ${makeHexTable(ptChars, GT.ptHex || [], true)}
+      <br>Plaintext kelompok Anda (bit) :<br>
+      ${makeBitTable(1, ptChars.slice(0, 2), (GT.ptBin || []).slice(0, 16), true)}
+      ${makeBitTable(17, ptChars.slice(2, 4), (GT.ptBin || []).slice(16, 32), true)}
+      ${makeBitTable(33, ptChars.slice(4, 6), (GT.ptBin || []).slice(32, 48), true)}
+      ${makeBitTable(49, ptChars.slice(6, 8), (GT.ptBin || []).slice(48, 64), true)}
+    </div>
+    <div style="margin-left: 20px; text-indent: -20px; margin-top: 20px;">
+       2. Plaintext Kelompok anda tersebut akan dienkrip menggunakan algoritma DES. Untuk mengenkrip plaintext tersebut, Kelompok Anda diberikan kunci (key) rahasia yang terdiri dari 8 karakter ASCII (ubah X menjadi nomor kelompok Anda).
+    </div>
+    <div style="margin-left: 20px; margin-top: 10px;">
+      Kunci rahasia kelompok Anda (ASCII) :<br>
+      ${makeAsciiTable(keyChars, false)}
+    </div>
+  </div>
+</div>
+
+<!-- Halaman 3 -->
+<div class="page">
+  ${headerFooter(3)}
+  <div class="content">
+    Kunci rahasia kelompok Anda (Hexadecimal) :<br>
+    ${makeHexTable(keyChars, GT.keyHex || [], false)}
+    <br>Kunci rahasia kelompok Anda (bit) :<br>
+    ${makeBitTable(1, keyChars.slice(0, 2), (GT.keyBin || []).slice(0, 16), false)}
+    ${makeBitTable(17, keyChars.slice(2, 4), (GT.keyBin || []).slice(16, 32), false)}
+    ${makeBitTable(33, keyChars.slice(4, 6), (GT.keyBin || []).slice(32, 48), false)}
+    ${makeBitTable(49, keyChars.slice(6, 8), (GT.keyBin || []).slice(48, 64), false)}
+    
+    <div style="margin-left: 20px; text-indent: -20px; margin-top: 20px;">
+       3. Lakukan proses enkripsi plaintext kelompok anda menggunakan algoritma DES dengan menggunakan table permutasi, subsitusi, XOR dan lain-lain yang telah disediakan dibawah untuk mendapatkan ciphertext Ronde-1 kelompok anda.
+    </div><br>
+    <b>Initial Permutation (IP) :</b>
+    <div style="margin-top: 10px; margin-left: 20px;">
+      ${makeMultiBlockTable(IP_TABLE.slice(0, 48), (GT.ip || []).slice(0, 48), 8)}
+    </div>
+  </div>
+</div>
+
+<!-- Halaman 4 -->
+<div class="page">
+  ${headerFooter(4)}
+  <div class="content">
+    <div style="margin-left: 20px;">
+      ${makeMultiBlockTable(IP_TABLE.slice(48, 64), (GT.ip || []).slice(48, 64), 8)}
+    </div>
+    <br><b>Hasil split 32-bit sebelah kiri:</b><br>
+    ${makeMultiBlockTable(Array.from({ length: 32 }, (_, i) => i + 1), GT.L0 || [], 16)}
+    <br><b>Hasil spit 32-bit sebelah kanan:</b><br>
+    ${makeMultiBlockTable(Array.from({ length: 32 }, (_, i) => i + 1), GT.R0 || [], 16)}
+    <br><b>Expansion Permutation (E) :</b><br>
+    <div style="margin-left: 20px;">
+      ${makeMultiBlockTable(E_TABLE.slice(0, 42), (GT.ER0 || []).slice(0, 42), 6)}
+    </div>
+  </div>
+</div>
+
+<!-- Halaman 5 -->
+<div class="page">
+  ${headerFooter(5)}
+  <div class="content">
+    <div style="margin-left: 20px;">
+      ${makeMultiBlockTable(E_TABLE.slice(42, 48), (GT.ER0 || []).slice(42, 48), 6)}
+    </div>
+    <br><b>Input Key :</b><br>
+    ${makeMultiBlockTable(inputKeyIndices, inputKeyValues, 14)}
+    <br><b>Permuted Choice One (PC-1):</b><br>
+    <div style="margin-left: 20px;">
+      ${makeMultiBlockTable(pc1Indices, (GT.C0 || []).concat(GT.D0 || []), 8)}
+    </div>
+  </div>
+</div>
+
+<!-- Halaman 6 -->
+<div class="page">
+  ${headerFooter(6)}
+  <div class="content">
+    <b>Left shift(s) 28 bit sebelah kiri, 1-bit ke kiri :</b><br>
+    <div style="margin-left: 20px;">
+      ${makeMultiBlockTable(shifted_C_indices, GT.C1 || [], 14)}
+    </div>
+    <br><b>Left shift(s) 28 bit sebelah kanan, 1-bit ke kiri :</b><br>
+    <div style="margin-left: 20px;">
+      ${makeMultiBlockTable(shifted_D_indices, GT.D1 || [], 14)}
+    </div>
+    <br><b>Hasil penggabungan Left shift(s) 28 bit sebelah kiri dan 28 bit sebelah kanan :</b><br>
+    ${makeMultiBlockTable(Array.from({ length: 56 }, (_, i) => i + 1), (GT.C1 || []).concat(GT.D1 || []), 14)}
+  </div>
+</div>
+
+<!-- Halaman 7 -->
+<div class="page">
+  ${headerFooter(7)}
+  <div class="content">
+    <b>Permuted Choice Two (PC-2):</b><br>
+    <div style="margin-left: 20px;">
+      ${makeMultiBlockTable(PC2_TABLE, GT.K1 || [], 8)}
+    </div>
+    <br><b>XOR antara hasil Expansion Permutation dan Kunci Ronde-1:</b><br>
+    ${makeXorTableP('16-bit yang pertama:', (GT.ER0 || []).slice(0, 16), (GT.K1 || []).slice(0, 16), (GT.xor1 || []).slice(0, 16), 'E', 'Key')}
+    ${makeXorTableP('16-bit yang kedua:', (GT.ER0 || []).slice(16, 32), (GT.K1 || []).slice(16, 32), (GT.xor1 || []).slice(16, 32), 'E', 'Key')}
+    ${makeXorTableP('16-bit yang ketiga:', (GT.ER0 || []).slice(32, 48), (GT.K1 || []).slice(32, 48), (GT.xor1 || []).slice(32, 48), 'E', 'Key')}
+  </div>
+</div>
+
+<!-- Halaman 8 -->
+<div class="page">
+  ${headerFooter(8)}
+  <div class="content">
+    <b>S-Box</b><br>
+    ${sboxDetails}
+    <br><b>Total 32-bit output Boks Subsitusi Ronde-1:</b><br>
+    ${makeMultiBlockTable(Array.from({ length: 32 }, (_, i) => i + 1), GT.sboxOutBits || [], 16)}
+  </div>
+</div>
+
+<!-- Halaman 9 -->
+<div class="page">
+  ${headerFooter(9)}
+  <div class="content">
+    <b>Permutation Function (P):</b><br>
+    <div style="margin-left: 20px;">
+      ${makeMultiBlockTable(P_TABLE, GT.pbox || [], 8)}
+    </div>
+    <br><b>XOR 32-bit hasil Permutation Function (P) dengan hasil split 32-bit sebelah kiri<br>(pada Langkah awal):</b><br>
+    ${makeXorTableP('16-bit yang pertama:', (GT.pbox || []).slice(0, 16), (GT.L0 || []).slice(0, 16), (GT.R1 || []).slice(0, 16), 'P1', 'S1')}
+    ${makeXorTableP('16-bit yang kedua:', (GT.pbox || []).slice(16, 32), (GT.L0 || []).slice(16, 32), (GT.R1 || []).slice(16, 32), 'P2', 'S2')}
+    <br><b>Penggabungan 32-bit bagian sebelah kanan hasil split 32-bit pada Langkah awal dengan 32-bit hasil XOR 32-bit untuk mendapatkan ciphertext rounde-1 Kelompok Anda:</b><br>
+    ${makeMultiBlockTable(Array.from({ length: 64 }, (_, i) => i + 1), (GT.R0 || []).concat(GT.R1 || []), 16)}
+    <br><div style="margin-left: 20px; text-indent: -20px; margin-top: 20px;">
+       4. Tuliskan ciphertext Ronde-1 kelompok anda (Hexadecimal):
+    </div>
+    <div style="margin-left: 20px;">
+      ${makeHexTableCipher(GT.finalHex)}
+    </div>
+  </div>
+</div>
+
+<!-- Halaman 10 -->
+<div class="page">
+  ${headerFooter(10)}
+  <div class="content">
+    <div class="sec-hdr">1.2 Analisis penerapan input plaintext dan kunci pada proses enkripsi untuk menghasilkan ciphertext Ronde-1 pada algoritma DES.</div>
+    <div>Buatkan analisis berdasarkan penerapan input plaintext dan kunci pada proses enkripsi untuk menghasilkan ciphertext Ronde-1 pada algoritma DES diatas:</div>
+    <div class="analysis-box" style="padding: 10px; box-sizing: border-box; white-space: pre-wrap;">\${escHtml(analisaText)}</div>
+  </div>
+</div>
+`;
+
+      // CSS override untuk mode PDF:
+      // - Hapus min-height agar tidak ada halaman kosong
+      // - Biarkan html2pdf yang handle page break via opsi 'after: .page'
+      // - Ubah elemen absolute ke relative agar tidak overflow
+      let pdfOverride = '';
+      if (forPdf) {
+        pdfOverride = `<style>
+          .page{
+            min-height:0!important;
+            height:auto!important;
+            overflow:visible!important;
+            /* page-break ditangani oleh html2pdf via pagebreak.after */
+          }
+          .cover-bottom{
+            position:relative!important;
+            bottom:auto!important;
+            margin-top:30px;
+          }
+          .pg-header,.pg-footer{
+            position:relative!important;
+            top:auto!important;
+            bottom:auto!important;
+            margin-bottom:8px;
+          }
+          .content{
+            margin-top:8px!important;
+            margin-bottom:8px!important;
+          }
+          .block-table-container .wk-table{
+            page-break-inside:avoid;
+          }
+        </style>`;
+      }
+
+      let finalHtml = `<div style="width:210mm;margin:0 auto;">
+        <style>${css}</style>${pdfOverride}`;
+      finalHtml += contentHtml + `</div>`;
+      return finalHtml;
+    }
+
+    // generateAcademicReport: buka preview di tab baru (tanpa window.print)
+    function generateAcademicReport(nama, nim) {
+      const html = generateAcademicReportHTML(nama, nim, false);
+      const win = window.open('', '_blank', 'width=960,height=750,scrollbars=yes');
+      if (!win) { alert('\u26a0\ufe0f Popup diblokir! Izinkan popup untuk situs ini lalu coba lagi.'); return; }
+      win.document.write(html);
+      win.document.close();
+    }
+
+    // Fungsi preview terpisah — bisa dipanggil dari tombol "Preview" jika diperlukan
+    function previewReport() {
+      const nama = document.getElementById('namaKelompok').value.trim() || '[Preview]';
+      const nim  = document.getElementById('namaNIM').value.trim() || '[Preview]';
+      generateAcademicReport(nama, nim);
+    }
+
+    // ============================================================
+    // ADMIN MODE
+    // ============================================================
+    // Password hash (SHA-256 of the admin password)
+    // Default password: "admin123" — ganti sesuai kebutuhan dengan mengganti ADMIN_HASH
+    // Untuk generate hash baru, jalankan: sha256('passwordbaru') di console browser
+    const ADMIN_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9'; // admin123
+
+    let isAdminMode = false;
+    let adminLogoClickCount = 0;
+    let adminLogoTimer = null;
+    let adminPanelOpen = false;
+
+    async function sha256(str) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function adminLogoClick() {
+      adminLogoClickCount++;
+      clearTimeout(adminLogoTimer);
+      adminLogoTimer = setTimeout(() => { adminLogoClickCount = 0; }, 3000);
+      if (adminLogoClickCount >= 5) {
+        adminLogoClickCount = 0;
+        openAdminModal();
+      }
+    }
+
+    function openAdminModal() {
+      document.getElementById('adminModalOverlay').classList.add('open');
+      document.getElementById('adminPassInput').value = '';
+      document.getElementById('adminErr').classList.remove('show');
+      setTimeout(() => document.getElementById('adminPassInput').focus(), 100);
+    }
+
+    function closeAdminModal() {
+      document.getElementById('adminModalOverlay').classList.remove('open');
+    }
+
+    async function verifyAdmin() {
+      const pass = document.getElementById('adminPassInput').value;
+      const hash = await sha256(pass);
+      if (hash === ADMIN_HASH) {
+        closeAdminModal();
+        activateAdminMode();
+      } else {
+        document.getElementById('adminErr').classList.add('show');
+        document.getElementById('adminPassInput').value = '';
+        document.getElementById('adminPassInput').focus();
+      }
+    }
+
+    function activateAdminMode() {
+      isAdminMode = true;
+      document.getElementById('adminBadge').classList.add('visible');
+      document.getElementById('adminPanelToggle').classList.add('visible');
+      document.getElementById('adminPanel').classList.add('visible');
+      adminPanelOpen = true;
+      console.log('%c[ADMIN MODE AKTIF]', 'color:#7c3aed;font-weight:bold;font-size:14px');
+    }
+
+    function adminLogout() {
+      isAdminMode = false;
+      adminPanelOpen = false;
+      document.getElementById('adminBadge').classList.remove('visible');
+      document.getElementById('adminPanelToggle').classList.remove('visible');
+      document.getElementById('adminPanel').classList.remove('visible');
+    }
+
+    function toggleAdminPanel() {
+      adminPanelOpen = !adminPanelOpen;
+      const panel = document.getElementById('adminPanel');
+      if (adminPanelOpen) panel.classList.add('visible');
+      else panel.classList.remove('visible');
+    }
+
+    // Auto-fill ALL sections with correct answers
+    function adminFillAll() {
+      if (!GT || !GT.ptBin) {
+        alert('⚠️ Klik "Hitung & Mulai Pengerjaan" terlebih dahulu dengan memasukkan Plaintext dan Kunci!');
+        return;
+      }
+
+      // Fill identity if empty
+      const namaEl = document.getElementById('namaKelompok');
+      const nimEl = document.getElementById('namaNIM');
+      if (!namaEl.value) namaEl.value = '[Admin Preview]';
+      if (!nimEl.value) nimEl.value = '[Admin Preview]';
+      if (!sectionDone[0]) submitIdentity();
+
+      // Section 1: Hex & Bin
+      adminFillHexGrid('pt-hex', GT.ptHex);
+      adminFillBitGrid('pt-bin', GT.ptBin, 64);
+      adminFillHexGrid('key-hex', GT.keyHex);
+      adminFillBitGrid('key-bin', GT.keyBin, 64);
+
+      // Section 2: IP
+      adminFillBitGrid('ip', GT.ip, 64);
+
+      // Section 3: L0 R0
+      adminFillBitGrid('l0', GT.L0, 32);
+      adminFillBitGrid('r0', GT.R0, 32);
+
+      // Section 4: Key schedule
+      adminFillBitGrid('c0', GT.C0, 28);
+      adminFillBitGrid('d0', GT.D0, 28);
+      adminFillBitGrid('c1', GT.C1, 28);
+      adminFillBitGrid('d1', GT.D1, 28);
+      adminFillBitGrid('k1', GT.K1, 48);
+
+      // Section 5: E(R0)
+      adminFillBitGrid('er0', GT.ER0, 48);
+
+      // Section 6: XOR
+      adminFillBitGrid('xor1', GT.xor1, 48);
+
+      // Section 7: S-Box
+      for (let s = 0; s < 8; s++) {
+        const inEl = document.getElementById(`sbox-in-${s}`);
+        const rowEl = document.getElementById(`sbox-row-${s}`);
+        const colEl = document.getElementById(`sbox-col-${s}`);
+        const outEl = document.getElementById(`sbox-out-${s}`);
+        if (inEl) inEl.value = GT.sboxInputGroups[s].join('');
+        if (rowEl) rowEl.value = GT.sboxRowArr[s];
+        if (colEl) colEl.value = GT.sboxColArr[s];
+        if (outEl) outEl.value = GT.sboxOutBits.slice(s * 4, s * 4 + 4).join('');
+      }
+      adminFillBitGrid('sout', GT.sboxOutBits, 32);
+
+      // Section 8: P-Box
+      adminFillBitGrid('pbox', GT.pbox, 32);
+
+      // Section 9: R1, L1
+      adminFillBitGrid('r1', GT.R1, 32);
+      adminFillBitGrid('l1', GT.L1, 32);
+
+      // Section 10: L1R1, IP-1, final hex
+      adminFillBitGrid('l1r1', GT.L1R1, 64);
+      adminFillBitGrid('ipm1', GT.ipm1, 64);
+      const hexChars = GT.finalHex.split('');
+      hexChars.forEach((ch, i) => {
+        const el = document.getElementById(`final-hex_${i}`);
+        if (el) el.value = ch;
+      });
+
+      // Auto-check & complete all sections
+      for (let sec = 1; sec <= 10; sec++) {
+        if (!sectionDone[sec]) {
+          checkSection(sec);
+        }
+      }
+
+      lsSaveLater();
+      alert(`✅ Semua jawaban telah diisi secara otomatis!\n\nOutput Ronde 1: ${GT.finalHex}`);
+    }
+
+    // Fill only the current (lowest incomplete) section
+    function adminFillSection() {
+      if (!GT || !GT.ptBin) {
+        alert('⚠️ Klik "Hitung & Mulai Pengerjaan" terlebih dahulu!');
+        return;
+      }
+      // Find lowest incomplete section
+      let targetSec = null;
+      for (let i = 1; i <= 10; i++) {
+        if (!sectionDone[i]) { targetSec = i; break; }
+      }
+      if (!targetSec) { alert('Semua section sudah selesai!'); return; }
+
+      switch (targetSec) {
+        case 1:
+          adminFillHexGrid('pt-hex', GT.ptHex);
+          adminFillBitGrid('pt-bin', GT.ptBin, 64);
+          adminFillHexGrid('key-hex', GT.keyHex);
+          adminFillBitGrid('key-bin', GT.keyBin, 64);
+          break;
+        case 2: adminFillBitGrid('ip', GT.ip, 64); break;
+        case 3:
+          adminFillBitGrid('l0', GT.L0, 32);
+          adminFillBitGrid('r0', GT.R0, 32);
+          break;
+        case 4:
+          adminFillBitGrid('c0', GT.C0, 28);
+          adminFillBitGrid('d0', GT.D0, 28);
+          adminFillBitGrid('c1', GT.C1, 28);
+          adminFillBitGrid('d1', GT.D1, 28);
+          adminFillBitGrid('k1', GT.K1, 48);
+          break;
+        case 5: adminFillBitGrid('er0', GT.ER0, 48); break;
+        case 6: adminFillBitGrid('xor1', GT.xor1, 48); break;
+        case 7:
+          for (let s = 0; s < 8; s++) {
+            const inEl = document.getElementById(`sbox-in-${s}`);
+            const rowEl = document.getElementById(`sbox-row-${s}`);
+            const colEl = document.getElementById(`sbox-col-${s}`);
+            const outEl = document.getElementById(`sbox-out-${s}`);
+            if (inEl) inEl.value = GT.sboxInputGroups[s].join('');
+            if (rowEl) rowEl.value = GT.sboxRowArr[s];
+            if (colEl) colEl.value = GT.sboxColArr[s];
+            if (outEl) outEl.value = GT.sboxOutBits.slice(s * 4, s * 4 + 4).join('');
+          }
+          adminFillBitGrid('sout', GT.sboxOutBits, 32);
+          break;
+        case 8: adminFillBitGrid('pbox', GT.pbox, 32); break;
+        case 9:
+          adminFillBitGrid('r1', GT.R1, 32);
+          adminFillBitGrid('l1', GT.L1, 32);
+          break;
+        case 10:
+          adminFillBitGrid('l1r1', GT.L1R1, 64);
+          adminFillBitGrid('ipm1', GT.ipm1, 64);
+          GT.finalHex.split('').forEach((ch, i) => {
+            const el = document.getElementById(`final-hex_${i}`);
+            if (el) el.value = ch;
+          });
+          break;
+      }
+      checkSection(targetSec);
+      lsSaveLater();
+    }
+
+    function adminFillBitGrid(prefix, bits, count) {
+      for (let i = 0; i < count; i++) {
+        const el = document.getElementById(`${prefix}_${i}`);
+        if (el) el.value = bits[i];
+      }
+    }
+
+    function adminFillHexGrid(prefix, hexArr) {
+      hexArr.forEach((val, i) => {
+        const el = document.getElementById(`${prefix}_${i}`);
+        if (el) el.value = val;
+      });
+    }
+
+    // Show answer key modal
+    function showAnswerKey() {
+      if (!GT || !GT.ptBin) {
+        alert('⚠️ Klik "Hitung & Mulai Pengerjaan" terlebih dahulu!');
+        return;
+      }
+      const content = document.getElementById('answerKeyContent');
+      content.innerHTML = `
+        <div class="ak-section">
+          <h4>Input</h4>
+          <div class="ak-value">
+            Plaintext: ${computedInput.plaintext}<br>
+            Kunci: ${computedInput.key}
+          </div>
+        </div>
+        <div class="ak-section">
+          <h4>Bagian 1 – Plaintext Hex</h4>
+          <div class="ak-value">${GT.ptHex.join(' ')}</div>
+        </div>
+        <div class="ak-section">
+          <h4>Bagian 1 – Plaintext Biner (64-bit)</h4>
+          <div class="ak-value">${chunkBits(GT.ptBin, 8)}</div>
+        </div>
+        <div class="ak-section">
+          <h4>Bagian 1 – Kunci Hex</h4>
+          <div class="ak-value">${GT.keyHex.join(' ')}</div>
+        </div>
+        <div class="ak-section">
+          <h4>Bagian 1 – Kunci Biner (64-bit)</h4>
+          <div class="ak-value">${chunkBits(GT.keyBin, 8)}</div>
+        </div>
+        <div class="ak-section">
+          <h4>Bagian 2 – IP (64-bit)</h4>
+          <div class="ak-value">${chunkBits(GT.ip, 8)}</div>
+        </div>
+        <div class="ak-section">
+          <h4>Bagian 3 – L₀ (32-bit)</h4>
+          <div class="ak-value">${chunkBits(GT.L0, 8)}</div>
+        </div>
+        <div class="ak-section">
+          <h4>Bagian 3 – R₀ (32-bit)</h4>
+          <div class="ak-value">${chunkBits(GT.R0, 8)}</div>
+        </div>
+        <div class="ak-section">
+          <h4>Bagian 4 – C₀ (28-bit)</h4>
+          <div class="ak-value">${chunkBits(GT.C0, 7)}</div>
+        </div>
+        <div class="ak-section">
+          <h4>Bagian 4 – D₀ (28-bit)</h4>
+          <div class="ak-value">${chunkBits(GT.D0, 7)}</div>
+        </div>
+        <div class="ak-section">
+          <h4>Bagian 4 – C₁ / D₁ / K₁ (48-bit)</h4>
+          <div class="ak-value">
+            C₁: ${chunkBits(GT.C1, 7)}<br>
+            D₁: ${chunkBits(GT.D1, 7)}<br>
+            K₁: ${chunkBits(GT.K1, 6)}
+          </div>
+        </div>
+        <div class="ak-section">
+          <h4>Bagian 5 – E(R₀) (48-bit)</h4>
+          <div class="ak-value">${chunkBits(GT.ER0, 6)}</div>
+        </div>
+        <div class="ak-section">
+          <h4>Bagian 6 – XOR E(R₀)⊕K₁ (48-bit)</h4>
+          <div class="ak-value">${chunkBits(GT.xor1, 6)}</div>
+        </div>
+        <div class="ak-section">
+          <h4>Bagian 7 – S-Box Input Groups</h4>
+          <div class="ak-value">${GT.sboxInputGroups.map((g, i) => `S${i + 1}: ${g.join('')} → baris=${GT.sboxRowArr[i]}, kol=${GT.sboxColArr[i]}, out=${GT.sboxOutBits.slice(i * 4, i * 4 + 4).join('')}`).join('<br>')}</div>
+        </div>
+        <div class="ak-section">
+          <h4>Bagian 8 – P-Box (32-bit)</h4>
+          <div class="ak-value">${chunkBits(GT.pbox, 8)}</div>
+        </div>
+        <div class="ak-section">
+          <h4>Bagian 9 – R₁ / L₁ (32-bit)</h4>
+          <div class="ak-value">
+            R₁: ${chunkBits(GT.R1, 8)}<br>
+            L₁: ${chunkBits(GT.L1, 8)}
+          </div>
+        </div>
+        <div class="ak-section">
+          <h4>Bagian 10 – L₁R₁ / IP⁻¹ / Hex Final</h4>
+          <div class="ak-value">
+            L₁R₁: ${chunkBits(GT.L1R1, 8)}<br>
+            IP⁻¹: ${chunkBits(GT.ipm1, 8)}<br>
+            Hex: ${GT.finalHex}
+          </div>
+        </div>
+      `;
+      document.getElementById('answerKeyModal').classList.add('open');
+    }
+
+    function closeAnswerKey() {
+      document.getElementById('answerKeyModal').classList.remove('open');
+    }
+
+    function chunkBits(bits, size) {
+      let result = '';
+      for (let i = 0; i < bits.length; i += size) {
+        if (i > 0) result += ' ';
+        result += bits.slice(i, i + size).join('');
+      }
+      return result;
+    }
+
+    function adminPreviewPDF() {
+      // Temporarily fill identity if empty
+      const namaEl = document.getElementById('namaKelompok');
+      const nimEl = document.getElementById('namaNIM');
+      const prevNama = namaEl.value;
+      const prevNim = nimEl.value;
+      if (!namaEl.value) namaEl.value = '[Admin Preview]';
+      if (!nimEl.value) nimEl.value = '[Admin Preview]';
+      submitReport().then(() => {
+        // Restore
+        namaEl.value = prevNama;
+        nimEl.value = prevNim;
+      });
+    }
+
+    // ============================================================
+    // INIT PAGE
+    // ============================================================
+    window.addEventListener('DOMContentLoaded', () => {
+      // Fix: add a style for group-6 bit grids
+      const style = document.createElement('style');
+      style.textContent = `.bit-grid.group-6 .bit-cell:nth-child(6n) { margin-right: 8px; }`;
+      document.head.appendChild(style);
+
+      // Restore previously saved data
+      lsRestore();
+
+      // Auto-save on any input change (identity + hex/bit inputs + sbox)
+      // Use event delegation on document so dynamically built grids are captured
+      document.addEventListener('input', (e) => {
+        const tag = e.target.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') {
+          lsSaveLater();
+        }
+      });
+
+      updateProgress();
+    });
+  </script>
+
+</body>
+
+</html>
