@@ -8,8 +8,9 @@
   <meta name="description"
     content="Lembar Kerja Interaktif dan Auto-Grader algoritma enkripsi DES Ronde 1 untuk mata kuliah Keamanan Informasi STIK3051." />
 
-  <!-- html2pdf.js CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <!-- jsPDF + jsPDF-AutoTable CDN (vector-native PDF, tanpa rasterisasi) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 
   <style>
     /* =============================================
@@ -137,13 +138,22 @@
     /* =============================================
        MAIN LAYOUT
     ============================================= */
-    main {
-      max-width: 1100px;
+    main.app-layout {
+      max-width: 1250px;
       margin: 0 auto;
       padding: 28px 20px 60px;
       display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 24px;
+    }
+
+    .cards-container {
+      display: flex;
       flex-direction: column;
       gap: 24px;
+      flex: 1;
+      min-width: 0;
     }
 
     /* =============================================
@@ -323,7 +333,8 @@
     .bit-grid {
       display: flex;
       flex-wrap: wrap;
-      gap: 3px;
+      justify-content: center;
+      gap: 1px;
       font-family: var(--font-mono);
     }
 
@@ -355,8 +366,8 @@
       font-family: var(--font-mono);
       font-size: 13px;
       font-weight: 600;
-      border: 1.5px solid var(--gray-300);
-      border-radius: 4px;
+      border: 1px solid var(--gray-400);
+      border-radius: 2px;
       padding: 0;
       outline: none;
       transition: var(--transition);
@@ -372,18 +383,6 @@
       position: relative;
     }
 
-    .bit-cell input.correct {
-      background: var(--green-light);
-      border-color: var(--green);
-      color: var(--green);
-    }
-
-    .bit-cell input.wrong {
-      background: var(--red-light);
-      border-color: var(--red);
-      color: var(--red);
-    }
-
     .bit-cell input[readonly] {
       background: var(--gray-100);
       cursor: default;
@@ -395,7 +394,8 @@
     ============================================= */
     .hex-answer-grid {
       display: flex;
-      gap: 4px;
+      gap: 2px;
+      justify-content: center;
       flex-wrap: wrap;
       font-family: var(--font-mono);
     }
@@ -408,8 +408,8 @@
       font-size: 14px;
       font-weight: 600;
       text-transform: uppercase;
-      border: 1.5px solid var(--gray-300);
-      border-radius: 4px;
+      border: 1px solid var(--gray-400);
+      border-radius: 2px;
       padding: 0;
       outline: none;
       transition: var(--transition);
@@ -421,16 +421,215 @@
       box-shadow: 0 0 0 2px rgba(37, 99, 235, .2);
     }
 
-    .hex-answer-grid input.correct {
-      background: var(--green-light);
-      border-color: var(--green);
-      color: var(--green);
+    /* =============================================
+       ASCII ROW (Tugas 1) – baris readonly di atas HEX
+    ============================================= */
+    .ascii-hex-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
     }
 
-    .hex-answer-grid input.wrong {
-      background: var(--red-light);
-      border-color: var(--red);
-      color: var(--red);
+    .ascii-hex-wrapper .ascii-row,
+    .ascii-hex-wrapper .hex-row {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .ascii-hex-wrapper .row-tag {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--gray-600);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      width: 38px;
+      flex-shrink: 0;
+      text-align: right;
+      padding-right: 4px;
+    }
+
+    /* Kotak ASCII – readonly, biru pucat */
+    .ascii-hex-wrapper .ascii-box {
+      width: 36px;
+      height: 28px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      border: 1.5px solid #93c5fd;
+      border-radius: 4px;
+      background: #dbeafe;
+      color: #1e40af;
+      outline: none;
+      cursor: default;
+      padding: 0;
+      text-transform: none;
+      /* TUGAS 1: Hapus Auto-Uppercase pada Input ASCII */
+    }
+
+    /* TUGAS 2: Class sembunyikan elemen secara default */
+    .d-none {
+      display: none !important;
+    }
+
+
+    /* =============================================
+       HEX-BIN GROUP LAYOUT (Tugas 1)
+       1 hex slot di atas 4 bit input, flex-wrap
+    ============================================= */
+    .hex-bin-group-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px;
+      overflow-x: visible;
+    }
+
+    .hex-bin-group {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 2px;
+    }
+
+    /* Kotak hex readonly di atas grup */
+    .hex-bin-group .hex-slot {
+      width: 115px;
+      /* 4×28px bit-cell + 3×1px gap = 115px */
+      height: 22px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      background: #dbeafe;
+      border: 1.5px solid #93c5fd;
+      border-radius: 4px;
+      color: #1e40af;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+
+    /* 4 bit cells dalam satu baris */
+    .hex-bin-group .bits-row {
+      display: flex;
+      gap: 3px;
+    }
+
+    /* =============================================
+       REFERENCE DISPLAY (Tugas 3)
+       Tampilkan nilai bit sebelumnya sebagai referensi dengan grid
+    ============================================= */
+    .ref-display {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+    }
+
+    .ref-display-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--navy);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .ref-display-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--gray-200);
+    }
+
+    .ref-bit-cell input {
+      background: var(--gray-100) !important;
+      color: var(--gray-700) !important;
+      border: 1px solid var(--gray-300) !important;
+      cursor: default !important;
+    }
+
+    .ref-bit-cell input:focus {
+      box-shadow: none !important;
+      border-color: var(--gray-300) !important;
+    }
+
+    /* =============================================
+       XOR TABLE VISUAL (Tugas 4)
+       Tabel murni 16-bit
+    ============================================= */
+    .xor-table-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-top: 8px;
+      overflow-x: auto;
+    }
+
+    .xor-table {
+      border-collapse: collapse;
+      width: max-content;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      background: var(--white);
+    }
+
+    .xor-table th,
+    .xor-table td {
+      border: 1.5px solid #000;
+      text-align: center;
+      padding: 4px;
+      min-width: 28px;
+      height: 28px;
+    }
+
+    .xor-table th {
+      background: var(--gray-100);
+      font-weight: 700;
+      font-size: 11px;
+      color: var(--gray-800);
+      padding: 4px 8px;
+    }
+
+    .xor-table td {
+      font-weight: 600;
+      color: var(--navy-dark);
+    }
+
+    .xor-table td.label-col {
+      background: var(--gray-100);
+      font-size: 11px;
+      font-weight: 700;
+      text-align: right;
+      padding-right: 8px;
+    }
+
+    .xor-table input {
+      width: 24px;
+      height: 24px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid var(--gray-400);
+      border-radius: 2px;
+      outline: none;
+      transition: var(--transition);
+      color: var(--navy-dark);
+    }
+
+    .xor-table input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, .2);
     }
 
     /* =============================================
@@ -485,8 +684,8 @@
       font-family: var(--font-mono);
       font-size: 13px;
       padding: 6px 8px;
-      border: 1.5px solid var(--gray-300);
-      border-radius: 4px;
+      border: 1px solid var(--gray-400);
+      border-radius: 2px;
       outline: none;
       transition: var(--transition);
     }
@@ -494,16 +693,6 @@
     .sbox-input-row input:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 2px rgba(37, 99, 235, .12);
-    }
-
-    .sbox-input-row input.correct {
-      background: var(--green-light);
-      border-color: var(--green);
-    }
-
-    .sbox-input-row input.wrong {
-      background: var(--red-light);
-      border-color: var(--red);
     }
 
     /* =============================================
@@ -1268,6 +1457,90 @@
       font-weight: 600;
       margin-bottom: 15px;
     }
+
+    /* =============================================
+       DES FLOWCHART SIDEBAR
+    ============================================= */
+    .des-flowchart {
+      position: sticky;
+      top: 28px;
+      width: 280px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--white);
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow-sm);
+      overflow-y: auto;
+      max-height: calc(100vh - 40px);
+    }
+
+    .flow-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--navy-dark);
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-align: center;
+    }
+
+    .img-tracker-container {
+      position: relative;
+      width: 100%;
+      margin-bottom: 16px;
+    }
+
+    .macro-img,
+    .micro-img {
+      width: 100%;
+      display: block;
+      border-radius: 4px;
+    }
+
+    .macro-highlight,
+    .micro-highlight {
+      position: absolute;
+      border: 3px solid red;
+      background-color: rgba(255, 0, 0, 0.1);
+      border-radius: 4px;
+      transition: all 0.4s ease;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    @media (max-width: 900px) {
+      main.app-layout {
+        flex-direction: column;
+      }
+
+      .des-flowchart {
+        position: relative;
+        top: 0;
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 16px;
+        padding: 12px;
+        overflow-y: visible;
+        max-height: none;
+      }
+
+      .flow-title {
+        width: 100%;
+        margin-bottom: 8px;
+      }
+
+      .img-tracker-container {
+        width: 45%;
+        margin-bottom: 0;
+      }
+    }
   </style>
 </head>
 
@@ -1328,466 +1601,547 @@
     </div>
   </div>
 
-  <main id="mainContent">
+  <main id="mainContent" class="app-layout">
 
-    <!-- ==================================================
-       SECTION 0: IDENTITAS MAHASISWA
-  ================================================== -->
-    <div class="card" id="card-identity">
-      <div class="card-header">
-        <div class="step-badge" id="badge-0">✎</div>
-        <h2>Identitas Kelompok</h2>
+    <!-- SIDEBAR FLOWCHART -->
+    <div class="des-flowchart no-print">
+      <div class="flow-title">Peta Alur DES</div>
+
+      <!-- MACRO IMAGE TRACKER -->
+      <div class="img-tracker-container">
+        <img src="1_cbl1.jpg" alt="Makro DES" class="macro-img">
+        <div class="macro-highlight" id="macroHighlight"></div>
       </div>
-      <div class="card-body">
-        <div class="identity-grid">
-          <div class="form-group">
-            <label for="namaKelompok">Nama Kelompok</label>
-            <input type="text" id="namaKelompok" placeholder="contoh: Kelompok 3" />
-          </div>
-          <div class="form-group">
-            <label for="namaNIM">Nama &amp; NIM Anggota</label>
-            <textarea id="namaNIM"
-              placeholder="contoh:&#10;1. Budi Santoso / 12340001&#10;2. Ani Putri / 12340002"></textarea>
-          </div>
-        </div>
-        <div class="btn-section">
-          <button class="btn btn-primary" onclick="submitIdentity()">✔ Konfirmasi Identitas</button>
-          <span class="feedback" id="fb-identity"></span>
-        </div>
+
+      <!-- MICRO IMAGE TRACKER -->
+      <div class="img-tracker-container">
+        <img src="2_cbl1.jpg" alt="Mikro DES (1 Ronde)" class="micro-img">
+        <div class="micro-highlight" id="microHighlight"></div>
       </div>
     </div>
 
-    <!-- ==================================================
-       SECTION 1: INPUT PLAINTEXT & KEY + KONVERSI HEX & BINER
-  ================================================== -->
-    <div class="card locked" id="card-s1">
-      <div class="card-header">
-        <div class="step-badge" id="badge-1">1</div>
-        <h2>Konversi Plaintext &amp; Kunci → Hexadesimal &amp; Biner (64-bit)</h2>
-        <span class="lock-icon" id="lock-1">🔒</span>
-      </div>
-      <div class="card-body">
-        <div class="info-box">
-          <strong>Petunjuk:</strong> Masukkan Plaintext (8 karakter ASCII) dan Kunci (8 karakter ASCII).
-          Sistem akan menggunakan nilai ini sebagai dasar penghitungan. Kemudian isi kolom Hexadesimal
-          dan Biner di bawah berdasarkan perhitungan manual Anda.
+    <div class="cards-container">
+      <!-- ==================================================
+         SECTION 0: IDENTITAS MAHASISWA
+    ================================================== -->
+      <div class="card" id="card-identity">
+        <div class="card-header">
+          <div class="step-badge" id="badge-0">✎</div>
+          <h2>Identitas Kelompok</h2>
         </div>
-
-        <!-- Input Plaintext dan Key -->
-        <div class="sub-section">
-          <div class="row-label">Input Nilai Awal</div>
-          <div style="display:flex; flex-direction:column; gap:10px;">
-            <div class="input-row">
-              <label>Plaintext</label>
-              <input type="text" id="inputPlaintext" class="hex-input" maxlength="8" placeholder="8 karakter"
-                style="text-transform:none; letter-spacing:1px;" oninput="clearAllComputed()" />
-              <span class="hint-text">8 karakter ASCII</span>
+        <div class="card-body">
+          <div class="identity-grid">
+            <div class="form-group">
+              <label for="namaKelompok">Nama Kelompok</label>
+              <input type="text" id="namaKelompok" placeholder="contoh: Kelompok 3" />
             </div>
-            <div class="input-row">
-              <label>Kunci (Key)</label>
-              <input type="text" id="inputKey" class="hex-input" maxlength="8" placeholder="8 karakter"
-                style="text-transform:none; letter-spacing:1px;" oninput="clearAllComputed()" />
-              <span class="hint-text">8 karakter ASCII</span>
+            <div class="form-group">
+              <label for="namaNIM">Nama &amp; NIM Anggota</label>
+              <textarea id="namaNIM"
+                placeholder="contoh:&#10;1. Budi Santoso / 12340001&#10;2. Ani Putri / 12340002"></textarea>
             </div>
           </div>
           <div class="btn-section">
-            <button class="btn btn-primary" onclick="initCompute()">⚙ Hitung &amp; Mulai Pengerjaan</button>
+            <button class="btn btn-primary" onclick="submitIdentity()">✔ Konfirmasi Identitas</button>
+            <span class="feedback" id="fb-identity"></span>
           </div>
         </div>
+      </div>
 
-        <hr class="section-divider" id="convDivider" style="display:none">
+      <!-- ==================================================
+       SECTION 1: INPUT PLAINTEXT & KEY + KONVERSI HEX & BINER
+  ================================================== -->
+      <div class="card locked" id="card-s1">
+        <div class="card-header">
+          <div class="step-badge" id="badge-1">1</div>
+          <h2>Konversi Plaintext &amp; Kunci → Hexadesimal &amp; Biner (64-bit)</h2>
+          <span class="lock-icon" id="lock-1">🔒</span>
+        </div>
+        <div class="card-body">
+          <p class="instruction-text" style="color: #4b5563; margin-bottom: 15px; font-size: 14px; line-height: 1.5;">
+            1. Kelompok Anda diberikan informasi (plaintext) yang terdiri dari 8 karakter ASCII (ubah X menjadi nomor
+            kelompok Anda).<br>
+            2. Plaintext Kelompok anda tersebut akan dienkrip menggunakan algoritma DES. Untuk mengenkrip plaintext
+            tersebut, Kelompok Anda diberikan kunci (key) rahasia yang terdiri dari 8 karakter ASCII (ubah X menjadi
+            nomor kelompok Anda).
+          </p>
+          <div class="info-box">
+            <strong>Petunjuk:</strong> Masukkan Plaintext (8 karakter ASCII) dan Kunci (8 karakter ASCII).
+            Sistem akan menggunakan nilai ini sebagai dasar penghitungan. Kemudian isi kolom Hexadesimal
+            dan Biner di bawah berdasarkan perhitungan manual Anda.
+          </div>
 
-        <!-- Konversi Plaintext -->
-        <div id="convSection" style="display:none">
+          <!-- Input Plaintext dan Key -->
           <div class="sub-section">
-            <div class="bit-section-label">Plaintext – Hexadesimal (isi per karakter)</div>
-            <div class="info-box">Ubah setiap karakter Plaintext ke nilai hexadesimal 2-digit (mis. 'M' → 4D)</div>
-            <div class="hex-answer-grid" id="grid-pt-hex"></div>
+            <div class="row-label">Input Nilai Awal</div>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div class="input-row">
+                <label>Plaintext</label>
+                <input type="text" id="inputPlaintext" class="hex-input" maxlength="8" placeholder="8 karakter"
+                  style="text-transform:none; letter-spacing:1px;" oninput="clearAllComputed()" />
+                <span class="hint-text">8 karakter ASCII</span>
+              </div>
+              <div class="input-row">
+                <label>Kunci (Key)</label>
+                <input type="text" id="inputKey" class="hex-input" maxlength="8" placeholder="8 karakter"
+                  style="text-transform:none; letter-spacing:1px;" oninput="clearAllComputed()" />
+                <span class="hint-text">8 karakter ASCII</span>
+              </div>
+            </div>
+            <div class="btn-section">
+              <button class="btn btn-primary" onclick="initCompute()">⚙ Hitung &amp; Mulai Pengerjaan</button>
+            </div>
+          </div>
+
+          <hr class="section-divider" id="convDivider" style="display:none">
+
+          <!-- Konversi Plaintext -->
+          <div id="convSection" style="display:none">
+            <div class="sub-section">
+              <div class="bit-section-label">Plaintext – Hexadesimal (isi per karakter)</div>
+              <div class="info-box">Ubah setiap karakter Plaintext ke nilai hexadesimal 2-digit (mis. 'M' → 4D)</div>
+              <div class="hex-answer-grid" id="grid-pt-hex"></div>
+            </div>
+
+            <div class="sub-section">
+              <div class="bit-section-label">Plaintext – Biner 64-bit (isi per bit)</div>
+              <div class="info-box">Ubah setiap karakter ke 8 bit biner (mis. 'M'=0x4D → 01001101)</div>
+              <div class="bit-grid-wrapper">
+                <div class="bit-grid group-8" id="grid-pt-bin"></div>
+              </div>
+            </div>
+
+            <hr class="section-divider">
+
+            <div class="sub-section">
+              <div class="bit-section-label">Kunci – Hexadesimal (isi per karakter)</div>
+              <div class="info-box">Ubah setiap karakter Kunci ke nilai hexadesimal 2-digit</div>
+              <div class="hex-answer-grid" id="grid-key-hex"></div>
+            </div>
+
+            <div class="sub-section">
+              <div class="bit-section-label">Kunci – Biner 64-bit (isi per bit)</div>
+              <div class="info-box">Ubah setiap karakter kunci ke 8 bit biner</div>
+              <div class="bit-grid-wrapper">
+                <div class="bit-grid group-8" id="grid-key-bin"></div>
+              </div>
+            </div>
+
+            <div class="btn-section">
+              <button class="btn btn-check" onclick="checkSection(1)">🔍 Cek Jawaban Bagian 1</button>
+              <span class="feedback" id="fb-1"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================
+       SECTION 2: INITIAL PERMUTATION (IP)
+  ================================================== -->
+      <div class="card locked" id="card-s2">
+        <div class="card-header">
+          <div class="step-badge" id="badge-2">2</div>
+          <h2>Initial Permutation (IP) – 64-bit</h2>
+          <span class="lock-icon" id="lock-2">🔒</span>
+        </div>
+        <div class="card-body">
+          <p class="instruction-text" style="color: #4b5563; margin-bottom: 15px; font-size: 14px; line-height: 1.5;">
+            3. Lakukan proses enkripsi plaintext kelompok anda menggunakan algoritma DES dengan menggunakan table
+            permutasi, subsitusi, XOR dan lain-lain yang telah disediakan dibawah untuk mendapatkan ciphertext Ronde-1
+            kelompok anda.<br>
+            Gunakan tabel Initial Permutation (IP) untuk mempermutasi 64-bit Plaintext Anda.
+          </p>
+          <div class="info-box">
+            <strong>Tabel IP:</strong> {58,50,42,34,26,18,10,2, 60,52,44,36,28,20,12,4,
+            62,54,46,38,30,22,14,6, 64,56,48,40,32,24,16,8,
+            57,49,41,33,25,17,9,1, 59,51,43,35,27,19,11,3,
+            61,53,45,37,29,21,13,5, 63,55,47,39,31,23,15,7}<br />
+            Gunakan tabel di atas untuk mempermutasi 64-bit Plaintext Anda.
+            Isi hasil IP bit per bit.
+          </div>
+          <div class="bit-section-label">Hasil IP (64 bit)</div>
+          <!-- Tugas 3: Referensi biner plaintext -->
+          <div id="ref-pt-bin-display"></div>
+          <div class="bit-grid-wrapper">
+            <div class="bit-grid group-8" id="grid-ip"></div>
+          </div>
+          <div class="btn-section">
+            <button class="btn btn-check" onclick="checkSection(2)">🔍 Cek Jawaban Bagian 2</button>
+            <span class="feedback" id="fb-2"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================
+       SECTION 3: L0 DAN R0
+  ================================================== -->
+      <div class="card locked" id="card-s3">
+        <div class="card-header">
+          <div class="step-badge" id="badge-3">3</div>
+          <h2>Pembagian L₀ dan R₀ (masing-masing 32-bit)</h2>
+          <span class="lock-icon" id="lock-3">🔒</span>
+        </div>
+        <div class="card-body">
+          <p class="instruction-text" style="color: #4b5563; margin-bottom: 15px; font-size: 14px; line-height: 1.5;">
+            Bagi hasil Initial Permutation menjadi dua bagian. Hasil split 32-bit sebelah kiri menjadi L₀, dan hasil
+            split 32-bit sebelah kanan menjadi R₀.
+          </p>
+          <div class="info-box">
+            Hasil IP 64-bit dibagi dua: <strong>L₀</strong> = 32 bit pertama, <strong>R₀</strong> = 32 bit terakhir.
+            Isi kolom berikut sesuai pembagian yang Anda hitung.
           </div>
 
           <div class="sub-section">
-            <div class="bit-section-label">Plaintext – Biner 64-bit (isi per bit)</div>
-            <div class="info-box">Ubah setiap karakter ke 8 bit biner (mis. 'M'=0x4D → 01001101)</div>
+            <div class="bit-section-label">L₀ (bit 1–32)</div>
             <div class="bit-grid-wrapper">
-              <div class="bit-grid group-8" id="grid-pt-bin"></div>
+              <div class="bit-grid group-8" id="grid-l0"></div>
+            </div>
+          </div>
+
+          <div class="sub-section">
+            <div class="bit-section-label">R₀ (bit 33–64)</div>
+            <div class="bit-grid-wrapper">
+              <div class="bit-grid group-8" id="grid-r0"></div>
+            </div>
+          </div>
+
+          <div class="btn-section">
+            <button class="btn btn-check" onclick="checkSection(3)">🔍 Cek Jawaban Bagian 3</button>
+            <span class="feedback" id="fb-3"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================
+       SECTION 4: KEY SCHEDULE (PC-1, Shift, PC-2)
+  ================================================== -->
+      <div class="card locked" id="card-s4">
+        <div class="card-header">
+          <div class="step-badge" id="badge-4">4</div>
+          <h2>Key Schedule – PC-1 → Shift → PC-2 (Round Key K₁)</h2>
+          <span class="lock-icon" id="lock-4">🔒</span>
+        </div>
+        <div class="card-body">
+          <p class="instruction-text" style="color: #4b5563; margin-bottom: 15px; font-size: 14px; line-height: 1.5;">
+            Lakukan proses Key Schedule untuk Ronde 1.<br>
+            - Lakukan Permuted Choice One (PC-1) pada Input Key.<br>
+            - Lakukan Left shift(s) 28 bit sebelah kiri (1-bit ke kiri) dan 28 bit sebelah kanan (1-bit ke kiri).<br>
+            - Lakukan penggabungan hasil Left shift 28 bit kiri dan kanan, lalu aplikasikan Permuted Choice Two (PC-2)
+            untuk mendapatkan Kunci Ronde-1 (K₁).
+          </p>
+
+          <!-- PC-1 -->
+          <div class="sub-section">
+            <div class="bit-section-label">Langkah 4a: Hasil PC-1 (56-bit)</div>
+            <div class="info-box">
+              <strong>Tabel PC-1:</strong><br />
+              C₀ (28-bit): {57,49,41,33,25,17,9, 1,58,50,42,34,26,18, 10,2,59,51,43,35,27, 19,11,3,60,52,44,36}<br />
+              D₀ (28-bit): {63,55,47,39,31,23,15, 7,62,54,46,38,30,22, 14,6,61,53,45,37,29, 21,13,5,28,20,12,4}
+            </div>
+            <!-- Tugas 3: Referensi biner kunci -->
+            <div id="ref-key-bin-display"></div>
+            <div class="row-label" style="margin-bottom:6px;">C₀ (28 bit)</div>
+            <div class="bit-grid-wrapper">
+              <div class="bit-grid group-4" id="grid-c0"></div>
+            </div>
+            <div class="row-label" style="margin-top:12px; margin-bottom:6px;">D₀ (28 bit)</div>
+            <div class="bit-grid-wrapper">
+              <div class="bit-grid group-4" id="grid-d0"></div>
             </div>
           </div>
 
           <hr class="section-divider">
 
+          <!-- Shift -->
           <div class="sub-section">
-            <div class="bit-section-label">Kunci – Hexadesimal (isi per karakter)</div>
-            <div class="info-box">Ubah setiap karakter Kunci ke nilai hexadesimal 2-digit</div>
-            <div class="hex-answer-grid" id="grid-key-hex"></div>
+            <div class="bit-section-label">Langkah 4b: Left Shift (Ronde 1 = 1 posisi)</div>
+            <div class="info-box">
+              Geser C₀ dan D₀ masing-masing 1 posisi ke kiri (circular). Hasilnya adalah C₁ dan D₁.
+            </div>
+            <div class="row-label" style="margin-bottom:6px;">C₁ (28 bit)</div>
+            <div class="bit-grid-wrapper">
+              <div class="bit-grid group-4" id="grid-c1"></div>
+            </div>
+            <div class="row-label" style="margin-top:12px; margin-bottom:6px;">D₁ (28 bit)</div>
+            <div class="bit-grid-wrapper">
+              <div class="bit-grid group-4" id="grid-d1"></div>
+            </div>
           </div>
 
+          <hr class="section-divider">
+
+          <!-- PC-2 -->
           <div class="sub-section">
-            <div class="bit-section-label">Kunci – Biner 64-bit (isi per bit)</div>
-            <div class="info-box">Ubah setiap karakter kunci ke 8 bit biner</div>
+            <div class="bit-section-label">Langkah 4c: Hasil PC-2 – Round Key K₁ (48-bit)</div>
+            <div class="info-box">
+              <strong>Tabel PC-2:</strong> {14,17,11,24,1,5, 3,28,15,6,21,10, 23,19,12,4,26,8, 16,7,27,20,13,2,
+              41,52,31,37,47,55, 30,40,51,45,33,48, 44,49,39,56,34,53, 46,42,50,36,29,32}<br />
+              Aplikasikan PC-2 ke gabungan C₁+D₁ (56-bit) untuk mendapatkan K₁.
+            </div>
             <div class="bit-grid-wrapper">
-              <div class="bit-grid group-8" id="grid-key-bin"></div>
+              <div class="bit-grid group-6" id="grid-k1"></div>
             </div>
           </div>
 
           <div class="btn-section">
-            <button class="btn btn-check" onclick="checkSection(1)">🔍 Cek Jawaban Bagian 1</button>
-            <span class="feedback" id="fb-1"></span>
+            <button class="btn btn-check" onclick="checkSection(4)">🔍 Cek Jawaban Bagian 4</button>
+            <span class="feedback" id="fb-4"></span>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- ==================================================
-       SECTION 2: INITIAL PERMUTATION (IP)
-  ================================================== -->
-    <div class="card locked" id="card-s2">
-      <div class="card-header">
-        <div class="step-badge" id="badge-2">2</div>
-        <h2>Initial Permutation (IP) – 64-bit</h2>
-        <span class="lock-icon" id="lock-2">🔒</span>
-      </div>
-      <div class="card-body">
-        <div class="info-box">
-          <strong>Tabel IP:</strong> {58,50,42,34,26,18,10,2, 60,52,44,36,28,20,12,4,
-          62,54,46,38,30,22,14,6, 64,56,48,40,32,24,16,8,
-          57,49,41,33,25,17,9,1, 59,51,43,35,27,19,11,3,
-          61,53,45,37,29,21,13,5, 63,55,47,39,31,23,15,7}<br />
-          Gunakan tabel di atas untuk mempermutasi 64-bit Plaintext Anda.
-          Isi hasil IP bit per bit.
-        </div>
-        <div class="bit-section-label">Hasil IP (64 bit)</div>
-        <div class="bit-grid-wrapper">
-          <div class="bit-grid group-8" id="grid-ip"></div>
-        </div>
-        <div class="btn-section">
-          <button class="btn btn-check" onclick="checkSection(2)">🔍 Cek Jawaban Bagian 2</button>
-          <span class="feedback" id="fb-2"></span>
-        </div>
-      </div>
-    </div>
-
-    <!-- ==================================================
-       SECTION 3: L0 DAN R0
-  ================================================== -->
-    <div class="card locked" id="card-s3">
-      <div class="card-header">
-        <div class="step-badge" id="badge-3">3</div>
-        <h2>Pembagian L₀ dan R₀ (masing-masing 32-bit)</h2>
-        <span class="lock-icon" id="lock-3">🔒</span>
-      </div>
-      <div class="card-body">
-        <div class="info-box">
-          Hasil IP 64-bit dibagi dua: <strong>L₀</strong> = 32 bit pertama, <strong>R₀</strong> = 32 bit terakhir.
-          Isi kolom berikut sesuai pembagian yang Anda hitung.
-        </div>
-
-        <div class="sub-section">
-          <div class="bit-section-label">L₀ (bit 1–32)</div>
-          <div class="bit-grid-wrapper">
-            <div class="bit-grid group-8" id="grid-l0"></div>
-          </div>
-        </div>
-
-        <div class="sub-section">
-          <div class="bit-section-label">R₀ (bit 33–64)</div>
-          <div class="bit-grid-wrapper">
-            <div class="bit-grid group-8" id="grid-r0"></div>
-          </div>
-        </div>
-
-        <div class="btn-section">
-          <button class="btn btn-check" onclick="checkSection(3)">🔍 Cek Jawaban Bagian 3</button>
-          <span class="feedback" id="fb-3"></span>
-        </div>
-      </div>
-    </div>
-
-    <!-- ==================================================
-       SECTION 4: KEY SCHEDULE (PC-1, Shift, PC-2)
-  ================================================== -->
-    <div class="card locked" id="card-s4">
-      <div class="card-header">
-        <div class="step-badge" id="badge-4">4</div>
-        <h2>Key Schedule – PC-1 → Shift → PC-2 (Round Key K₁)</h2>
-        <span class="lock-icon" id="lock-4">🔒</span>
-      </div>
-      <div class="card-body">
-
-        <!-- PC-1 -->
-        <div class="sub-section">
-          <div class="bit-section-label">Langkah 4a: Hasil PC-1 (56-bit)</div>
-          <div class="info-box">
-            <strong>Tabel PC-1:</strong><br />
-            C₀ (28-bit): {57,49,41,33,25,17,9, 1,58,50,42,34,26,18, 10,2,59,51,43,35,27, 19,11,3,60,52,44,36}<br />
-            D₀ (28-bit): {63,55,47,39,31,23,15, 7,62,54,46,38,30,22, 14,6,61,53,45,37,29, 21,13,5,28,20,12,4}
-          </div>
-          <div class="row-label" style="margin-bottom:6px;">C₀ (28 bit)</div>
-          <div class="bit-grid-wrapper">
-            <div class="bit-grid group-4" id="grid-c0"></div>
-          </div>
-          <div class="row-label" style="margin-top:12px; margin-bottom:6px;">D₀ (28 bit)</div>
-          <div class="bit-grid-wrapper">
-            <div class="bit-grid group-4" id="grid-d0"></div>
-          </div>
-        </div>
-
-        <hr class="section-divider">
-
-        <!-- Shift -->
-        <div class="sub-section">
-          <div class="bit-section-label">Langkah 4b: Left Shift (Ronde 1 = 1 posisi)</div>
-          <div class="info-box">
-            Geser C₀ dan D₀ masing-masing 1 posisi ke kiri (circular). Hasilnya adalah C₁ dan D₁.
-          </div>
-          <div class="row-label" style="margin-bottom:6px;">C₁ (28 bit)</div>
-          <div class="bit-grid-wrapper">
-            <div class="bit-grid group-4" id="grid-c1"></div>
-          </div>
-          <div class="row-label" style="margin-top:12px; margin-bottom:6px;">D₁ (28 bit)</div>
-          <div class="bit-grid-wrapper">
-            <div class="bit-grid group-4" id="grid-d1"></div>
-          </div>
-        </div>
-
-        <hr class="section-divider">
-
-        <!-- PC-2 -->
-        <div class="sub-section">
-          <div class="bit-section-label">Langkah 4c: Hasil PC-2 – Round Key K₁ (48-bit)</div>
-          <div class="info-box">
-            <strong>Tabel PC-2:</strong> {14,17,11,24,1,5, 3,28,15,6,21,10, 23,19,12,4,26,8, 16,7,27,20,13,2,
-            41,52,31,37,47,55, 30,40,51,45,33,48, 44,49,39,56,34,53, 46,42,50,36,29,32}<br />
-            Aplikasikan PC-2 ke gabungan C₁+D₁ (56-bit) untuk mendapatkan K₁.
-          </div>
-          <div class="bit-grid-wrapper">
-            <div class="bit-grid group-6" id="grid-k1"></div>
-          </div>
-        </div>
-
-        <div class="btn-section">
-          <button class="btn btn-check" onclick="checkSection(4)">🔍 Cek Jawaban Bagian 4</button>
-          <span class="feedback" id="fb-4"></span>
-        </div>
-      </div>
-    </div>
-
-    <!-- ==================================================
+      <!-- ==================================================
        SECTION 5: EXPANSION PERMUTATION (E) R0 → 48-bit
   ================================================== -->
-    <div class="card locked" id="card-s5">
-      <div class="card-header">
-        <div class="step-badge" id="badge-5">5</div>
-        <h2>Expansion Permutation (E) – R₀ menjadi 48-bit</h2>
-        <span class="lock-icon" id="lock-5">🔒</span>
+      <div class="card locked" id="card-s5">
+        <div class="card-header">
+          <div class="step-badge" id="badge-5">5</div>
+          <h2>Expansion Permutation (E) – R₀ menjadi 48-bit</h2>
+          <span class="lock-icon" id="lock-5">🔒</span>
+        </div>
+        <div class="card-body">
+          <p class="instruction-text" style="color: #4b5563; margin-bottom: 15px; font-size: 14px; line-height: 1.5;">
+            Gunakan tabel Expansion Permutation (E) untuk mengekspansi 32-bit R₀ menjadi 48-bit.
+          </p>
+          <div class="info-box">
+            <strong>Tabel Expansion E:</strong><br />
+            {32,1,2,3,4,5, 4,5,6,7,8,9, 8,9,10,11,12,13, 12,13,14,15,16,17,
+            16,17,18,19,20,21, 20,21,22,23,24,25, 24,25,26,27,28,29, 28,29,30,31,32,1}<br />
+            Ekspansi R₀ (32-bit) menjadi 48-bit menggunakan tabel di atas. Isi bit per bit.
+          </div>
+          <div class="bit-section-label">E(R₀) – Hasil Expansion (48 bit)</div>
+          <div class="bit-grid-wrapper">
+            <div class="bit-grid group-6" id="grid-er0"></div>
+          </div>
+          <div class="btn-section">
+            <button class="btn btn-check" onclick="checkSection(5)">🔍 Cek Jawaban Bagian 5</button>
+            <span class="feedback" id="fb-5"></span>
+          </div>
+        </div>
       </div>
-      <div class="card-body">
-        <div class="info-box">
-          <strong>Tabel Expansion E:</strong><br />
-          {32,1,2,3,4,5, 4,5,6,7,8,9, 8,9,10,11,12,13, 12,13,14,15,16,17,
-          16,17,18,19,20,21, 20,21,22,23,24,25, 24,25,26,27,28,29, 28,29,30,31,32,1}<br />
-          Ekspansi R₀ (32-bit) menjadi 48-bit menggunakan tabel di atas. Isi bit per bit.
-        </div>
-        <div class="bit-section-label">E(R₀) – Hasil Expansion (48 bit)</div>
-        <div class="bit-grid-wrapper">
-          <div class="bit-grid group-6" id="grid-er0"></div>
-        </div>
-        <div class="btn-section">
-          <button class="btn btn-check" onclick="checkSection(5)">🔍 Cek Jawaban Bagian 5</button>
-          <span class="feedback" id="fb-5"></span>
-        </div>
-      </div>
-    </div>
 
-    <!-- ==================================================
+      <!-- ==================================================
        SECTION 6: XOR E(R0) dengan K1
   ================================================== -->
-    <div class="card locked" id="card-s6">
-      <div class="card-header">
-        <div class="step-badge" id="badge-6">6</div>
-        <h2>XOR: E(R₀) ⊕ K₁ = 48-bit</h2>
-        <span class="lock-icon" id="lock-6">🔒</span>
+      <div class="card locked" id="card-s6">
+        <div class="card-header">
+          <div class="step-badge" id="badge-6">6</div>
+          <h2>XOR: E(R₀) ⊕ K₁ = 48-bit</h2>
+          <span class="lock-icon" id="lock-6">🔒</span>
+        </div>
+        <div class="card-body">
+          <p class="instruction-text" style="color: #4b5563; margin-bottom: 15px; font-size: 14px; line-height: 1.5;">
+            Lakukan operasi XOR antara hasil Expansion Permutation E(R₀) dengan Kunci Ronde-1 (K₁).
+          </p>
+          <div class="info-box">
+            XOR-kan setiap bit E(R₀) dengan bit K₁ yang bersesuaian (posisi demi posisi).
+            Hasil XOR adalah 48 bit yang akan menjadi input S-Box.
+          </div>
+          <div class="bit-section-label">Hasil XOR: E(R₀) ⊕ K₁ (48 bit)</div>
+          <!-- Tugas 4: XOR stack visual – diisi oleh buildXorGrid() -->
+          <div id="xor1-stack-area"></div>
+          <div class="btn-section">
+            <button class="btn btn-check" onclick="checkSection(6)">🔍 Cek Jawaban Bagian 6</button>
+            <span class="feedback" id="fb-6"></span>
+          </div>
+        </div>
       </div>
-      <div class="card-body">
-        <div class="info-box">
-          XOR-kan setiap bit E(R₀) dengan bit K₁ yang bersesuaian (posisi demi posisi).
-          Hasil XOR adalah 48 bit yang akan menjadi input S-Box.
-        </div>
-        <div class="bit-section-label">Hasil XOR: E(R₀) ⊕ K₁ (48 bit)</div>
-        <div class="bit-grid-wrapper">
-          <div class="bit-grid group-6" id="grid-xor1"></div>
-        </div>
-        <div class="btn-section">
-          <button class="btn btn-check" onclick="checkSection(6)">🔍 Cek Jawaban Bagian 6</button>
-          <span class="feedback" id="fb-6"></span>
-        </div>
-      </div>
-    </div>
 
-    <!-- ==================================================
+      <!-- ==================================================
        SECTION 7: SUBSTITUSI S-BOX
   ================================================== -->
-    <div class="card locked" id="card-s7">
-      <div class="card-header">
-        <div class="step-badge" id="badge-7">7</div>
-        <h2>Substitusi S-Box (S1 – S8) → 32-bit</h2>
-        <span class="lock-icon" id="lock-7">🔒</span>
-      </div>
-      <div class="card-body">
-        <div class="info-box">
-          Bagi 48-bit hasil XOR menjadi 8 kelompok 6-bit. Untuk tiap kelompok:<br />
-          • <strong>Baris</strong> = bit ke-1 dan ke-6 (gabungkan → desimal 0–3)<br />
-          • <strong>Kolom</strong> = bit ke-2 sampai ke-5 (gabungkan → desimal 0–15)<br />
-          Cari nilai dari tabel S-Box yang sesuai, tulis dalam 4-bit biner.
+      <div class="card locked" id="card-s7">
+        <div class="card-header">
+          <div class="step-badge" id="badge-7">7</div>
+          <h2>Substitusi S-Box (S1 – S8) → 32-bit</h2>
+          <span class="lock-icon" id="lock-7">🔒</span>
         </div>
+        <div class="card-body">
+          <p class="instruction-text" style="color: #4b5563; margin-bottom: 15px; font-size: 14px; line-height: 1.5;">
+            Lakukan substitusi menggunakan S-Box.<br>
+            Tentukan Indek baris dan Indek kolom untuk mendapatkan 4-bit Output dari masing-masing S1 hingga S8.
+            Kemudian gabungkan untuk mendapatkan total 32-bit output Boks Subsitusi Ronde-1.
+          </p>
+          <div class="info-box">
+            Bagi 48-bit hasil XOR menjadi 8 kelompok 6-bit. Untuk tiap kelompok:<br />
+            • <strong>Baris</strong> = bit ke-1 dan ke-6 (gabungkan → desimal 0–3)<br />
+            • <strong>Kolom</strong> = bit ke-2 sampai ke-5 (gabungkan → desimal 0–15)<br />
+            Cari nilai dari tabel S-Box yang sesuai, tulis dalam 4-bit biner.
+          </div>
 
-        <div class="sbox-container" id="sbox-container"></div>
+          <!-- Tugas 3: Referensi 48-bit XOR di atas S-Box -->
+          <div id="ref-xor1-display"></div>
 
-        <!-- Gabungan Output S-Box -->
-        <div class="sub-section" style="margin-top:20px;">
-          <div class="bit-section-label">Gabungan Output S-Box (32-bit)</div>
-          <div class="info-box">Gabungkan seluruh output 4-bit dari S1–S8 menjadi 32-bit.</div>
-          <div class="bit-grid-wrapper">
-            <div class="bit-grid group-8" id="grid-sbox-out"></div>
+          <div class="sbox-container" id="sbox-container"></div>
+
+          <!-- Gabungan Output S-Box -->
+          <div class="sub-section" style="margin-top:20px;">
+            <div class="bit-section-label">Gabungan Output S-Box (32-bit)</div>
+            <div class="info-box">Gabungkan seluruh output 4-bit dari S1–S8 menjadi 32-bit.</div>
+            <div class="bit-grid-wrapper">
+              <div class="bit-grid group-8" id="grid-sbox-out"></div>
+            </div>
+          </div>
+
+          <div class="btn-section">
+            <button class="btn btn-check" onclick="checkSection(7)">🔍 Cek Jawaban Bagian 7</button>
+            <span class="feedback" id="fb-7"></span>
           </div>
         </div>
-
-        <div class="btn-section">
-          <button class="btn btn-check" onclick="checkSection(7)">🔍 Cek Jawaban Bagian 7</button>
-          <span class="feedback" id="fb-7"></span>
-        </div>
       </div>
-    </div>
 
-    <!-- ==================================================
+      <!-- ==================================================
        SECTION 8: PERMUTASI P-BOX
   ================================================== -->
-    <div class="card locked" id="card-s8">
-      <div class="card-header">
-        <div class="step-badge" id="badge-8">8</div>
-        <h2>Permutasi P-Box – 32-bit</h2>
-        <span class="lock-icon" id="lock-8">🔒</span>
+      <div class="card locked" id="card-s8">
+        <div class="card-header">
+          <div class="step-badge" id="badge-8">8</div>
+          <h2>Permutasi P-Box – 32-bit</h2>
+          <span class="lock-icon" id="lock-8">🔒</span>
+        </div>
+        <div class="card-body">
+          <p class="instruction-text" style="color: #4b5563; margin-bottom: 15px; font-size: 14px; line-height: 1.5;">
+            Gunakan tabel Permutation Function (P) untuk mempermutasi 32-bit hasil output dari S-Box.
+          </p>
+          <div class="info-box">
+            <strong>Tabel P-Box:</strong><br />
+            {16,7,20,21,29,12,28,17, 1,15,23,26,5,18,31,10, 2,8,24,14,32,27,3,9, 19,13,30,6,22,11,4,25}<br />
+            Permutasikan 32-bit output S-Box menggunakan tabel di atas.
+          </div>
+          <div class="bit-section-label">Hasil P-Box (32 bit)</div>
+          <div class="bit-grid-wrapper">
+            <div class="bit-grid group-8" id="grid-pbox"></div>
+          </div>
+          <div class="btn-section">
+            <button class="btn btn-check" onclick="checkSection(8)">🔍 Cek Jawaban Bagian 8</button>
+            <span class="feedback" id="fb-8"></span>
+          </div>
+        </div>
       </div>
-      <div class="card-body">
-        <div class="info-box">
-          <strong>Tabel P-Box:</strong><br />
-          {16,7,20,21,29,12,28,17, 1,15,23,26,5,18,31,10, 2,8,24,14,32,27,3,9, 19,13,30,6,22,11,4,25}<br />
-          Permutasikan 32-bit output S-Box menggunakan tabel di atas.
-        </div>
-        <div class="bit-section-label">Hasil P-Box (32 bit)</div>
-        <div class="bit-grid-wrapper">
-          <div class="bit-grid group-8" id="grid-pbox"></div>
-        </div>
-        <div class="btn-section">
-          <button class="btn btn-check" onclick="checkSection(8)">🔍 Cek Jawaban Bagian 8</button>
-          <span class="feedback" id="fb-8"></span>
-        </div>
-      </div>
-    </div>
 
-    <!-- ==================================================
+      <!-- ==================================================
        SECTION 9: XOR AKHIR → L1 = P(S) XOR L0
   ================================================== -->
-    <div class="card locked" id="card-s9">
-      <div class="card-header">
-        <div class="step-badge" id="badge-9">9</div>
-        <h2>XOR Akhir: P(S) ⊕ L₀ = R₁ (Ciphertext Ronde 1)</h2>
-        <span class="lock-icon" id="lock-9">🔒</span>
-      </div>
-      <div class="card-body">
-        <div class="info-box">
-          XOR-kan hasil P-Box dengan L₀ untuk mendapatkan <strong>R₁</strong>.<br />
-          <em>L₁ = R₀</em> (tidak berubah). Bersama R₁, inilah output Ronde 1 DES (64-bit).
+      <div class="card locked" id="card-s9">
+        <div class="card-header">
+          <div class="step-badge" id="badge-9">9</div>
+          <h2>XOR Akhir: P(S) ⊕ L₀ = R₁ (Ciphertext Ronde 1)</h2>
+          <span class="lock-icon" id="lock-9">🔒</span>
         </div>
+        <div class="card-body">
+          <p class="instruction-text" style="color: #4b5563; margin-bottom: 15px; font-size: 14px; line-height: 1.5;">
+            Lakukan XOR 32-bit hasil Permutation Function (P) dengan hasil split 32-bit sebelah kiri (L₀ pada langkah
+            awal). Kemudian gabungkan 32-bit bagian sebelah kanan (R₀) dengan 32-bit hasil XOR untuk mendapatkan
+            ciphertext Ronde-1 Kelompok Anda.
+          </p>
+          <div class="info-box">
+            XOR-kan hasil P-Box dengan L₀ untuk mendapatkan <strong>R₁</strong>.<br />
+            <em>L₁ = R₀</em> (tidak berubah). Bersama R₁, inilah output Ronde 1 DES (64-bit).
+          </div>
 
-        <div class="sub-section">
-          <div class="bit-section-label">R₁ = P(S) ⊕ L₀ (32 bit)</div>
-          <div class="bit-grid-wrapper">
-            <div class="bit-grid group-8" id="grid-r1"></div>
+          <div class="sub-section">
+            <div class="bit-section-label">R₁ = P(S) ⊕ L₀ (32 bit)</div>
+            <!-- Tugas 4: XOR stack visual R1 -->
+            <div id="r1-stack-area"></div>
+          </div>
+
+          <div class="sub-section" style="margin-top:16px;">
+            <div class="bit-section-label">L₁ = R₀ (32 bit – salin dari R₀)</div>
+            <div class="bit-grid-wrapper">
+              <div class="bit-grid group-8" id="grid-l1"></div>
+            </div>
+          </div>
+
+          <div class="btn-section">
+            <button class="btn btn-check" onclick="checkSection(9)">🔍 Cek Jawaban Bagian 9</button>
+            <span class="feedback" id="fb-9"></span>
           </div>
         </div>
-
-        <div class="sub-section" style="margin-top:16px;">
-          <div class="bit-section-label">L₁ = R₀ (32 bit – salin dari R₀)</div>
-          <div class="bit-grid-wrapper">
-            <div class="bit-grid group-8" id="grid-l1"></div>
-          </div>
-        </div>
-
-        <div class="btn-section">
-          <button class="btn btn-check" onclick="checkSection(9)">🔍 Cek Jawaban Bagian 9</button>
-          <span class="feedback" id="fb-9"></span>
-        </div>
       </div>
-    </div>
 
-    <!-- ==================================================
+      <!-- ==================================================
        SECTION 10: HASIL AKHIR & INVERSE IP (IP-1)
   ================================================== -->
-    <div class="card locked" id="card-s10">
-      <div class="card-header">
-        <div class="step-badge" id="badge-10">10</div>
-        <h2>Inverse Initial Permutation (IP⁻¹) – Output Ronde 1</h2>
-        <span class="lock-icon" id="lock-10">🔒</span>
-      </div>
-      <div class="card-body">
-        <div class="info-box">
-          <strong>Tabel IP⁻¹:</strong><br />
-          {40,8,48,16,56,24,64,32, 39,7,47,15,55,23,63,31, 38,6,46,14,54,22,62,30,
-          37,5,45,13,53,21,61,29, 36,4,44,12,52,20,60,28, 35,3,43,11,51,19,59,27,
-          34,2,42,10,50,18,58,26, 33,1,41,9,49,17,57,25}<br />
-          Gabungkan L₁+R₁ (64-bit) dan aplikasikan IP⁻¹ untuk mendapatkan output akhir Ronde 1.
+      <div class="card locked" id="card-s10">
+        <div class="card-header">
+          <div class="step-badge" id="badge-10">10</div>
+          <h2>Inverse Initial Permutation (IP⁻¹) – Output Ronde 1</h2>
+          <span class="lock-icon" id="lock-10">🔒</span>
         </div>
+        <div class="card-body">
+          <p class="instruction-text" style="color: #4b5563; margin-bottom: 15px; font-size: 14px; line-height: 1.5;">
+            Lakukan Inverse Initial Permutation pada gabungan L₁ dan R₁.<br>
+            4. Tuliskan ciphertext Ronde-1 kelompok anda (Hexadecimal).
+          </p>
+          <div class="info-box">
+            <strong>Tabel IP⁻¹:</strong><br />
+            {40,8,48,16,56,24,64,32, 39,7,47,15,55,23,63,31, 38,6,46,14,54,22,62,30,
+            37,5,45,13,53,21,61,29, 36,4,44,12,52,20,60,28, 35,3,43,11,51,19,59,27,
+            34,2,42,10,50,18,58,26, 33,1,41,9,49,17,57,25}<br />
+            Gabungkan L₁+R₁ (64-bit) dan aplikasikan IP⁻¹ untuk mendapatkan output akhir Ronde 1.
+          </div>
 
-        <div class="sub-section">
-          <div class="bit-section-label">Gabungan L₁R₁ (64 bit)</div>
-          <div class="bit-grid-wrapper">
-            <div class="bit-grid group-8" id="grid-l1r1"></div>
+          <div class="sub-section">
+            <div class="bit-section-label">Gabungan L₁R₁ (64 bit)</div>
+            <div class="bit-grid-wrapper">
+              <div class="bit-grid group-8" id="grid-l1r1"></div>
+            </div>
+          </div>
+
+          <div class="sub-section" style="margin-top:14px;">
+            <div class="bit-section-label">Hasil IP⁻¹ – Output Ronde 1 (64 bit)</div>
+            <div class="bit-grid-wrapper">
+              <div class="bit-grid group-8" id="grid-ipm1"></div>
+            </div>
+          </div>
+
+          <div class="sub-section" style="margin-top:14px;">
+            <div class="bit-section-label">Output Ronde 1 dalam Hexadesimal (16 karakter)</div>
+            <div class="hex-answer-grid" id="grid-final-hex"></div>
+          </div>
+
+          <div class="btn-section">
+            <button class="btn btn-check" onclick="checkSection(10)">🔍 Cek Jawaban Bagian 10</button>
+            <span class="feedback" id="fb-10"></span>
           </div>
         </div>
-
-        <div class="sub-section" style="margin-top:14px;">
-          <div class="bit-section-label">Hasil IP⁻¹ – Output Ronde 1 (64 bit)</div>
-          <div class="bit-grid-wrapper">
-            <div class="bit-grid group-8" id="grid-ipm1"></div>
-          </div>
-        </div>
-
-        <div class="sub-section" style="margin-top:14px;">
-          <div class="bit-section-label">Output Ronde 1 dalam Hexadesimal (16 karakter)</div>
-          <div class="hex-answer-grid" id="grid-final-hex"></div>
-        </div>
-
-        <div class="btn-section">
-          <button class="btn btn-check" onclick="checkSection(10)">🔍 Cek Jawaban Bagian 10</button>
-          <span class="feedback" id="fb-10"></span>
-        </div>
       </div>
-    </div>
 
-    <!-- ==================================================
+      <!-- ==================================================
        RESULT BOX & SUBMIT
   ================================================== -->
-    <div class="result-box fade-in" id="resultBox">
-      <h3>🎉 Selamat! Semua Tahapan Selesai dengan Benar!</h3>
-      <div class="cipher-display" id="finalCipherDisplay">????????????????????????</div>
-      
-      <div class="form-group" style="text-align: left; margin: 20px 0; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
-        <label for="analisaMahasiswa" style="color: var(--white); font-size: 14px; margin-bottom: 8px; display: block;">📝 Analisa Hasil (Wajib diisi untuk Laporan)</label>
-        <p style="font-size: 12px; color: rgba(255,255,255,0.8); margin-bottom: 12px; margin-top: 0; line-height: 1.5;">Buatkan analisis berdasarkan penerapan input plaintext dan kunci pada proses enkripsi untuk menghasilkan ciphertext Ronde-1 pada algoritma DES.</p>
-        <textarea id="analisaMahasiswa" placeholder="Ketikkan analisa kelompok Anda di sini..." style="width: 100%; min-height: 120px; background: var(--white); color: var(--navy-dark); padding: 12px; border-radius: 8px; border: none; font-family: var(--font-sans); resize: vertical; box-sizing: border-box;" oninput="lsSaveLater()"></textarea>
-      </div>
+      <div class="result-box fade-in" id="resultBox">
+        <h3>🎉 Selamat! Semua Tahapan Selesai dengan Benar!</h3>
+        <div class="cipher-display" id="finalCipherDisplay">????????????????????????</div>
 
-      <p>Output Ronde 1 DES berhasil dihitung. Pastikan Analisa sudah diisi sebelum mengunduh / mengirim laporan.</p>
-      <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
-        <button class="btn" style="background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.35);"
-          onclick="previewReport()" title="Buka preview laporan di tab baru">
-          👁️ Preview Laporan
-        </button>
-        <button class="btn btn-success" onclick="submitReport()" id="btnSubmitReport">
-          📥 Unduh PDF &amp; Kirim ke Drive
-        </button>
+        <div class="form-group"
+          style="text-align: left; margin: 20px 0; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+          <label for="analisaMahasiswa"
+            style="color: var(--white); font-size: 14px; margin-bottom: 8px; display: block;">📝 1.2 Analisis penerapan
+            input plaintext dan kunci pada proses enkripsi untuk menghasilkan ciphertext Ronde-1 pada algoritma
+            DES.</label>
+          <p
+            style="font-size: 12px; color: rgba(255,255,255,0.8); margin-bottom: 12px; margin-top: 0; line-height: 1.5;">
+            Buatkan analisis berdasarkan penerapan input plaintext dan kunci pada proses enkripsi untuk menghasilkan
+            ciphertext Ronde-1 pada algoritma DES diatas:</p>
+          <textarea id="analisaMahasiswa" placeholder="Ketikkan analisa kelompok Anda di sini..."
+            style="width: 100%; min-height: 120px; background: var(--white); color: var(--navy-dark); padding: 12px; border-radius: 8px; border: none; font-family: var(--font-sans); resize: vertical; box-sizing: border-box;"
+            oninput="lsSaveLater()"></textarea>
+        </div>
+
+        <p>Output Ronde 1 DES berhasil dihitung. Pastikan Analisa sudah diisi sebelum mengunduh / mengirim laporan.</p>
+        <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
+          <button class="btn"
+            style="background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.35);"
+            onclick="previewReport()" title="Buka preview laporan di tab baru">
+            👁️ Preview Laporan
+          </button>
+          <button class="btn btn-success" onclick="submitReport()" id="btnSubmitReport">
+            📥 Unduh PDF &amp; Kirim ke Drive
+          </button>
+        </div>
       </div>
-    </div>
+    </div> <!-- end .cards-container -->
 
   </main>
 
@@ -2011,28 +2365,38 @@
         computedInput = { plaintext: pt, key: key };
 
         // Rebuild all grids
-        buildHexGrid('grid-pt-hex', 8, 'pt-hex');
-        buildBitGrid('grid-pt-bin', 64, 'pt-bin', 'group-8');
-        buildHexGrid('grid-key-hex', 8, 'key-hex');
-        buildBitGrid('grid-key-bin', 64, 'key-bin', 'group-8');
-        buildBitGrid('grid-ip', 64, 'ip', 'group-8');
+        // Panggil builder khusus untuk PT/Key hex (dengan baris ASCII)
+        buildHexGridWithASCII('grid-pt-hex', 8, 'pt-hex', saved.plaintext);
+        buildHexGridWithASCII('grid-key-hex', 8, 'key-hex', saved.key);
+        // Panggil builder dengan HEXA group untuk biner PT/Key
+        buildBitGridWithHex('grid-pt-bin', 64, 'pt-bin', 'group-8', GT.ptHex);
+        buildBitGridWithHex('grid-key-bin', 64, 'key-bin', 'group-8', GT.keyHex);
+        // Tugas 2: indeks permutasi asli
+        buildBitGrid('grid-ip', 64, 'ip', 'group-8', IP_TABLE);
         buildBitGrid('grid-l0', 32, 'l0', 'group-8');
         buildBitGrid('grid-r0', 32, 'r0', 'group-8');
-        buildBitGrid('grid-c0', 28, 'c0', 'group-4');
-        buildBitGrid('grid-d0', 28, 'd0', 'group-4');
+        buildBitGrid('grid-c0', 28, 'c0', 'group-4', PC1_C);
+        buildBitGrid('grid-d0', 28, 'd0', 'group-4', PC1_D);
         buildBitGrid('grid-c1', 28, 'c1', 'group-4');
         buildBitGrid('grid-d1', 28, 'd1', 'group-4');
-        buildBitGrid('grid-k1', 48, 'k1', 'group-6');
-        buildBitGrid('grid-er0', 48, 'er0', 'group-6');
-        buildBitGrid('grid-xor1', 48, 'xor1', 'group-6');
+        buildBitGrid('grid-k1', 48, 'k1', 'group-6', PC2_TABLE);
+        buildBitGrid('grid-er0', 48, 'er0', 'group-6', E_TABLE);
+        // Tugas 4: XOR visual
+        buildXorGrid('xor1-stack-area', 'grid-xor1', 48, 'xor1', 'group-6',
+          GT.ER0, 'E(R₀)', GT.K1, 'K₁', 'Hasil');
         buildSBoxSection();
         buildBitGrid('grid-sbox-out', 32, 'sout', 'group-8');
-        buildBitGrid('grid-pbox', 32, 'pbox', 'group-8');
-        buildBitGrid('grid-r1', 32, 'r1', 'group-8');
+        buildBitGrid('grid-pbox', 32, 'pbox', 'group-8', P_TABLE);
+        buildXorGrid('r1-stack-area', 'grid-r1', 32, 'r1', 'group-8',
+          GT.pbox, 'P(S)', GT.L0, 'L₀', 'R₁');
         buildBitGrid('grid-l1', 32, 'l1', 'group-8');
         buildBitGrid('grid-l1r1', 64, 'l1r1', 'group-8');
-        buildBitGrid('grid-ipm1', 64, 'ipm1', 'group-8');
+        buildBitGrid('grid-ipm1', 64, 'ipm1', 'group-8', IP_INV_TABLE);
         buildHexGrid('grid-final-hex', 16, 'final-hex');
+        // Tugas 3: referensi
+        buildRefDisplay('ref-pt-bin-display', GT.ptBin, 8, 'ℹ️ Biner Plaintext (referensi untuk IP)');
+        buildRefDisplay('ref-key-bin-display', GT.keyBin, 8, 'ℹ️ Biner Kunci (referensi untuk PC-1)');
+        buildRefDisplay('ref-xor1-display', GT.xor1, 6, 'ℹ️ Hasil XOR Bagian 6 (referensi untuk S-Box)');
 
         document.getElementById('convSection').style.display = 'block';
         document.getElementById('convDivider').style.display = 'block';
@@ -2055,6 +2419,7 @@
         }
 
         updateProgress();
+        updateFlowchart();
       }
     }
 
@@ -2191,7 +2556,13 @@
     // ============================================================
     // DOM BUILDER HELPERS
     // ============================================================
-    function buildBitGrid(containerId, count, idPrefix, groupClass) {
+
+    /**
+     * Build a bit-grid input.
+     * TUGAS 2: labelArr allows custom indices (e.g. IP_TABLE values)
+     * instead of sequential 1,2,3...
+     */
+    function buildBitGrid(containerId, count, idPrefix, groupClass, labelArr = null) {
       const container = document.getElementById(containerId);
       container.className = `bit-grid ${groupClass}`;
       container.innerHTML = '';
@@ -2200,7 +2571,8 @@
         cell.className = 'bit-cell';
         const idx = document.createElement('div');
         idx.className = 'bit-index';
-        idx.textContent = i + 1;
+        // TUGAS 2: gunakan labelArr jika tersedia, fallback ke i+1
+        idx.textContent = labelArr ? labelArr[i] : (i + 1);
         const inp = document.createElement('input');
         inp.type = 'text';
         inp.maxLength = 1;
@@ -2221,7 +2593,7 @@
     }
 
     function moveFocusNext(inp, prefix, max) {
-      const id = inp.id; // prefix_i
+      const id = inp.id;
       const i = parseInt(id.split('_').pop());
       if (i < max - 1) {
         const next = document.getElementById(`${prefix}_${i + 1}`);
@@ -2257,6 +2629,341 @@
       }
     }
 
+    /**
+     * TUGAS 1 – Grid HEX dengan baris ASCII di atasnya (Bagian 1).
+     */
+    function buildHexGridWithASCII(containerId, count, idPrefix, sourceStr) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      const wrapper = document.createElement('div');
+      wrapper.className = 'ascii-hex-wrapper';
+
+      const asciiRow = document.createElement('div');
+      asciiRow.className = 'ascii-row';
+      const asciiTag = document.createElement('span');
+      asciiTag.className = 'row-tag';
+      asciiTag.textContent = 'ASCII:';
+      asciiRow.appendChild(asciiTag);
+      for (let i = 0; i < count; i++) {
+        const box = document.createElement('input');
+        box.type = 'text';
+        box.readOnly = true;
+        box.disabled = true;
+        box.className = 'ascii-box';
+        box.value = (sourceStr && sourceStr[i]) ? sourceStr[i] : '';
+        asciiRow.appendChild(box);
+      }
+      wrapper.appendChild(asciiRow);
+
+      const hexRow = document.createElement('div');
+      hexRow.className = 'hex-row';
+      const hexTag = document.createElement('span');
+      hexTag.className = 'row-tag';
+      hexTag.textContent = 'HEXA:';
+      hexRow.appendChild(hexTag);
+      for (let i = 0; i < count; i++) {
+        const inp = document.createElement('input');
+        inp.type = 'text';
+        inp.maxLength = 2;
+        inp.id = `${idPrefix}_${i}`;
+        inp.style.textTransform = 'uppercase';
+        inp.setAttribute('autocomplete', 'off');
+        inp.addEventListener('input', (e) => {
+          if (e.target.value.length === 2) {
+            const next = document.getElementById(`${idPrefix}_${parseInt(e.target.id.split('_').pop()) + 1}`);
+            if (next) next.focus();
+          }
+        });
+        hexRow.appendChild(inp);
+      }
+      wrapper.appendChild(hexRow);
+      container.appendChild(wrapper);
+    }
+
+    /**
+     * TUGAS 1 – Kelompok HEX di atas 4 Bit (flex-wrap, tanpa scroll horizontal).
+     * Setiap grup = 1 kotak hex readonly di atas 4 input bit.
+     */
+    function buildBitGridWithHex(containerId, count, idPrefix, groupClass, hexSource) {
+      const container = document.getElementById(containerId);
+      container.className = 'hex-bin-group-container';
+      container.innerHTML = '';
+
+      // Expand: 8 × 2-char hex → 16 single-char hex digits
+      const hexDigits = [];
+      if (hexSource && hexSource.length === 8) {
+        hexSource.forEach(h => {
+          hexDigits.push(h[0] || '?');
+          hexDigits.push(h[1] || '?');
+        });
+      } else {
+        for (let g = 0; g < count / 4; g++) hexDigits.push('?');
+      }
+
+      // 16 grup, masing-masing 1 hex + 4 bit
+      for (let g = 0; g < count / 4; g++) {
+        const group = document.createElement('div');
+        group.className = 'hex-bin-group';
+
+        // Hex slot di atas
+        const hexSlot = document.createElement('div');
+        hexSlot.className = 'hex-slot';
+        hexSlot.textContent = hexDigits[g] || '?';
+        group.appendChild(hexSlot);
+
+        // 4 bit input di bawah
+        const bitsRow = document.createElement('div');
+        bitsRow.className = 'bits-row';
+        for (let b = 0; b < 4; b++) {
+          const bitIdx = g * 4 + b;
+          const cell = document.createElement('div');
+          cell.className = 'bit-cell';
+          const idxEl = document.createElement('div');
+          idxEl.className = 'bit-index';
+          idxEl.textContent = bitIdx + 1;
+          const inp = document.createElement('input');
+          inp.type = 'text';
+          inp.maxLength = 1;
+          inp.id = `${idPrefix}_${bitIdx}`;
+          inp.setAttribute('autocomplete', 'off');
+          inp.addEventListener('input', (e) => {
+            const v = e.target.value;
+            if (!/^[01]$/.test(v)) e.target.value = '';
+            else moveFocusNext(e.target, idPrefix, count);
+          });
+          inp.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && e.target.value === '') moveFocusPrev(e.target, idPrefix);
+          });
+          cell.appendChild(idxEl);
+          cell.appendChild(inp);
+          bitsRow.appendChild(cell);
+        }
+        group.appendChild(bitsRow);
+        container.appendChild(group);
+      }
+    }
+
+    /**
+     * TUGAS 3 – Tampilkan nilai bit referensi (readonly) di atas area input dengan index angka.
+     * @param {string} containerId – id div placeholder
+     * @param {Array}  bits        – array 0/1
+     * @param {number} groupSize   – ukuran gap antar grup (dipertahankan untuk kompatibilitas class CSS)
+     * @param {string} label       – label judul referensi
+     */
+    function buildRefDisplay(containerId, bits, groupSize, label) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      container.innerHTML = '';
+
+      // TUGAS 2: Default hide
+      container.classList.add('d-none');
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'ref-display';
+
+      const lbl = document.createElement('div');
+      lbl.className = 'ref-display-label';
+      lbl.textContent = label;
+      wrapper.appendChild(lbl);
+
+      const bitsDiv = document.createElement('div');
+      // Gunakan bit-grid untuk styling index angka
+      bitsDiv.className = `bit-grid group-${groupSize}`;
+
+      bits.forEach((bit, i) => {
+        const cell = document.createElement('div');
+        cell.className = 'bit-cell ref-bit-cell';
+
+        const idx = document.createElement('div');
+        idx.className = 'bit-index';
+        idx.textContent = i + 1;
+
+        const inp = document.createElement('input');
+        inp.type = 'text';
+        inp.maxLength = 1;
+        inp.id = `ref-${containerId}-${i}`;
+        inp.value = ''; // Anti-cheat: biarkan kosong saat init
+        inp.readOnly = true;
+
+        cell.appendChild(idx);
+        cell.appendChild(inp);
+        bitsDiv.appendChild(cell);
+      });
+
+      wrapper.appendChild(bitsDiv);
+      container.appendChild(wrapper);
+    }
+
+    /**
+     * TUGAS 4 – XOR tersusun vertikal berupa Tabel HTML per 16-bit.
+     * Tampilkan: Baris A (readonly) | Baris B (readonly) | Input mahasiswa
+     */
+    function buildXorGrid(areaId, gridId, count, idPrefix, groupClass, bitsA, labelA, bitsB, labelB, resultLabel) {
+      const area = document.getElementById(areaId);
+      if (!area) return;
+      area.innerHTML = '';
+
+      const container = document.createElement('div');
+      container.className = 'xor-table-container';
+
+      const numTables = count / 16;
+      let bitIdx = 0;
+
+      for (let t = 0; t < numTables; t++) {
+        const table = document.createElement('table');
+        table.className = 'xor-table';
+
+        // Row 1: LabelA + bitsA
+        const tr1 = document.createElement('tr');
+        const tdLabelA = document.createElement('td');
+        tdLabelA.className = 'label-col';
+        tdLabelA.textContent = labelA;
+        tr1.appendChild(tdLabelA);
+
+        // Row 2: LabelB + bitsB
+        const tr2 = document.createElement('tr');
+        const tdLabelB = document.createElement('td');
+        tdLabelB.className = 'label-col';
+        tdLabelB.textContent = labelB;
+        tr2.appendChild(tdLabelB);
+
+        // Row 3: Result Label + inputs
+        const tr3 = document.createElement('tr');
+        const tdLabelRes = document.createElement('td');
+        tdLabelRes.className = 'label-col';
+        tdLabelRes.textContent = resultLabel;
+        tr3.appendChild(tdLabelRes);
+
+        for (let i = 0; i < 16; i++) {
+          const currentBitIdx = bitIdx + i;
+
+          const td1 = document.createElement('td');
+          td1.id = `ref-${idPrefix}-a-${currentBitIdx}`;
+          td1.textContent = ''; // Anti-cheat: biarkan kosong saat init
+          tr1.appendChild(td1);
+
+          const td2 = document.createElement('td');
+          td2.id = `ref-${idPrefix}-b-${currentBitIdx}`;
+          td2.textContent = ''; // Anti-cheat: biarkan kosong saat init
+          tr2.appendChild(td2);
+
+          const td3 = document.createElement('td');
+          const inp = document.createElement('input');
+          inp.type = 'text';
+          inp.maxLength = 1;
+          inp.id = `${idPrefix}_${currentBitIdx}`;
+          inp.setAttribute('autocomplete', 'off');
+          inp.addEventListener('input', (e) => {
+            const v = e.target.value;
+            if (!/^[01]$/.test(v)) e.target.value = '';
+            else moveFocusNext(e.target, idPrefix, count);
+          });
+          inp.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && e.target.value === '') moveFocusPrev(e.target, idPrefix);
+          });
+          td3.appendChild(inp);
+          tr3.appendChild(td3);
+        }
+
+        table.appendChild(tr1);
+        table.appendChild(tr2);
+        table.appendChild(tr3);
+        container.appendChild(table);
+
+        bitIdx += 16;
+      }
+
+      area.appendChild(container);
+    }
+
+    // Helper to populate reference displays dynamically
+    function populateRefDisplay(containerId, bits) {
+      if (!bits) return;
+      const container = document.getElementById(containerId);
+      if (container) container.classList.remove('d-none');
+      bits.forEach((bit, i) => {
+        const inp = document.getElementById(`ref-${containerId}-${i}`);
+        if (inp) inp.value = bit;
+      });
+    }
+
+    // Helper to populate XOR reference table dynamically
+    function populateXorGrid(idPrefix, count, bitsA, bitsB) {
+      if (!bitsA || !bitsB) return;
+      for (let i = 0; i < count; i++) {
+        const tdA = document.getElementById(`ref-${idPrefix}-a-${i}`);
+        const tdB = document.getElementById(`ref-${idPrefix}-b-${i}`);
+        if (tdA) tdA.textContent = bitsA[i];
+        if (tdB) tdB.textContent = bitsB[i];
+      }
+    }
+
+    const trackerCoords = {
+      macro: {
+        sec1_2: { top: '4%', left: '4%', width: '40%', height: '20%' },    // Plaintext & Initial Permutation
+        sec3_9: { top: '25%', left: '4%', width: '92%', height: '14%' },   // Round 1 & Key Schedule
+        sec10: { top: '71%', left: '4%', width: '40%', height: '27%' }    // Swap, Inverse IP & Ciphertext
+      },
+      micro: {
+        sec3: { top: '3%', left: '2%', width: '53%', height: '10%' },      // L_{i-1} & R_{i-1}
+        sec4: { top: '3%', left: '58%', width: '40%', height: '42%' },     // C, D, Left Shift, PC-2
+        sec5: { top: '16%', left: '26%', width: '28%', height: '10%' },    // Expansion / E-table
+        sec6: { top: '33%', left: '34%', width: '12%', height: '11%' },    // First XOR (Top)
+        sec7: { top: '47%', left: '21%', width: '38%', height: '12%' },    // Substitution S-Box
+        sec8: { top: '63%', left: '28%', width: '24%', height: '9%' },     // Permutation P-Box
+        sec9: { top: '79%', left: '4%', width: '50%', height: '18%' }      // Second XOR (Bottom) & L_i / R_i
+      }
+    };
+
+    // Update flowchart active state based on unlocked sections
+    function updateFlowchart() {
+      // Determine highest unlocked section
+      let highest = 1;
+      for (let i = 1; i <= 10; i++) {
+        const card = document.getElementById(`card-s${i}`);
+        if (card && !card.classList.contains('locked')) {
+          highest = i;
+        }
+      }
+
+      const macroBox = document.getElementById('macroHighlight');
+      const microBox = document.getElementById('microHighlight');
+      if (!macroBox || !microBox) return;
+
+      // Reset
+      macroBox.style.opacity = '0';
+      microBox.style.opacity = '0';
+
+      const applyCoords = (el, coords) => {
+        // Karena input sudah menggunakan persentase (ada '%'-nya), kita langsung assign
+        el.style.top = coords.top;
+        el.style.left = coords.left;
+        el.style.width = coords.width;
+        el.style.height = coords.height;
+        el.style.opacity = '1';
+      };
+
+      // 1. MACRO LOGIC
+      if (highest <= 2) {
+        applyCoords(macroBox, trackerCoords.macro.sec1_2);
+      } else if (highest >= 3 && highest <= 9) {
+        applyCoords(macroBox, trackerCoords.macro.sec3_9);
+      } else if (highest === 10) {
+        applyCoords(macroBox, trackerCoords.macro.sec10);
+      }
+
+      // 2. MICRO LOGIC
+      if (highest === 1 || highest === 2 || highest === 10) {
+        // disembunyikan (opacity: 0, sudah direset di atas)
+      } else if (highest === 3) applyCoords(microBox, trackerCoords.micro.sec3);
+      else if (highest === 4) applyCoords(microBox, trackerCoords.micro.sec4);
+      else if (highest === 5) applyCoords(microBox, trackerCoords.micro.sec5);
+      else if (highest === 6) applyCoords(microBox, trackerCoords.micro.sec6);
+      else if (highest === 7) applyCoords(microBox, trackerCoords.micro.sec7);
+      else if (highest === 8) applyCoords(microBox, trackerCoords.micro.sec8);
+      else if (highest === 9) applyCoords(microBox, trackerCoords.micro.sec9);
+    }
+
     // ============================================================
     // SECTION UNLOCK / LOCK
     // ============================================================
@@ -2266,6 +2973,15 @@
       card.classList.remove('locked');
       const lock = document.getElementById(`lock-${n}`);
       if (lock) lock.textContent = '🔓';
+
+      // TUGAS 1: Populate reference values ONLY when section unlocks
+      if (n === 2) populateRefDisplay('ref-pt-bin-display', GT.ptBin);
+      if (n === 4) populateRefDisplay('ref-key-bin-display', GT.keyBin);
+      if (n === 6) populateXorGrid('xor1', 48, GT.ER0, GT.K1);
+      if (n === 7) populateRefDisplay('ref-xor1-display', GT.xor1);
+      if (n === 9) populateXorGrid('r1', 32, GT.pbox, GT.L0);
+
+      updateFlowchart();
     }
 
     function markSectionDone(n) {
@@ -2306,23 +3022,18 @@
         if (!inp) return;
         const val = inp.value.trim();
         const ok = val === String(bit);
-        inp.classList.toggle('correct', ok);
-        inp.classList.toggle('wrong', !ok);
         if (!ok) allOk = false;
       });
       return allOk;
     }
 
     function validateHexGrid(idPrefix, groundTruth, charsPerCell = 2) {
-      // groundTruth: array of hex strings (2-char each)
       let allOk = true;
       groundTruth.forEach((hexVal, i) => {
         const inp = document.getElementById(`${idPrefix}_${i}`);
         if (!inp) return;
         const val = inp.value.trim().toUpperCase().padStart(charsPerCell, '0');
         const ok = val === hexVal.toUpperCase();
-        inp.classList.toggle('correct', ok);
-        inp.classList.toggle('wrong', !ok);
         if (!ok) allOk = false;
       });
       return allOk;
@@ -2378,31 +3089,52 @@
       computedInput = { plaintext: pt, key: key };
 
       // Build grids
-      buildHexGrid('grid-pt-hex', 8, 'pt-hex');
-      buildBitGrid('grid-pt-bin', 64, 'pt-bin', 'group-8');
-      buildHexGrid('grid-key-hex', 8, 'key-hex');
-      buildBitGrid('grid-key-bin', 64, 'key-bin', 'group-8');
-      buildBitGrid('grid-ip', 64, 'ip', 'group-8');
+      buildHexGridWithASCII('grid-pt-hex', 8, 'pt-hex', pt);
+      buildBitGridWithHex('grid-pt-bin', 64, 'pt-bin', 'group-8', GT.ptHex);
+      buildHexGridWithASCII('grid-key-hex', 8, 'key-hex', key);
+      buildBitGridWithHex('grid-key-bin', 64, 'key-bin', 'group-8', GT.keyHex);
+
+      // Tugas 2: IP dengan indeks permutasi asli
+      buildBitGrid('grid-ip', 64, 'ip', 'group-8', IP_TABLE);
       buildBitGrid('grid-l0', 32, 'l0', 'group-8');
       buildBitGrid('grid-r0', 32, 'r0', 'group-8');
-      buildBitGrid('grid-c0', 28, 'c0', 'group-4');
-      buildBitGrid('grid-d0', 28, 'd0', 'group-4');
+      // Tugas 2: PC-1 dengan indeks permutasi asli
+      buildBitGrid('grid-c0', 28, 'c0', 'group-4', PC1_C);
+      buildBitGrid('grid-d0', 28, 'd0', 'group-4', PC1_D);
       buildBitGrid('grid-c1', 28, 'c1', 'group-4');
       buildBitGrid('grid-d1', 28, 'd1', 'group-4');
-      buildBitGrid('grid-k1', 48, 'k1', 'group-6');
-      buildBitGrid('grid-er0', 48, 'er0', 'group-6');
-      buildBitGrid('grid-xor1', 48, 'xor1', 'group-6');
+      // Tugas 2: PC-2 dengan indeks permutasi asli
+      buildBitGrid('grid-k1', 48, 'k1', 'group-6', PC2_TABLE);
+      // Tugas 2: E-Table dengan indeks permutasi asli
+      buildBitGrid('grid-er0', 48, 'er0', 'group-6', E_TABLE);
+
+      // Tugas 4: XOR E(R0)⊕K1 tersusun vertikal
+      buildXorGrid('xor1-stack-area', 'grid-xor1', 48, 'xor1', 'group-6',
+        GT.ER0, 'E(R₀)', GT.K1, 'K₁', 'Hasil');
+
       buildSBoxSection();
       buildBitGrid('grid-sbox-out', 32, 'sout', 'group-8');
-      buildBitGrid('grid-pbox', 32, 'pbox', 'group-8');
-      buildBitGrid('grid-r1', 32, 'r1', 'group-8');
+      // Tugas 2: P-Box dengan indeks permutasi asli
+      buildBitGrid('grid-pbox', 32, 'pbox', 'group-8', P_TABLE);
+
+      // Tugas 4: XOR P(S)⊕L0 tersusun vertikal
+      buildXorGrid('r1-stack-area', 'grid-r1', 32, 'r1', 'group-8',
+        GT.pbox, 'P(S)', GT.L0, 'L₀', 'R₁');
+
       buildBitGrid('grid-l1', 32, 'l1', 'group-8');
       buildBitGrid('grid-l1r1', 64, 'l1r1', 'group-8');
-      buildBitGrid('grid-ipm1', 64, 'ipm1', 'group-8');
+      buildBitGrid('grid-ipm1', 64, 'ipm1', 'group-8', IP_INV_TABLE);
       buildHexGrid('grid-final-hex', 16, 'final-hex');
+
+      // Tugas 3: Tampilkan referensi nilai bit
+      buildRefDisplay('ref-pt-bin-display', GT.ptBin, 8, 'ℹ️ Biner Plaintext (referensi untuk IP)');
+      buildRefDisplay('ref-key-bin-display', GT.keyBin, 8, 'ℹ️ Biner Kunci (referensi untuk PC-1)');
+      buildRefDisplay('ref-xor1-display', GT.xor1, 6, 'ℹ️ Hasil XOR Bagian 6 (referensi untuk S-Box)');
 
       document.getElementById('convSection').style.display = 'block';
       document.getElementById('convDivider').style.display = 'block';
+
+      updateFlowchart();
     }
 
     // ============================================================
@@ -2495,11 +3227,24 @@
       if (ok) {
         showFeedback(n, true, 'Semua jawaban benar! Bagian ini selesai ✓');
         markSectionDone(n);
+
+        // TUGAS 2: Tampilkan referensi untuk section berikutnya
+        if (n === 1) {
+          const refPt = document.getElementById('ref-pt-bin-display');
+          if (refPt) refPt.classList.remove('d-none');
+        } else if (n === 3) {
+          const refKey = document.getElementById('ref-key-bin-display');
+          if (refKey) refKey.classList.remove('d-none');
+        } else if (n === 6) {
+          const refXor1 = document.getElementById('ref-xor1-display');
+          if (refXor1) refXor1.classList.remove('d-none');
+        }
+
         // Scroll to next section
         const nextCard = document.getElementById(`card-s${n + 1}`);
         if (nextCard) setTimeout(() => nextCard.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
       } else {
-        showFeedback(n, false, 'Ada jawaban yang salah. Periksa kolom berwarna merah.');
+        showFeedback(n, false, 'Ada jawaban yg salah, silahkan diulangi.');
       }
     }
 
@@ -2520,12 +3265,6 @@
         const okRow = inpRow.value.trim() === expectedRow;
         const okCol = inpCol.value.trim() === expectedCol;
         const okOut = inpOut.value.trim() === expectedOut;
-
-        [inpIn, inpRow, inpCol, inpOut].forEach((el, idx) => {
-          const ok = [okIn, okRow, okCol, okOut][idx];
-          el.classList.toggle('correct', ok);
-          el.classList.toggle('wrong', !ok);
-        });
 
         if (!okIn || !okRow || !okCol || !okOut) allOk = false;
       }
@@ -2550,7 +3289,7 @@
         const val = inp.value.trim().toUpperCase();
         const ok = val === ch;
         inp.classList.toggle('correct', ok);
-        inp.classList.toggle('wrong', !ok);
+        // Tidak set class 'wrong' – tampilan biarkan normal jika salah
         if (!ok) hexOk = false;
       });
 
@@ -2569,46 +3308,413 @@
 
     // ============================================================
     // SUBMIT REPORT (DRIVE UPLOAD / PREVIEW)
+    // PDF VEKTOR NATIVE — dibangun langsung dengan jsPDF + AutoTable.
+    // Tidak ada rasterisasi (html2canvas) sama sekali: semua teks & garis
+    // tabel digambar sebagai objek vektor, sehingga teks tetap bisa
+    // di-select/di-copy/di-cari, file jauh lebih kecil, dan tajam di
+    // zoom berapa pun.
     // ============================================================
-    // Konfigurasi html2pdf yang stabil untuk 10 halaman
-    function _getPdfOptions(filename) {
-      return {
-        margin:      [0, 0, 0, 0],
-        filename:    filename,
-        image:       { type: 'jpeg', quality: 0.95 },
-        html2canvas: {
-          scale:           2,
-          useCORS:         true,
-          letterRendering: true,
-          logging:         false
-        },
-        jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        // 'after' memaksa page-break tepat setelah setiap div.page
-        pagebreak:   { mode: 'css', after: '.page' }
-      };
+    const PDF_MARGIN = 25.4;           // sama seperti margin dokumen Word (1 inci)
+    const PDF_PAGE_W = 210;
+    const PDF_PAGE_H = 297;
+    const PDF_CONTENT_W = PDF_PAGE_W - PDF_MARGIN * 2;
+    const PDF_COLOR_PT = [0, 112, 192];   // #0070C0 biru — sama seperti warna karakter plaintext
+    const PDF_COLOR_KEY = [0, 176, 80];   // #00B050 hijau — sama seperti warna karakter kunci
+    const PDF_COLOR_BLACK = [0, 0, 0];
+
+    function buildVectorReportPDF(nama, nim) {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+
+      let y = PDF_MARGIN;
+
+      // ---------- HEADER / FOOTER tiap halaman ----------
+      function drawHeaderFooter(pageNum) {
+        doc.setFont('helvetica', 'bolditalic');
+        doc.setFontSize(9);
+        doc.setTextColor(...PDF_COLOR_BLACK);
+        doc.text('STIK3051 – Keamanan Informasi', PDF_MARGIN, 15);
+        doc.text('CBL-1: Penerapan dan Analisis Enkripsi dan Dekripsi Informasi menggunakan Algoritma DES', PDF_MARGIN, 19);
+        doc.text(String(pageNum), PDF_PAGE_W - PDF_MARGIN, 15, { align: 'right' });
+        doc.text('Program Studi Teknik Komputer -  DTEK – FT – USK', PDF_MARGIN, PDF_PAGE_H - 16);
+        doc.text('Copyright: yuliar@usk.ac.id', PDF_MARGIN, PDF_PAGE_H - 12);
+      }
+
+      let pageNum = 1;
+      drawHeaderFooter(pageNum);
+
+      function newPage() {
+        doc.addPage();
+        pageNum++;
+        drawHeaderFooter(pageNum);
+        y = PDF_MARGIN + 22; // beri ruang di bawah header
+        return y;
+      }
+
+      // ---------- helper teks ----------
+      function bodyText(str, x, yy, opts = {}) {
+        doc.setFont(opts.font || 'times', opts.style || 'normal');
+        doc.setFontSize(opts.size || 10.5);
+        doc.setTextColor(...(opts.color || PDF_COLOR_BLACK));
+        doc.text(str, x, yy, opts.align ? { align: opts.align } : undefined);
+      }
+
+      function centeredBlock(lines, yy, opts = {}) {
+        const size = opts.size || 12.5;
+        const gap = opts.gap || 5.2;
+        doc.setFont('times', opts.style || 'bold');
+        doc.setFontSize(size);
+        doc.setTextColor(...PDF_COLOR_BLACK);
+        lines.forEach((line, i) => {
+          if (line) doc.text(line, PDF_PAGE_W / 2, yy + i * gap, { align: 'center' });
+        });
+        return yy + lines.length * gap;
+      }
+
+      // Paragraf bernomor dengan hanging indent, mis: " 1. Kelompok Anda ..."
+      function numberedParagraph(num, text, yy) {
+        const full = `${num}. ${text}`;
+        const wrapped = doc.splitTextToSize(full, PDF_CONTENT_W - 5);
+        doc.setFont('times', 'normal'); doc.setFontSize(10.5); doc.setTextColor(...PDF_COLOR_BLACK);
+        wrapped.forEach((line, i) => {
+          doc.text(line, i === 0 ? PDF_MARGIN : PDF_MARGIN + 5, yy + i * 4.6);
+        });
+        return yy + wrapped.length * 4.6;
+      }
+
+      function wrappedText(text, yy, indent = 0) {
+        const wrapped = doc.splitTextToSize(text, PDF_CONTENT_W - indent);
+        doc.setFont('times', 'normal'); doc.setFontSize(10.5); doc.setTextColor(...PDF_COLOR_BLACK);
+        wrapped.forEach((line, i) => doc.text(line, PDF_MARGIN + indent, yy + i * 4.6));
+        return yy + wrapped.length * 4.6;
+      }
+
+      // ---------- helper tabel (AutoTable = vektor, bukan gambar) ----------
+      const TBL_STYLE = { font: 'helvetica', fontSize: 8, halign: 'center', valign: 'middle', cellPadding: 1, minCellHeight: 6, lineColor: PDF_COLOR_BLACK, lineWidth: 0.15, textColor: PDF_COLOR_BLACK };
+      const TBL_HEAD = { fillColor: 255, textColor: PDF_COLOR_BLACK, fontStyle: 'normal', fontSize: 8 };
+
+      function asciiTable(chars, isPt, x, yy) {
+        doc.autoTable({
+          startY: yy, margin: { left: x }, tableWidth: 8 * 9.5,
+          head: [[1, 2, 3, 4, 5, 6, 7, 8]],
+          body: [chars.map(c => c || '')],
+          theme: 'grid', styles: { ...TBL_STYLE }, headStyles: TBL_HEAD,
+          columnStyles: Object.fromEntries([...Array(8)].map((_, i) => [i, { cellWidth: 9.5 }])),
+          bodyStyles: { textColor: isPt ? PDF_COLOR_PT : PDF_COLOR_KEY, fontStyle: 'bold' }
+        });
+        return doc.lastAutoTable.finalY;
+      }
+
+      function hexTable(chars, hexArr, isPt, x, yy) {
+        const color = isPt ? PDF_COLOR_PT : PDF_COLOR_KEY;
+        const row1 = chars.map(c => ({ content: c || '', colSpan: 2, styles: { textColor: color, fontStyle: 'bold' } }));
+        doc.autoTable({
+          startY: yy, margin: { left: x }, tableWidth: PDF_CONTENT_W,
+          head: [[...Array(16)].map((_, i) => i + 1)],
+          body: [row1, hexArr],
+          theme: 'grid', styles: { ...TBL_STYLE }, headStyles: TBL_HEAD
+        });
+        return doc.lastAutoTable.finalY;
+      }
+
+      function bitTable(startIdx, charArr2, valuesArr16, isPt, x, yy) {
+        const color = isPt ? PDF_COLOR_PT : PDF_COLOR_KEY;
+        const row1 = [
+          { content: charArr2[0] || '', colSpan: 8, styles: { textColor: color, fontStyle: 'bold' } },
+          { content: charArr2[1] || '', colSpan: 8, styles: { textColor: color, fontStyle: 'bold' } }
+        ];
+        doc.autoTable({
+          startY: yy, margin: { left: x }, tableWidth: PDF_CONTENT_W,
+          head: [[...Array(16)].map((_, i) => startIdx + i)],
+          body: [row1, valuesArr16],
+          theme: 'grid', styles: { ...TBL_STYLE }, headStyles: TBL_HEAD
+        });
+        return doc.lastAutoTable.finalY;
+      }
+
+      function multiBlockTable(indices, values, blockSize, x, yy) {
+        let curY = yy;
+        const nBlocks = Math.ceil(indices.length / blockSize);
+        for (let b = 0; b < nBlocks; b++) {
+          const idxChunk = indices.slice(b * blockSize, (b + 1) * blockSize);
+          const valChunk = values.slice(b * blockSize, (b + 1) * blockSize);
+          doc.autoTable({
+            startY: curY, margin: { left: x }, tableWidth: idxChunk.length * 8,
+            head: [idxChunk], body: [valChunk],
+            theme: 'grid',
+            styles: { ...TBL_STYLE, fontSize: 7.5, cellPadding: 0.8, minCellHeight: 5.5 },
+            headStyles: { ...TBL_HEAD, fontSize: 7.5 },
+            columnStyles: Object.fromEntries(idxChunk.map((_, i) => [i, { cellWidth: 8 }]))
+          });
+          curY = doc.lastAutoTable.finalY + 2;
+        }
+        return curY;
+      }
+
+      function xorTable(label, val1, val2, xorVal, l1, l2, x, yy) {
+        bodyText(label, x, yy, { size: 10.5 });
+        const rowStyle = { fontStyle: 'bold', halign: 'left' };
+        doc.autoTable({
+          startY: yy + 2, margin: { left: x + 6 }, tableWidth: 14 + 16 * 8,
+          head: [], body: [
+            [{ content: l1, styles: rowStyle }, ...val1],
+            [{ content: l2, styles: rowStyle }, ...val2],
+            [{ content: 'XOR', styles: rowStyle }, ...xorVal]
+          ],
+          theme: 'grid', styles: { ...TBL_STYLE },
+          columnStyles: { 0: { cellWidth: 14, halign: 'left' } }
+        });
+        return doc.lastAutoTable.finalY + 3;
+      }
+
+      function hexTableCipher(hexStr, x, yy) {
+        const hexArr = (hexStr || '').replace(/\s/g, '').split('');
+        doc.autoTable({
+          startY: yy, margin: { left: x }, tableWidth: PDF_CONTENT_W,
+          head: [[...Array(16)].map((_, i) => i + 1)],
+          body: [hexArr],
+          theme: 'grid', styles: { ...TBL_STYLE }, headStyles: TBL_HEAD
+        });
+        return doc.lastAutoTable.finalY;
+      }
+
+      // ============================================================
+      // DATA
+      // ============================================================
+      const ptStr = computedInput.plaintext || '        ';
+      const keyStr = computedInput.key || '        ';
+      const ptChars = Array.from(ptStr);
+      const keyChars = Array.from(keyStr);
+      const analisaText = document.getElementById('analisaMahasiswa') ? document.getElementById('analisaMahasiswa').value : '';
+      const nimLines = nim.split('\n').filter(l => l.trim().length > 0);
+
+      const inputKeyIndices = [], inputKeyValues = [];
+      for (let i = 0; i < 64; i++) {
+        if ((i + 1) % 8 !== 0) { inputKeyIndices.push(i + 1); inputKeyValues.push(GT.keyBin ? GT.keyBin[i] : ''); }
+      }
+      const pc1Indices = PC1_C.concat(PC1_D);
+      const shifted_C_indices = PC1_C.slice(1).concat(PC1_C[0]);
+      const shifted_D_indices = PC1_D.slice(1).concat(PC1_D[0]);
+
+      // ============================================================
+      // HALAMAN 1 — COVER
+      // ============================================================
+      y = PDF_MARGIN + 12;
+      y = centeredBlock(['STIK3051 – KEAMANAN INFORMASI', '', 'CBL-1', '',
+        'PENERAPAN DAN ANALISIS ENKRIPSI DAN DEKRIPSI INFORMASI', 'MENGGUNAKAN ALGORITMA DES'], y, { size: 13.5, gap: 6 });
+
+      // Logo vektor sederhana (emblem bundar) — pengganti logo asli.
+      // Ganti dengan doc.addImage(logoDataUrl,'PNG',x,y,w,h) jika ada file logo resmi USK.
+      const lcx = PDF_PAGE_W / 2, lcy = y + 24;
+      doc.setDrawColor(139, 105, 20); doc.setLineWidth(0.6);
+      doc.setFillColor(212, 160, 23);
+      doc.circle(lcx, lcy, 16, 'FD');
+      doc.setFillColor(139, 105, 20);
+      doc.circle(lcx, lcy, 5, 'F');
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(255, 255, 255);
+      doc.text('USK', lcx, lcy + 1.2, { align: 'center' });
+
+      y = lcy + 24;
+      doc.autoTable({
+        startY: y, margin: { left: PDF_MARGIN, right: PDF_MARGIN }, tableWidth: PDF_CONTENT_W,
+        theme: 'grid',
+        body: [
+          ['KELOMPOK', nama],
+          ['NAMA/NIM', (nimLines.length ? nimLines : ['']).map((l, i) => `${i + 1}. ${l}`).join('\n') || '1. \n2. \n3. \n4. \n5. '],
+          ['DOSEN PENGAMPU', 'Prof. Dr. Ir. Teuku Yuliar Arif, ST., M.Kom']
+        ],
+        styles: { font: 'times', fontSize: 11, cellPadding: 2.5, lineColor: PDF_COLOR_BLACK, lineWidth: 0.2, textColor: PDF_COLOR_BLACK, valign: 'top' },
+        columnStyles: { 0: { cellWidth: PDF_CONTENT_W * 0.35, fontStyle: 'normal' }, 1: { cellWidth: PDF_CONTENT_W * 0.65 } }
+      });
+
+      centeredBlock(['PROGRAM STUDI TEKNIK KOMPUTER', 'DEPARTEMEN TEKNIK ELEKTRO DAN KOMPUTER',
+        'FAKULTAS TEKNIK', 'UNIVERSITAS SYIAH KUALA', '2025'], 255, { size: 11.5, gap: 5 });
+
+      // ============================================================
+      // HALAMAN 2
+      // ============================================================
+      newPage();
+      y = centeredBlock(['CBL-1', 'Penerapan dan Analisis Enkripsi dan Dekripsi Informasi', 'menggunakan Algoritma DES'], y, { size: 13.5, gap: 6 });
+      y += 4;
+      bodyText('1.1 Penerapan input plaintext dan kunci pada proses enkripsi untuk menghasilkan ciphertext Ronde-1 pada algoritma DES.', PDF_MARGIN, y, { style: 'bold' });
+      y += 7;
+      bodyText('Lakukan langkah-langkah sebagai berikut:', PDF_MARGIN, y); y += 6;
+      y = numberedParagraph('1', 'Kelompok Anda diberikan informasi (plaintext) yang terdiri dari 8 karakter ASCII (ubah X menjadi nomor kelompok Anda).', y);
+      y += 6;
+      bodyText('Plaintext kelompok Anda (ASCII) :', PDF_MARGIN, y); y += 3;
+      y = asciiTable(ptChars, true, PDF_MARGIN, y) + 5;
+      bodyText('Plaintext kelompok Anda (Hexadecimal) :', PDF_MARGIN, y); y += 3;
+      y = hexTable(ptChars, GT.ptHex || [], true, PDF_MARGIN, y) + 5;
+      bodyText('Plaintext kelompok Anda (bit) :', PDF_MARGIN, y); y += 3;
+      y = bitTable(1, ptChars.slice(0, 2), (GT.ptBin || []).slice(0, 16), true, PDF_MARGIN, y) + 2;
+      y = bitTable(17, ptChars.slice(2, 4), (GT.ptBin || []).slice(16, 32), true, PDF_MARGIN, y) + 2;
+      y = bitTable(33, ptChars.slice(4, 6), (GT.ptBin || []).slice(32, 48), true, PDF_MARGIN, y) + 2;
+      y = bitTable(49, ptChars.slice(6, 8), (GT.ptBin || []).slice(48, 64), true, PDF_MARGIN, y) + 6;
+      y = numberedParagraph('2', 'Plaintext Kelompok anda tersebut akan dienkrip menggunakan algoritma DES. Untuk mengenkrip plaintext tersebut, Kelompok Anda diberikan kunci (key) rahasia yang terdiri dari 8 karakter ASCII (ubah X menjadi nomor kelompok Anda).', y);
+      y += 6;
+      bodyText('Kunci rahasia kelompok Anda (ASCII) :', PDF_MARGIN, y); y += 3;
+      asciiTable(keyChars, false, PDF_MARGIN, y);
+
+      // ============================================================
+      // HALAMAN 3
+      // ============================================================
+      newPage();
+      bodyText('Kunci rahasia kelompok Anda (Hexadecimal) :', PDF_MARGIN, y); y += 3;
+      y = hexTable(keyChars, GT.keyHex || [], false, PDF_MARGIN, y) + 5;
+      bodyText('Kunci rahasia kelompok Anda (bit) :', PDF_MARGIN, y); y += 3;
+      y = bitTable(1, keyChars.slice(0, 2), (GT.keyBin || []).slice(0, 16), false, PDF_MARGIN, y) + 2;
+      y = bitTable(17, keyChars.slice(2, 4), (GT.keyBin || []).slice(16, 32), false, PDF_MARGIN, y) + 2;
+      y = bitTable(33, keyChars.slice(4, 6), (GT.keyBin || []).slice(32, 48), false, PDF_MARGIN, y) + 2;
+      y = bitTable(49, keyChars.slice(6, 8), (GT.keyBin || []).slice(48, 64), false, PDF_MARGIN, y) + 6;
+      y = numberedParagraph('3', 'Lakukan proses enkripsi plaintext kelompok anda menggunakan algoritma DES dengan menggunakan table permutasi, subsitusi, XOR dan lain-lain yang telah disediakan dibawah untuk mendapatkan ciphertext Ronde-1 kelompok anda.', y);
+      y += 6;
+      bodyText('Initial Permutation (IP) :', PDF_MARGIN, y, { style: 'bold' }); y += 4;
+      multiBlockTable(IP_TABLE.slice(0, 48), (GT.ip || []).slice(0, 48), 8, PDF_MARGIN + 5, y);
+
+      // ============================================================
+      // HALAMAN 4
+      // ============================================================
+      newPage();
+      y = multiBlockTable(IP_TABLE.slice(48, 64), (GT.ip || []).slice(48, 64), 8, PDF_MARGIN + 5, y) + 4;
+      bodyText('Hasil split 32-bit sebelah kiri:', PDF_MARGIN, y, { style: 'bold' }); y += 4;
+      y = multiBlockTable(Array.from({ length: 32 }, (_, i) => i + 1), GT.L0 || [], 16, PDF_MARGIN, y) + 4;
+      bodyText('Hasil spit 32-bit sebelah kanan:', PDF_MARGIN, y, { style: 'bold' }); y += 4;
+      y = multiBlockTable(Array.from({ length: 32 }, (_, i) => i + 1), GT.R0 || [], 16, PDF_MARGIN, y) + 4;
+      bodyText('Expansion Permutation (E) :', PDF_MARGIN, y, { style: 'bold' }); y += 4;
+      multiBlockTable(E_TABLE.slice(0, 42), (GT.ER0 || []).slice(0, 42), 6, PDF_MARGIN + 5, y);
+
+      // ============================================================
+      // HALAMAN 5
+      // ============================================================
+      newPage();
+      y = multiBlockTable(E_TABLE.slice(42, 48), (GT.ER0 || []).slice(42, 48), 6, PDF_MARGIN + 5, y) + 4;
+      bodyText('Input Key :', PDF_MARGIN, y, { style: 'bold' }); y += 4;
+      y = multiBlockTable(inputKeyIndices, inputKeyValues, 14, PDF_MARGIN, y) + 4;
+      bodyText('Permuted Choice One (PC-1):', PDF_MARGIN, y, { style: 'bold' }); y += 4;
+      multiBlockTable(pc1Indices, (GT.C0 || []).concat(GT.D0 || []), 8, PDF_MARGIN + 5, y);
+
+      // ============================================================
+      // HALAMAN 6
+      // ============================================================
+      newPage();
+      bodyText('Left shift(s) 28 bit sebelah kiri, 1-bit ke kiri :', PDF_MARGIN, y, { style: 'bold' }); y += 4;
+      y = multiBlockTable(shifted_C_indices, GT.C1 || [], 14, PDF_MARGIN + 5, y) + 4;
+      bodyText('Left shift(s) 28 bit sebelah kanan, 1-bit ke kiri :', PDF_MARGIN, y, { style: 'bold' }); y += 4;
+      y = multiBlockTable(shifted_D_indices, GT.D1 || [], 14, PDF_MARGIN + 5, y) + 4;
+      bodyText('Hasil penggabungan Left shift(s) 28 bit sebelah kiri dan 28 bit sebelah kanan :', PDF_MARGIN, y, { style: 'bold' }); y += 4;
+      multiBlockTable(Array.from({ length: 56 }, (_, i) => i + 1), (GT.C1 || []).concat(GT.D1 || []), 14, PDF_MARGIN, y);
+
+      // ============================================================
+      // HALAMAN 7
+      // ============================================================
+      newPage();
+      bodyText('Permuted Choice Two (PC-2):', PDF_MARGIN, y, { style: 'bold' }); y += 4;
+      y = multiBlockTable(PC2_TABLE, GT.K1 || [], 8, PDF_MARGIN + 5, y) + 4;
+      bodyText('XOR antara hasil Expansion Permutation dan Kunci Ronde-1:', PDF_MARGIN, y, { style: 'bold' }); y += 5;
+      y = xorTable('16-bit yang pertama:', (GT.ER0 || []).slice(0, 16), (GT.K1 || []).slice(0, 16), (GT.xor1 || []).slice(0, 16), 'E', 'Key', PDF_MARGIN, y);
+      y = xorTable('16-bit yang kedua:', (GT.ER0 || []).slice(16, 32), (GT.K1 || []).slice(16, 32), (GT.xor1 || []).slice(16, 32), 'E', 'Key', PDF_MARGIN, y);
+      xorTable('16-bit yang ketiga:', (GT.ER0 || []).slice(32, 48), (GT.K1 || []).slice(32, 48), (GT.xor1 || []).slice(32, 48), 'E', 'Key', PDF_MARGIN, y);
+
+      // ============================================================
+      // HALAMAN 8
+      // ============================================================
+      newPage();
+      bodyText('S-Box', PDF_MARGIN, y, { style: 'bold' }); y += 6;
+      const nth = ['pertama', 'ke-dua', 'ke-tiga', 'ke-empat', 'ke-lima', 'ke-enam', 'ke-tujuh', 'ke-delapan'];
+      for (let s = 0; s < 8; s++) {
+        const row = GT.sboxRowArr ? GT.sboxRowArr[s] : '';
+        const col = GT.sboxColArr ? GT.sboxColArr[s] : '';
+        const out = GT.sboxOutBits ? GT.sboxOutBits.slice(s * 4, s * 4 + 4).join('') : '';
+        bodyText(`Bagian 6-bit yang ${nth[s]} :`, PDF_MARGIN, y); y += 4.4;
+        bodyText(`Indek baris     : = ${row}`, PDF_MARGIN + 6, y); y += 4.2;
+        bodyText(`Indek kolom    : = ${col}`, PDF_MARGIN + 6, y); y += 4.2;
+        bodyText(`4-bit Output S${s + 1} : = ${out}`, PDF_MARGIN + 6, y); y += 5.5;
+      }
+      y += 2;
+      bodyText('Total 32-bit output Boks Subsitusi Ronde-1:', PDF_MARGIN, y, { style: 'bold' }); y += 4;
+      multiBlockTable(Array.from({ length: 32 }, (_, i) => i + 1), GT.sboxOutBits || [], 16, PDF_MARGIN, y);
+
+      // ============================================================
+      // HALAMAN 9
+      // ============================================================
+      newPage();
+      bodyText('Permutation Function (P):', PDF_MARGIN, y, { style: 'bold' }); y += 4;
+      y = multiBlockTable(P_TABLE, GT.pbox || [], 8, PDF_MARGIN + 5, y) + 4;
+      y = wrappedText('XOR 32-bit hasil Permutation Function (P) dengan hasil split 32-bit sebelah kiri (pada Langkah awal):', y);
+      y += 3;
+      y = xorTable('16-bit yang pertama:', (GT.pbox || []).slice(0, 16), (GT.L0 || []).slice(0, 16), (GT.R1 || []).slice(0, 16), 'P1', 'S1', PDF_MARGIN, y);
+      y = xorTable('16-bit yang kedua:', (GT.pbox || []).slice(16, 32), (GT.L0 || []).slice(16, 32), (GT.R1 || []).slice(16, 32), 'P2', 'S2', PDF_MARGIN, y);
+      y = wrappedText('Penggabungan 32-bit bagian sebelah kanan hasil split 32-bit pada Langkah awal dengan 32-bit hasil XOR 32-bit untuk mendapatkan ciphertext rounde-1 Kelompok Anda:', y);
+      y += 2;
+      y = multiBlockTable(Array.from({ length: 64 }, (_, i) => i + 1), (GT.R0 || []).concat(GT.R1 || []), 16, PDF_MARGIN, y) + 6;
+      y = numberedParagraph('4', 'Tuliskan ciphertext Ronde-1 kelompok anda (Hexadecimal):', y);
+      y += 3;
+      hexTableCipher(GT.finalHex, PDF_MARGIN, y);
+
+      // ============================================================
+      // HALAMAN 10 — Analisis (panjang teks bisa bervariasi → auto lanjut halaman)
+      // ============================================================
+      newPage();
+      doc.setFont('times', 'bold'); doc.setFontSize(10.5); doc.setTextColor(...PDF_COLOR_BLACK);
+      const headingWrapped = doc.splitTextToSize('1.2 Analisis penerapan input plaintext dan kunci pada proses enkripsi untuk menghasilkan ciphertext Ronde-1 pada algoritma DES.', PDF_CONTENT_W);
+      headingWrapped.forEach((line, i) => doc.text(line, PDF_MARGIN, y + i * 4.6));
+      y += headingWrapped.length * 4.6 + 3;
+      y = wrappedText('Buatkan analisis berdasarkan penerapan input plaintext dan kunci pada proses enkripsi untuk menghasilkan ciphertext Ronde-1 pada algoritma DES diatas:', y);
+      y += 4;
+
+      const boxLines = doc.splitTextToSize(analisaText || '', PDF_CONTENT_W - 6);
+      const lineH = 4.6;
+      const bottomLimit = PDF_PAGE_H - PDF_MARGIN;
+      let boxTop = y;
+      let cursor = y + 5;
+      let i = 0;
+      doc.setFont('times', 'normal'); doc.setFontSize(10.5); doc.setTextColor(...PDF_COLOR_BLACK);
+      while (i < boxLines.length || i === 0) {
+        while (i < boxLines.length && cursor < bottomLimit - 6) {
+          doc.text(boxLines[i], PDF_MARGIN + 3, cursor);
+          cursor += lineH; i++;
+        }
+        // Kotak border minimal 600px (~120mm) tinggi seperti aslinya, atau mengikuti isi jika lebih panjang
+        const minBottom = Math.min(boxTop + 130, bottomLimit);
+        doc.setDrawColor(...PDF_COLOR_BLACK); doc.setLineWidth(0.25);
+        doc.rect(PDF_MARGIN, boxTop, PDF_CONTENT_W, Math.max(cursor + 3, minBottom) - boxTop);
+        if (i < boxLines.length) {
+          newPage();
+          boxTop = y; cursor = y + 5;
+        } else break;
+      }
+
+      return doc;
     }
 
     async function submitReport() {
       const nama = document.getElementById('namaKelompok').value.trim();
-      const nim  = document.getElementById('namaNIM').value.trim();
+      const nim = document.getElementById('namaNIM').value.trim();
       if (!nama || !nim) { alert('Isi identitas kelompok terlebih dahulu!'); return; }
       if (!GT || !GT.ptBin) { alert('Selesaikan pengerjaan terlebih dahulu!'); return; }
 
       const filename = `Laporan_CBL1_${nama.replace(/[^a-z0-9]/gi, '_')}.pdf`;
 
-      showUploadOverlay('Sedang membuat PDF laporan... (mohon tunggu)');
+      // Guard: pastikan library jsPDF (dari CDN) benar-benar sudah termuat.
+      // Kalau belum, jangan lempar error mentah — beri pesan yang jelas.
+      if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF !== 'function') {
+        alert('⚠️ Library pembuat PDF (jsPDF) belum berhasil dimuat.\n\n' +
+          'Kemungkinan penyebab:\n' +
+          '- Koneksi internet Anda terputus/lambat saat halaman ini dibuka\n' +
+          '- CDN cdnjs.cloudflare.com diblokir oleh jaringan/firewall/ad-blocker\n\n' +
+          'Coba: refresh halaman ini (pastikan sampai selesai termuat), matikan ad-blocker untuk situs ini, atau coba jaringan internet lain, lalu ulangi.');
+        return;
+      }
+
+      showUploadOverlay('Sedang membuat PDF laporan (vektor)... (mohon tunggu)');
 
       try {
-        // Buat HTML laporan (forPdf=true: min-height dihapus, posisi absolute→relative)
-        const htmlContent = generateAcademicReportHTML(nama, nim, true);
+        // Bangun PDF vektor native langsung dengan jsPDF (tanpa screenshot DOM)
+        const doc = buildVectorReportPDF(nama, nim);
 
-        const opt = _getPdfOptions(filename);
-
-        // html2pdf().from(string) — html2pdf buat container-nya sendiri di body (VISIBLE),
-        // lalu html2canvas ambil screenshot, lalu hapus container. Ini cara yang benar.
         if (GOOGLE_SCRIPT_URL) {
           // === MODE: Download lokal + Upload ke Drive ===
-          const pdfBlob = await html2pdf().set(opt).from(htmlContent).output('blob');
+          const pdfBlob = doc.output('blob');
 
           // 2a. Simpan ke laptop user
           const blobUrl = URL.createObjectURL(pdfBlob);
@@ -2623,16 +3729,16 @@
           const base64data = await new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onloadend = () => resolve(reader.result);
-            reader.onerror  = reject;
+            reader.onerror = reject;
             reader.readAsDataURL(pdfBlob);
           });
 
           const payload = { nama, nim, filename, pdfBase64: base64data };
           try {
             const response = await fetch(GOOGLE_SCRIPT_URL, {
-              method:  'POST',
+              method: 'POST',
               headers: { 'Content-Type': 'text/plain' },
-              body:    JSON.stringify(payload)
+              body: JSON.stringify(payload)
             });
             const result = await response.json();
             if (result.ok) {
@@ -2652,7 +3758,7 @@
 
         } else {
           // === MODE: Hanya Download lokal ===
-          await html2pdf().set(opt).from(htmlContent).save();
+          doc.save(filename);
           showUploadOverlay('✅ PDF berhasil diunduh ke laptop Anda!', true);
         }
 
@@ -2689,14 +3795,14 @@
       const css = `
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Times New Roman',Times,serif;font-size:11pt;color:#000;background:#fff;line-height:1.5}
-.page{width:210mm;min-height:297mm;padding:15mm 20mm 15mm 20mm;background:#fff;position:relative;page-break-after:always;margin:0 auto}
+.page{width:210mm;min-height:297mm;padding:25.4mm;background:#fff;position:relative;page-break-after:always;margin:0 auto}
 .page:last-child{page-break-after:auto}
-.pg-header,.pg-footer{position:absolute;left:20mm;right:20mm;font-family:Arial,sans-serif;font-size:9pt}
+.pg-header,.pg-footer{position:absolute;left:25.4mm;right:25.4mm;font-family:Arial,sans-serif;font-size:9pt}
 .pg-header{top:12mm;display:flex;justify-content:space-between;align-items:flex-start;font-weight:bold}
 .pg-header-left{text-align:left;font-style:italic}
 .pg-footer{bottom:12mm;text-align:left}
 .pg-footer i{font-style:italic}
-.content{margin-top:20mm;margin-bottom:15mm}
+.content{margin-top:6mm;margin-bottom:6mm}
 .cover-title{text-align:center;font-weight:bold;font-size:14pt;margin-bottom:25px;line-height:1.3}
 .logo{width:140px;height:140px;display:block;margin:40px auto}
 .cover-table{width:100%;border-collapse:collapse;margin-top:30px;font-size:12pt}
@@ -2716,7 +3822,7 @@ h3{font-size:11pt;font-weight:bold;margin:15px 0 5px}
 .block-table-container .wk-table{margin-bottom:0;width:auto;min-width:300px}
 .sbox-row{margin-bottom:5px;font-family:'Times New Roman',Times,serif}
 .sbox-indent{margin-left:20px;font-family:'Times New Roman',Times,serif;line-height:1.3}
-.analysis-box{border:1px solid #000;width:100%;height:600px;margin-top:10px}
+.analysis-box{border:1px solid #000;width:100%;min-height:600px;margin-top:10px;overflow:visible;page-break-inside:avoid}
 .print-btn{position:fixed;top:12px;right:12px;background:#1e3a5f;color:#fff;border:none;padding:10px 22px;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer;z-index:999}
 .print-btn:hover{background:#2563eb}
 @media print{.print-btn{display:none!important}}
@@ -3046,15 +4152,16 @@ h3{font-size:11pt;font-weight:bold;margin:15px 0 5px}
   <div class="content">
     <div class="sec-hdr">1.2 Analisis penerapan input plaintext dan kunci pada proses enkripsi untuk menghasilkan ciphertext Ronde-1 pada algoritma DES.</div>
     <div>Buatkan analisis berdasarkan penerapan input plaintext dan kunci pada proses enkripsi untuk menghasilkan ciphertext Ronde-1 pada algoritma DES diatas:</div>
-    <div class="analysis-box" style="padding: 10px; box-sizing: border-box; white-space: pre-wrap;">\${escHtml(analisaText)}</div>
+    <div class="analysis-box" style="padding: 10px; box-sizing: border-box; white-space: pre-wrap;">${escHtml(analisaText)}</div>
   </div>
 </div>
 `;
 
-      // CSS override untuk mode PDF:
-      // - Hapus min-height agar tidak ada halaman kosong
-      // - Biarkan html2pdf yang handle page break via opsi 'after: .page'
-      // - Ubah elemen absolute ke relative agar tidak overflow
+      // Catatan: fungsi HTML ini sekarang HANYA dipakai untuk pratinjau di tab baru
+      // (generateAcademicReport/previewReport). PDF yang diunduh sudah tidak lagi
+      // dibuat dari HTML ini — PDF dibangun langsung sebagai vektor native oleh
+      // buildVectorReportPDF() (lihat submitReport()). Parameter forPdf tetap
+      // dipertahankan untuk kompatibilitas, meski saat ini selalu dipanggil false.
       let pdfOverride = '';
       if (forPdf) {
         pdfOverride = `<style>
@@ -3103,7 +4210,7 @@ h3{font-size:11pt;font-weight:bold;margin:15px 0 5px}
     // Fungsi preview terpisah — bisa dipanggil dari tombol "Preview" jika diperlukan
     function previewReport() {
       const nama = document.getElementById('namaKelompok').value.trim() || '[Preview]';
-      const nim  = document.getElementById('namaNIM').value.trim() || '[Preview]';
+      const nim = document.getElementById('namaNIM').value.trim() || '[Preview]';
       generateAcademicReport(nama, nim);
     }
 
