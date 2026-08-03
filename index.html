@@ -1782,6 +1782,10 @@
               <div class="bit-section-label">Plaintext – Hexadesimal (isi per karakter)</div>
               <div class="info-box">Ubah setiap karakter Plaintext ke nilai hexadesimal 2-digit (mis. 'M' → 4D)</div>
               <div class="hex-answer-grid" id="grid-pt-hex"></div>
+              <div class="btn-section">
+                <button class="btn btn-check" onclick="checkSubSection('1a')">🔍 Cek Plaintext – Hexadesimal</button>
+                <span class="feedback" id="fb-1a"></span>
+              </div>
             </div>
 
             <div class="sub-section">
@@ -1789,6 +1793,10 @@
               <div class="info-box">Ubah setiap karakter ke 8 bit biner (mis. 'M'=0x4D → 01001101)</div>
               <div class="bit-grid-wrapper">
                 <div class="bit-grid group-8" id="grid-pt-bin"></div>
+              </div>
+              <div class="btn-section">
+                <button class="btn btn-check" onclick="checkSubSection('1b')">🔍 Cek Plaintext – Biner 64-bit</button>
+                <span class="feedback" id="fb-1b"></span>
               </div>
             </div>
 
@@ -1798,6 +1806,10 @@
               <div class="bit-section-label">Kunci – Hexadesimal (isi per karakter)</div>
               <div class="info-box">Ubah setiap karakter Kunci ke nilai hexadesimal 2-digit</div>
               <div class="hex-answer-grid" id="grid-key-hex"></div>
+              <div class="btn-section">
+                <button class="btn btn-check" onclick="checkSubSection('1c')">🔍 Cek Kunci – Hexadesimal</button>
+                <span class="feedback" id="fb-1c"></span>
+              </div>
             </div>
 
             <div class="sub-section">
@@ -1806,10 +1818,13 @@
               <div class="bit-grid-wrapper">
                 <div class="bit-grid group-8" id="grid-key-bin"></div>
               </div>
+              <div class="btn-section">
+                <button class="btn btn-check" onclick="checkSubSection('1d')">🔍 Cek Kunci – Biner 64-bit</button>
+                <span class="feedback" id="fb-1d"></span>
+              </div>
             </div>
 
             <div class="btn-section">
-              <button class="btn btn-check" onclick="checkSection(1)">🔍 Cek Jawaban Bagian 1</button>
               <span class="feedback" id="fb-1"></span>
             </div>
           </div>
@@ -1879,6 +1894,10 @@
               <span class="row-label-inline">Biner:</span>
               <div class="bit-grid group-8" id="grid-l0"></div>
             </div>
+            <div class="btn-section">
+              <button class="btn btn-check" onclick="checkSubSection('3a')">🔍 Cek L₀ (32-bit)</button>
+              <span class="feedback" id="fb-3a"></span>
+            </div>
           </div>
 
           <div class="sub-section">
@@ -1887,10 +1906,13 @@
               <span class="row-label-inline">Biner:</span>
               <div class="bit-grid group-8" id="grid-r0"></div>
             </div>
+            <div class="btn-section">
+              <button class="btn btn-check" onclick="checkSubSection('3b')">🔍 Cek R₀ (32-bit)</button>
+              <span class="feedback" id="fb-3b"></span>
+            </div>
           </div>
 
           <div class="btn-section">
-            <button class="btn btn-check" onclick="checkSection(3)">🔍 Cek Jawaban Bagian 3</button>
             <span class="feedback" id="fb-3"></span>
           </div>
         </div>
@@ -1962,27 +1984,40 @@
               <span class="row-label-inline">Biner:</span>
               <div class="bit-grid group-8" id="grid-inputkey56"></div>
             </div>
+            <div class="btn-section">
+              <button class="btn btn-check" onclick="checkSubSection('5a')">🔍 Cek Langkah 5a (Input Key 56-bit)</button>
+              <span class="feedback" id="fb-5a"></span>
+            </div>
           </div>
 
           <hr class="section-divider">
 
           <!-- PC-1 -->
           <div class="sub-section">
-            <div class="bit-section-label">Langkah 5b: Hasil PC-1 (56-bit)</div>
+            <div class="bit-section-label">Langkah 5b: Hasil PC-1 Utuh (56-bit) & Pemisahan C₀, D₀</div>
             <div class="info-box">
               <strong>Tabel PC-1:</strong><br />
               C₀ (28-bit): {57,49,41,33,25,17,9, 1,58,50,42,34,26,18, 10,2,59,51,43,35,27, 19,11,3,60,52,44,36}<br />
               D₀ (28-bit): {63,55,47,39,31,23,15, 7,62,54,46,38,30,22, 14,6,61,53,45,37,29, 21,13,5,28,20,12,4}
             </div>
-            <div class="row-label" style="margin-bottom:6px;">C₀ (28 bit)</div>
+            <div class="row-label" style="margin-bottom:6px;">Hasil PC-1 Utuh (56 bit)</div>
+            <div class="bit-grid-wrapper">
+              <span class="row-label-inline">Biner:</span>
+              <div class="bit-grid group-8" id="grid-pc1-full"></div>
+            </div>
+            <div class="row-label" style="margin-top:12px; margin-bottom:6px;">Pemisahan C₀ (28 bit pertama)</div>
             <div class="bit-grid-wrapper">
               <span class="row-label-inline">Biner:</span>
               <div class="bit-grid group-4" id="grid-c0"></div>
             </div>
-            <div class="row-label" style="margin-top:12px; margin-bottom:6px;">D₀ (28 bit)</div>
+            <div class="row-label" style="margin-top:12px; margin-bottom:6px;">Pemisahan D₀ (28 bit terakhir)</div>
             <div class="bit-grid-wrapper">
               <span class="row-label-inline">Biner:</span>
               <div class="bit-grid group-4" id="grid-d0"></div>
+            </div>
+            <div class="btn-section">
+              <button class="btn btn-check" onclick="checkSubSection('5b')">🔍 Cek Langkah 5b (PC-1 Utuh & C₀, D₀)</button>
+              <span class="feedback" id="fb-5b"></span>
             </div>
           </div>
 
@@ -2004,6 +2039,10 @@
               <span class="row-label-inline">Biner:</span>
               <div class="bit-grid group-4" id="grid-d1"></div>
             </div>
+            <div class="btn-section">
+              <button class="btn btn-check" onclick="checkSubSection('5c')">🔍 Cek Langkah 5c (Left Shift C₁, D₁)</button>
+              <span class="feedback" id="fb-5c"></span>
+            </div>
           </div>
 
           <hr class="section-divider">
@@ -2020,10 +2059,13 @@
               <span class="row-label-inline">Biner:</span>
               <div class="bit-grid group-6" id="grid-k1"></div>
             </div>
+            <div class="btn-section">
+              <button class="btn btn-check" onclick="checkSubSection('5d')">🔍 Cek Langkah 5d (Hasil PC-2 / Key K₁)</button>
+              <span class="feedback" id="fb-5d"></span>
+            </div>
           </div>
 
           <div class="btn-section">
-            <button class="btn btn-check" onclick="checkSection(5)">🔍 Cek Jawaban Bagian 5</button>
             <span class="feedback" id="fb-5"></span>
           </div>
         </div>
@@ -2082,6 +2124,10 @@
           <div id="ref-xor1-display"></div>
 
           <div class="sbox-container" id="sbox-container"></div>
+          <div class="btn-section">
+            <button class="btn btn-check" onclick="checkSubSection('7a')">🔍 Cek Substitusi S-Box (S1–S8)</button>
+            <span class="feedback" id="fb-7a"></span>
+          </div>
 
           <!-- Gabungan Output S-Box -->
           <div class="sub-section" style="margin-top:20px;">
@@ -2091,10 +2137,13 @@
               <span class="row-label-inline">Biner:</span>
               <div class="bit-grid group-8" id="grid-sbox-out"></div>
             </div>
+            <div class="btn-section">
+              <button class="btn btn-check" onclick="checkSubSection('7b')">🔍 Cek Gabungan Output S-Box (32-bit)</button>
+              <span class="feedback" id="fb-7b"></span>
+            </div>
           </div>
 
           <div class="btn-section">
-            <button class="btn btn-check" onclick="checkSection(7)">🔍 Cek Jawaban Bagian 7</button>
             <span class="feedback" id="fb-7"></span>
           </div>
         </div>
@@ -2154,6 +2203,10 @@
             <div class="bit-section-label">R₁ = P(S) ⊕ L₀ (32 bit)</div>
             <!-- Tugas 4: XOR stack visual R1 -->
             <div id="r1-stack-area"></div>
+            <div class="btn-section">
+              <button class="btn btn-check" onclick="checkSubSection('9a')">🔍 Cek R₁ = P(S) ⊕ L₀</button>
+              <span class="feedback" id="fb-9a"></span>
+            </div>
           </div>
 
           <div class="sub-section" style="margin-top:16px;">
@@ -2162,10 +2215,13 @@
               <span class="row-label-inline">Biner:</span>
               <div class="bit-grid group-8" id="grid-l1"></div>
             </div>
+            <div class="btn-section">
+              <button class="btn btn-check" onclick="checkSubSection('9b')">🔍 Cek L₁ = R₀</button>
+              <span class="feedback" id="fb-9b"></span>
+            </div>
           </div>
 
           <div class="btn-section">
-            <button class="btn btn-check" onclick="checkSection(9)">🔍 Cek Jawaban Bagian 9</button>
             <span class="feedback" id="fb-9"></span>
           </div>
         </div>
@@ -2237,6 +2293,10 @@
               <span class="row-label-inline">Biner:</span>
               <div class="bit-grid group-8" id="grid-swap6416"></div>
             </div>
+            <div class="btn-section">
+              <button class="btn btn-check" onclick="checkSubSection('11a')">🔍 Cek 64-bit Swap (R₁₆ ‖ L₁₆)</button>
+              <span class="feedback" id="fb-11a"></span>
+            </div>
           </div>
 
           <div class="sub-section" style="margin-top:14px;">
@@ -2244,6 +2304,10 @@
             <div class="bit-grid-wrapper">
               <span class="row-label-inline">Biner:</span>
               <div class="bit-grid group-8" id="grid-ipm1-16"></div>
+            </div>
+            <div class="btn-section">
+              <button class="btn btn-check" onclick="checkSubSection('11b')">🔍 Cek Hasil IP⁻¹ (64-bit)</button>
+              <span class="feedback" id="fb-11b"></span>
             </div>
           </div>
 
@@ -2253,10 +2317,13 @@
               <span class="row-label-inline" style="padding-top: 0; height: 32px;">HEXA:</span>
               <div class="hex-answer-grid" id="grid-final-hex-16"></div>
             </div>
+            <div class="btn-section">
+              <button class="btn btn-check" onclick="checkSubSection('11c')">🔍 Cek Ciphertext Hexadesimal</button>
+              <span class="feedback" id="fb-11c"></span>
+            </div>
           </div>
 
           <div class="btn-section">
-            <button class="btn btn-check" onclick="checkSection(11)">🔍 Cek Jawaban Bagian 11</button>
             <span class="feedback" id="fb-11"></span>
           </div>
         </div>
@@ -2532,6 +2599,7 @@
         buildBitGrid('grid-r0', 32, 'r0', 'group-8');
         // TUGAS 2: Input Key 56-bit (penomoran urut sekuensial 1-56)
         buildBitGrid('grid-inputkey56', 56, 'inputkey56', 'group-8');
+        buildBitGrid('grid-pc1-full', 56, 'pc1full', 'group-8');
         buildBitGrid('grid-c0', 28, 'c0', 'group-4');
         buildBitGrid('grid-d0', 28, 'd0', 'group-4');
         buildBitGrid('grid-c1', 28, 'c1', 'group-4');
@@ -2555,7 +2623,7 @@
         buildBitGrid('grid-ipm1-16', 64, 'ipm1-16', 'group-8');
         buildHexGrid('grid-final-hex-16', 16, 'final-hex-16');
         // Tugas 3: referensi
-        buildRefDisplay('ref-pt-bin-display', GT.ptBin, 8, 'ℹ️ Biner Plaintext (referensi untuk IP)');
+        buildRefDisplay('ref-pt-bin-display', GT.ptBin, 8, 'ℹ️ Biner Plaintext (bit input bagian IP)');
         buildRefDisplay('ref-key-bin-display', GT.keyBin, 8, 'ℹ️ Biner Kunci (referensi untuk PC-1)');
         buildRefDisplay('ref-xor1-display', GT.xor1, 6, 'ℹ️ Hasil XOR Bagian 6 (referensi untuk S-Box)');
 
@@ -2656,6 +2724,7 @@
       // Key Schedule
       const C0 = permute(keyBin, PC1_C);
       const D0 = permute(keyBin, PC1_D);
+      const pc1Full = [...C0, ...D0];
       const C1 = leftShift(C0, 1);
       const D1 = leftShift(D0, 1);
       const CD1 = [...C1, ...D1];
@@ -2752,7 +2821,7 @@
         ptBin, ptHex,
         keyBin, keyHex,
         ip, L0, R0,
-        C0, D0, C1, D1, K1, inputKey56,
+        pc1Full, C0, D0, C1, D1, K1, inputKey56,
         ER0, xor1,
         sboxInputGroups, sboxRowArr, sboxColArr, sboxOutBits,
         pbox,
@@ -2842,7 +2911,8 @@
 
     /**
      * TUGAS 1 – Grid HEX dengan baris ASCII di atasnya (Bagian 1).
-     * Render 8 kotak ASCII dan 16 kotak Hexa (1 karakter per kotak, 2 Hexa di bawah 1 ASCII).
+     * Render 8 kotak ASCII dan 16 kotak Hexa (1 karakter per kotak, 2 Hexa di bawah 1 ASCII),
+     * lengkap dengan nomor indeks (1-8 di atas ASCII, 1-16 di atas HEXA).
      */
     function buildHexGridWithASCII(containerId, count, idPrefix, sourceStr) {
       const container = document.getElementById(containerId);
@@ -2852,28 +2922,53 @@
 
       const asciiRow = document.createElement('div');
       asciiRow.className = 'ascii-row';
+      asciiRow.style.alignItems = 'flex-end';
       const asciiTag = document.createElement('span');
       asciiTag.className = 'row-tag';
       asciiTag.textContent = 'ASCII:';
+      asciiTag.style.marginBottom = '4px';
       asciiRow.appendChild(asciiTag);
       for (let i = 0; i < count; i++) {
+        const cell = document.createElement('div');
+        cell.style.display = 'flex';
+        cell.style.flexDirection = 'column';
+        cell.style.alignItems = 'center';
+
+        const idx = document.createElement('div');
+        idx.className = 'bit-index';
+        idx.textContent = i + 1;
+
         const box = document.createElement('input');
         box.type = 'text';
         box.readOnly = true;
         box.disabled = true;
         box.className = 'ascii-box';
         box.value = (sourceStr && sourceStr[i]) ? sourceStr[i] : '';
-        asciiRow.appendChild(box);
+
+        cell.appendChild(idx);
+        cell.appendChild(box);
+        asciiRow.appendChild(cell);
       }
       wrapper.appendChild(asciiRow);
 
       const hexRow = document.createElement('div');
       hexRow.className = 'hex-row';
+      hexRow.style.alignItems = 'flex-end';
       const hexTag = document.createElement('span');
       hexTag.className = 'row-tag';
       hexTag.textContent = 'HEXA:';
+      hexTag.style.marginBottom = '4px';
       hexRow.appendChild(hexTag);
       for (let i = 0; i < count * 2; i++) {
+        const cell = document.createElement('div');
+        cell.style.display = 'flex';
+        cell.style.flexDirection = 'column';
+        cell.style.alignItems = 'center';
+
+        const idx = document.createElement('div');
+        idx.className = 'bit-index';
+        idx.textContent = i + 1;
+
         const inp = document.createElement('input');
         inp.type = 'text';
         inp.maxLength = 1;
@@ -2902,14 +2997,17 @@
             if (prev) { prev.focus(); prev.select(); }
           }
         });
-        hexRow.appendChild(inp);
+        cell.appendChild(idx);
+        cell.appendChild(inp);
+        hexRow.appendChild(cell);
       }
       wrapper.appendChild(hexRow);
       container.appendChild(wrapper);
     }
 
     /**
-     * TUGAS 1 & TUGAS 2 – Kelompok HEX di atas 4 Bit dengan label 'HEXA:' dan 'BINER:' di samping kiri.
+     * TUGAS 1 & TUGAS 2 – Kelompok HEX di atas 4 Bit dengan label 'HEXA:' dan 'BINER:' di samping kiri,
+     * serta nomor indeks (1-16) di atas kotak Hexa biru (.hex-slot).
      */
     function buildBitGridWithHex(containerId, count, idPrefix, groupClass, hexSource) {
       const container = document.getElementById(containerId);
@@ -2923,6 +3021,8 @@
       const labelHex = document.createElement('span');
       labelHex.className = 'row-tag-hex';
       labelHex.textContent = 'HEXA:';
+      labelHex.style.paddingTop = '13px';
+      labelHex.style.height = '35px';
 
       const labelBin = document.createElement('span');
       labelBin.className = 'row-tag-bin';
@@ -2940,6 +3040,12 @@
         const group = document.createElement('div');
         group.className = 'hex-bin-group';
 
+        const idxEl = document.createElement('div');
+        idxEl.className = 'bit-index';
+        idxEl.style.textAlign = 'center';
+        idxEl.textContent = g + 1;
+        group.appendChild(idxEl);
+
         // TUGAS 1: Kotak biru di-render KOSONG ("") di awal (Mencegah kebocoran jawaban)
         const hexSlot = document.createElement('div');
         hexSlot.className = 'hex-slot';
@@ -2954,9 +3060,9 @@
           const bitIdx = g * 4 + b;
           const cell = document.createElement('div');
           cell.className = 'bit-cell';
-          const idxEl = document.createElement('div');
-          idxEl.className = 'bit-index';
-          idxEl.textContent = bitIdx + 1;
+          const idxElBit = document.createElement('div');
+          idxElBit.className = 'bit-index';
+          idxElBit.textContent = bitIdx + 1;
           const inp = document.createElement('input');
           inp.type = 'text';
           inp.maxLength = 1;
@@ -2970,7 +3076,7 @@
           inp.addEventListener('keydown', (e) => {
             if (e.key === 'Backspace' && e.target.value === '') moveFocusPrev(e.target, idPrefix);
           });
-          cell.appendChild(idxEl);
+          cell.appendChild(idxElBit);
           cell.appendChild(inp);
           bitsRow.appendChild(cell);
         }
@@ -3310,9 +3416,11 @@
         if (badge) { badge.textContent = i; badge.classList.remove('done-badge'); }
         const lock = document.getElementById(`lock-${i}`);
         if (lock) lock.textContent = '🔒';
-        const fb = document.getElementById(`fb-${i}`);
-        if (fb) { fb.className = 'feedback'; fb.textContent = ''; }
       }
+      document.querySelectorAll('.feedback').forEach(fb => {
+        fb.className = 'feedback';
+        fb.textContent = '';
+      });
       document.getElementById('convSection').style.display = 'none';
       document.getElementById('convDivider').style.display = 'none';
       document.getElementById('resultBox').classList.remove('show');
@@ -3343,6 +3451,7 @@
       buildBitGrid('grid-r0', 32, 'r0', 'group-8');
       // TUGAS 2: Input Key 56-bit (penomoran urut sekuensial 1-56)
       buildBitGrid('grid-inputkey56', 56, 'inputkey56', 'group-8');
+      buildBitGrid('grid-pc1-full', 56, 'pc1full', 'group-8');
       // Tugas 2: PC-1 dengan indeks permutasi asli
       buildBitGrid('grid-c0', 28, 'c0', 'group-4');
       buildBitGrid('grid-d0', 28, 'd0', 'group-4');
@@ -3378,7 +3487,7 @@
       buildHexGrid('grid-final-hex-16', 16, 'final-hex-16');
 
       // Tugas 3: Tampilkan referensi nilai bit
-      buildRefDisplay('ref-pt-bin-display', GT.ptBin, 8, 'ℹ️ Biner Plaintext (referensi untuk IP)');
+      buildRefDisplay('ref-pt-bin-display', GT.ptBin, 8, 'ℹ️ Biner Plaintext (bit input bagian IP)');
       buildRefDisplay('ref-key-bin-display', GT.keyBin, 8, 'ℹ️ Biner Kunci (referensi untuk PC-1)');
       buildRefDisplay('ref-xor1-display', GT.xor1, 6, 'ℹ️ Hasil XOR Bagian 6 (referensi untuk S-Box)');
 
@@ -3428,8 +3537,170 @@
     }
 
     // ============================================================
-    // CHECK SECTION LOGIC
+    // CHECK SECTION & SUB-SECTION LOGIC
     // ============================================================
+    function checkSubSection(subId) {
+      if (!GT || !GT.ptBin) { alert('Klik "Hitung & Mulai Pengerjaan" terlebih dahulu!'); return; }
+
+      let ok = false;
+
+      switch (subId) {
+        case '1a':
+          ok = validateHexGrid('pt-hex', GT.ptHex);
+          break;
+        case '1b':
+          ok = validateBitGrid('pt-bin', GT.ptBin);
+          break;
+        case '1c':
+          ok = validateHexGrid('key-hex', GT.keyHex);
+          break;
+        case '1d':
+          ok = validateBitGrid('key-bin', GT.keyBin);
+          break;
+        case '3a':
+          ok = validateBitGrid('l0', GT.L0);
+          break;
+        case '3b':
+          ok = validateBitGrid('r0', GT.R0);
+          break;
+        case '5a':
+          ok = validateBitGrid('inputkey56', GT.inputKey56);
+          break;
+        case '5b':
+          ok = validateBitGrid('pc1full', GT.pc1Full) &&
+            validateBitGrid('c0', GT.C0) &&
+            validateBitGrid('d0', GT.D0);
+          break;
+        case '5c':
+          ok = validateBitGrid('c1', GT.C1) &&
+            validateBitGrid('d1', GT.D1);
+          break;
+        case '5d':
+          ok = validateBitGrid('k1', GT.K1);
+          break;
+        case '7a':
+          ok = checkSBoxUnitsOnly();
+          break;
+        case '7b':
+          ok = validateBitGrid('sout', GT.sboxOutBits);
+          break;
+        case '9a':
+          ok = validateBitGrid('r1', GT.R1);
+          break;
+        case '9b':
+          ok = validateBitGrid('l1', GT.L1);
+          break;
+        case '11a':
+          ok = validateBitGrid('swap6416', GT.swap6416);
+          break;
+        case '11b':
+          ok = validateBitGrid('ipm1-16', GT.ipm1_16);
+          break;
+        case '11c':
+          ok = checkFinalHex16();
+          break;
+      }
+
+      showFeedback(subId, ok, ok ? 'Jawaban sub-bagian ini benar! ✓' : 'Ada jawaban yg salah, silahkan diulangi.');
+      if (ok) {
+        checkParentSectionComplete(subId);
+      }
+    }
+
+    function checkSBoxUnitsOnly() {
+      let allOk = true;
+      for (let s = 0; s < 8; s++) {
+        const inpIn = document.getElementById(`sbox-in-${s}`);
+        const inpRow = document.getElementById(`sbox-row-${s}`);
+        const inpCol = document.getElementById(`sbox-col-${s}`);
+        const inpOut = document.getElementById(`sbox-out-${s}`);
+
+        const expectedIn = GT.sboxInputGroups[s].join('');
+        const expectedRow = String(GT.sboxRowArr[s]);
+        const expectedCol = String(GT.sboxColArr[s]);
+        const expectedOut = GT.sboxOutBits.slice(s * 4, s * 4 + 4).join('');
+
+        const okIn = inpIn && inpIn.value.trim() === expectedIn;
+        const okRow = inpRow && inpRow.value.trim() === expectedRow;
+        const okCol = inpCol && inpCol.value.trim() === expectedCol;
+        const okOut = inpOut && inpOut.value.trim() === expectedOut;
+
+        if (!okIn || !okRow || !okCol || !okOut) allOk = false;
+      }
+      return allOk;
+    }
+
+    function checkFinalHex16() {
+      if (!GT || !GT.finalHex16) return false;
+      const hexArr = GT.finalHex16.split('');
+      let hexOk = true;
+      hexArr.forEach((ch, i) => {
+        const inp = document.getElementById(`final-hex-16_${i}`);
+        if (!inp) return;
+        const val = inp.value.trim().toUpperCase();
+        const ok = val === ch;
+        inp.classList.toggle('correct', ok);
+        if (!ok) hexOk = false;
+      });
+      return hexOk;
+    }
+
+    function checkParentSectionComplete(subId) {
+      const sectionNum = parseInt(subId);
+      if (isNaN(sectionNum)) return;
+
+      if (!sectionDone[sectionNum]) {
+        let allParentOk = false;
+        switch (sectionNum) {
+          case 1:
+            allParentOk = validateHexGrid('pt-hex', GT.ptHex) &&
+              validateBitGrid('pt-bin', GT.ptBin) &&
+              validateHexGrid('key-hex', GT.keyHex) &&
+              validateBitGrid('key-bin', GT.keyBin);
+            break;
+          case 3:
+            allParentOk = validateBitGrid('l0', GT.L0) && validateBitGrid('r0', GT.R0);
+            break;
+          case 5:
+            allParentOk = validateBitGrid('inputkey56', GT.inputKey56) &&
+              validateBitGrid('pc1full', GT.pc1Full) &&
+              validateBitGrid('c0', GT.C0) &&
+              validateBitGrid('d0', GT.D0) &&
+              validateBitGrid('c1', GT.C1) &&
+              validateBitGrid('d1', GT.D1) &&
+              validateBitGrid('k1', GT.K1);
+            break;
+          case 7:
+            allParentOk = checkSBoxUnitsOnly() && validateBitGrid('sout', GT.sboxOutBits);
+            break;
+          case 9:
+            allParentOk = validateBitGrid('r1', GT.R1) && validateBitGrid('l1', GT.L1);
+            break;
+          case 11:
+            allParentOk = validateBitGrid('swap6416', GT.swap6416) &&
+              validateBitGrid('ipm1-16', GT.ipm1_16) &&
+              checkFinalHex16();
+            break;
+        }
+
+        if (allParentOk) {
+          showFeedback(sectionNum, true, `Semua sub-bagian selesai dengan benar! Bagian ${sectionNum} selesai ✓`);
+          markSectionDone(sectionNum);
+
+          if (sectionNum === 1) {
+            const refPt = document.getElementById('ref-pt-bin-display');
+            if (refPt) refPt.classList.remove('d-none');
+          } else if (sectionNum === 3) {
+            const refKey = document.getElementById('ref-key-bin-display');
+            if (refKey) refKey.classList.remove('d-none');
+          }
+
+          const nextCard = document.getElementById(`card-s${sectionNum + 1}`);
+          if (nextCard) setTimeout(() => nextCard.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
+        }
+      }
+    }
+
     function checkSection(n) {
       if (!GT || !GT.ptBin) { alert('Klik "Hitung & Mulai Pengerjaan" terlebih dahulu!'); return; }
 
@@ -3453,6 +3724,7 @@
           break;
         case 5:
           ok = validateBitGrid('inputkey56', GT.inputKey56) &&
+            validateBitGrid('pc1full', GT.pc1Full) &&
             validateBitGrid('c0', GT.C0) &&
             validateBitGrid('d0', GT.D0) &&
             validateBitGrid('c1', GT.C1) &&
@@ -3480,7 +3752,6 @@
         showFeedback(n, true, 'Semua jawaban benar! Bagian ini selesai ✓');
         markSectionDone(n);
 
-        // TUGAS 2: Tampilkan referensi untuk section berikutnya
         if (n === 1) {
           const refPt = document.getElementById('ref-pt-bin-display');
           if (refPt) refPt.classList.remove('d-none');
@@ -3492,7 +3763,6 @@
           if (refXor1) refXor1.classList.remove('d-none');
         }
 
-        // Scroll to next section
         const nextCard = document.getElementById(`card-s${n + 1}`);
         if (nextCard) setTimeout(() => nextCard.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
       } else {
@@ -3501,30 +3771,9 @@
     }
 
     function checkSBoxSection() {
-      let allOk = true;
-      for (let s = 0; s < 8; s++) {
-        const inpIn = document.getElementById(`sbox-in-${s}`);
-        const inpRow = document.getElementById(`sbox-row-${s}`);
-        const inpCol = document.getElementById(`sbox-col-${s}`);
-        const inpOut = document.getElementById(`sbox-out-${s}`);
-
-        const expectedIn = GT.sboxInputGroups[s].join('');
-        const expectedRow = String(GT.sboxRowArr[s]);
-        const expectedCol = String(GT.sboxColArr[s]);
-        const expectedOut = GT.sboxOutBits.slice(s * 4, s * 4 + 4).join('');
-
-        const okIn = inpIn.value.trim() === expectedIn;
-        const okRow = inpRow.value.trim() === expectedRow;
-        const okCol = inpCol.value.trim() === expectedCol;
-        const okOut = inpOut.value.trim() === expectedOut;
-
-        if (!okIn || !okRow || !okCol || !okOut) allOk = false;
-      }
-
-      // Also check combined sbox output
+      let allOk = checkSBoxUnitsOnly();
       const sboxOutOk = validateBitGrid('sout', GT.sboxOutBits);
       if (!sboxOutOk) allOk = false;
-
       return allOk;
     }
 
@@ -4690,6 +4939,7 @@ h3{font-size:11pt;font-weight:bold;margin:15px 0 5px}
 
       // Section 5 (TUGAS 2: sekarang Key schedule) — TUGAS 3: + Input Key 56-bit
       adminFillBitGrid('inputkey56', GT.inputKey56, 56);
+      adminFillBitGrid('pc1full', GT.pc1Full, 56);
       adminFillBitGrid('c0', GT.C0, 28);
       adminFillBitGrid('d0', GT.D0, 28);
       adminFillBitGrid('c1', GT.C1, 28);
@@ -4772,6 +5022,7 @@ h3{font-size:11pt;font-weight:bold;margin:15px 0 5px}
         case 5:
           // TUGAS 2: sekarang Key Schedule — TUGAS 3: + Input Key 56-bit
           adminFillBitGrid('inputkey56', GT.inputKey56, 56);
+          adminFillBitGrid('pc1full', GT.pc1Full, 56);
           adminFillBitGrid('c0', GT.C0, 28);
           adminFillBitGrid('d0', GT.D0, 28);
           adminFillBitGrid('c1', GT.C1, 28);
@@ -4878,11 +5129,15 @@ h3{font-size:11pt;font-weight:bold;margin:15px 0 5px}
           <div class="ak-value">${chunkBits(GT.R0, 8)}</div>
         </div>
         <div class="ak-section">
-          <h4>Bagian 4 – C₀ (28-bit)</h4>
+          <h4>Bagian 5 – PC-1 Utuh (56-bit)</h4>
+          <div class="ak-value">${chunkBits(GT.pc1Full, 7)}</div>
+        </div>
+        <div class="ak-section">
+          <h4>Bagian 5 – C₀ (28-bit)</h4>
           <div class="ak-value">${chunkBits(GT.C0, 7)}</div>
         </div>
         <div class="ak-section">
-          <h4>Bagian 4 – D₀ (28-bit)</h4>
+          <h4>Bagian 5 – D₀ (28-bit)</h4>
           <div class="ak-value">${chunkBits(GT.D0, 7)}</div>
         </div>
         <div class="ak-section">
