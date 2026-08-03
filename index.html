@@ -241,6 +241,22 @@
       }
     }
 
+    /* Sub-section Sequential Locking */
+    .sub-section.locked-sub {
+      opacity: 0.5;
+      pointer-events: none;
+      filter: grayscale(0.6);
+      user-select: none;
+      transition: opacity 0.3s ease, filter 0.3s ease;
+    }
+
+    .sub-section.locked-sub input,
+    .sub-section.locked-sub button,
+    .sub-section.locked-sub select,
+    .sub-section.locked-sub textarea {
+      cursor: not-allowed !important;
+    }
+
     .form-group {
       display: flex;
       flex-direction: column;
@@ -1841,7 +1857,7 @@
 
           <!-- Konversi Plaintext -->
           <div id="convSection" style="display:none">
-            <div class="sub-section">
+            <div class="sub-section" id="sub-1a">
               <div class="bit-section-label">Plaintext – Hexadesimal (isi per karakter)</div>
               <div class="info-box">Ubah setiap karakter Plaintext ke nilai hexadesimal 2-digit (mis. 'M' → 4D)</div>
               <div class="hex-answer-grid" id="grid-pt-hex"></div>
@@ -1851,38 +1867,41 @@
               </div>
             </div>
 
-            <div class="sub-section">
+            <div class="sub-section locked-sub" id="sub-1b">
               <div class="bit-section-label">Plaintext – Biner 64-bit (isi per bit)</div>
               <div class="info-box">Ubah setiap karakter ke 8 bit biner (mis. 'M'=0x4D → 01001101)</div>
               <div class="bit-grid-wrapper">
                 <div class="bit-grid group-8" id="grid-pt-bin"></div>
               </div>
               <div class="btn-section">
-                <button class="btn btn-check" onclick="checkSubSection('1b')">🔍 Cek Plaintext – Biner 64-bit</button>
+                <button class="btn btn-check" onclick="checkSubSection('1b')" disabled>🔍 Cek Plaintext – Biner
+                  64-bit</button>
                 <span class="feedback" id="fb-1b"></span>
               </div>
             </div>
 
             <hr class="section-divider">
 
-            <div class="sub-section">
+            <div class="sub-section locked-sub" id="sub-1c">
               <div class="bit-section-label">Kunci – Hexadesimal (isi per karakter)</div>
               <div class="info-box">Ubah setiap karakter Kunci ke nilai hexadesimal 2-digit</div>
               <div class="hex-answer-grid" id="grid-key-hex"></div>
               <div class="btn-section">
-                <button class="btn btn-check" onclick="checkSubSection('1c')">🔍 Cek Kunci – Hexadesimal</button>
+                <button class="btn btn-check" onclick="checkSubSection('1c')" disabled>🔍 Cek Kunci –
+                  Hexadesimal</button>
                 <span class="feedback" id="fb-1c"></span>
               </div>
             </div>
 
-            <div class="sub-section">
+            <div class="sub-section locked-sub" id="sub-1d">
               <div class="bit-section-label">Kunci – Biner 64-bit (isi per bit)</div>
               <div class="info-box">Ubah setiap karakter kunci ke 8 bit biner</div>
               <div class="bit-grid-wrapper">
                 <div class="bit-grid group-8" id="grid-key-bin"></div>
               </div>
               <div class="btn-section">
-                <button class="btn btn-check" onclick="checkSubSection('1d')">🔍 Cek Kunci – Biner 64-bit</button>
+                <button class="btn btn-check" onclick="checkSubSection('1d')" disabled>🔍 Cek Kunci – Biner
+                  64-bit</button>
                 <span class="feedback" id="fb-1d"></span>
               </div>
             </div>
@@ -1951,7 +1970,7 @@
             Isi kolom berikut sesuai pembagian yang Anda hitung.
           </div>
 
-          <div class="sub-section">
+          <div class="sub-section" id="sub-3a">
             <div class="bit-section-label">L₀ (bit 1–32)</div>
             <div class="bit-grid-wrapper">
               <span class="row-label-inline">Biner:</span>
@@ -1963,14 +1982,14 @@
             </div>
           </div>
 
-          <div class="sub-section">
+          <div class="sub-section locked-sub" id="sub-3b">
             <div class="bit-section-label">R₀ (bit 33–64)</div>
             <div class="bit-grid-wrapper">
               <span class="row-label-inline">Biner:</span>
               <div class="bit-grid group-8" id="grid-r0"></div>
             </div>
             <div class="btn-section">
-              <button class="btn btn-check" onclick="checkSubSection('3b')">🔍 Cek R₀ (32-bit)</button>
+              <button class="btn btn-check" onclick="checkSubSection('3b')" disabled>🔍 Cek R₀ (32-bit)</button>
               <span class="feedback" id="fb-3b"></span>
             </div>
           </div>
@@ -2034,7 +2053,7 @@
           </p>
 
           <!-- TUGAS 3: Input Key 56-bit -->
-          <div class="sub-section">
+          <div class="sub-section" id="sub-5a">
             <div class="bit-section-label">Langkah 5a: Input Key 56-bit</div>
             <div class="info-box">
               Ini adalah representasi 56-bit dari kunci 64-bit awal — bit paritas (kelipatan 8: bit ke-8, 16, 24, ...,
@@ -2057,7 +2076,7 @@
           <hr class="section-divider">
 
           <!-- PC-1 -->
-          <div class="sub-section">
+          <div class="sub-section locked-sub" id="sub-5b">
             <div class="bit-section-label">Langkah 5b: Hasil PC-1 Utuh (56-bit) & Pemisahan C₀, D₀</div>
             <div class="info-box">
               <strong>Tabel PC-1:</strong><br />
@@ -2080,7 +2099,7 @@
               <div class="bit-grid group-4" id="grid-d0"></div>
             </div>
             <div class="btn-section">
-              <button class="btn btn-check" onclick="checkSubSection('5b')">🔍 Cek Langkah 5b (PC-1 Utuh & C₀,
+              <button class="btn btn-check" onclick="checkSubSection('5b')" disabled>🔍 Cek Langkah 5b (PC-1 Utuh & C₀,
                 D₀)</button>
               <span class="feedback" id="fb-5b"></span>
             </div>
@@ -2089,7 +2108,7 @@
           <hr class="section-divider">
 
           <!-- Shift -->
-          <div class="sub-section">
+          <div class="sub-section locked-sub" id="sub-5c">
             <div class="bit-section-label">Langkah 5c: Left Shift (Ronde 1 = 1 posisi)</div>
             <div class="info-box">
               Geser C₀ dan D₀ masing-masing 1 posisi ke kiri (circular). Hasilnya adalah C₁ dan D₁.
@@ -2105,7 +2124,7 @@
               <div class="bit-grid group-4" id="grid-d1"></div>
             </div>
             <div class="btn-section">
-              <button class="btn btn-check" onclick="checkSubSection('5c')">🔍 Cek Langkah 5c (Left Shift C₁,
+              <button class="btn btn-check" onclick="checkSubSection('5c')" disabled>🔍 Cek Langkah 5c (Left Shift C₁,
                 D₁)</button>
               <span class="feedback" id="fb-5c"></span>
             </div>
@@ -2114,7 +2133,7 @@
           <hr class="section-divider">
 
           <!-- PC-2 -->
-          <div class="sub-section">
+          <div class="sub-section locked-sub" id="sub-5d">
             <div class="bit-section-label">Langkah 5d: Hasil PC-2 – Round Key K₁ (48-bit)</div>
             <div class="info-box">
               <strong>Tabel PC-2:</strong> {14,17,11,24,1,5, 3,28,15,6,21,10, 23,19,12,4,26,8, 16,7,27,20,13,2,
@@ -2126,7 +2145,7 @@
               <div class="bit-grid group-6" id="grid-k1"></div>
             </div>
             <div class="btn-section">
-              <button class="btn btn-check" onclick="checkSubSection('5d')">🔍 Cek Langkah 5d (Hasil PC-2 / Key
+              <button class="btn btn-check" onclick="checkSubSection('5d')" disabled>🔍 Cek Langkah 5d (Hasil PC-2 / Key
                 K₁)</button>
               <span class="feedback" id="fb-5d"></span>
             </div>
@@ -2191,13 +2210,15 @@
           <div id="ref-xor1-display"></div>
 
           <div class="sbox-container" id="sbox-container"></div>
-          <div class="btn-section">
-            <button class="btn btn-check" onclick="checkSubSection('7a')">🔍 Cek Substitusi S-Box (S1–S8)</button>
-            <span class="feedback" id="fb-7a"></span>
+          <div class="sub-section" id="sub-7a">
+            <div class="btn-section">
+              <button class="btn btn-check" onclick="checkSubSection('7a')">🔍 Cek Substitusi S-Box (S1–S8)</button>
+              <span class="feedback" id="fb-7a"></span>
+            </div>
           </div>
 
           <!-- Gabungan Output S-Box -->
-          <div class="sub-section" style="margin-top:20px;">
+          <div class="sub-section locked-sub" id="sub-7b" style="margin-top:20px;">
             <div class="bit-section-label">Gabungan Output S-Box (32-bit)</div>
             <div class="info-box">Gabungkan seluruh output 4-bit dari S1–S8 menjadi 32-bit.</div>
             <div class="bit-grid-wrapper">
@@ -2205,7 +2226,7 @@
               <div class="bit-grid group-8" id="grid-sbox-out"></div>
             </div>
             <div class="btn-section">
-              <button class="btn btn-check" onclick="checkSubSection('7b')">🔍 Cek Gabungan Output S-Box
+              <button class="btn btn-check" onclick="checkSubSection('7b')" disabled>🔍 Cek Gabungan Output S-Box
                 (32-bit)</button>
               <span class="feedback" id="fb-7b"></span>
             </div>
@@ -2267,7 +2288,7 @@
             <em>L₁ = R₀</em> (tidak berubah). Bersama R₁, inilah output Ronde 1 DES (64-bit).
           </div>
 
-          <div class="sub-section">
+          <div class="sub-section" id="sub-9a">
             <div class="bit-section-label">R₁ = P(S) ⊕ L₀ (32 bit)</div>
             <!-- Tugas 4: XOR stack visual R1 -->
             <div id="r1-stack-area"></div>
@@ -2277,14 +2298,14 @@
             </div>
           </div>
 
-          <div class="sub-section" style="margin-top:16px;">
+          <div class="sub-section locked-sub" id="sub-9b" style="margin-top:16px;">
             <div class="bit-section-label">L₁ = R₀ (32 bit – salin dari R₀)</div>
             <div class="bit-grid-wrapper">
               <span class="row-label-inline">Biner:</span>
               <div class="bit-grid group-8" id="grid-l1"></div>
             </div>
             <div class="btn-section">
-              <button class="btn btn-check" onclick="checkSubSection('9b')">🔍 Cek L₁ = R₀</button>
+              <button class="btn btn-check" onclick="checkSubSection('9b')" disabled>🔍 Cek L₁ = R₀</button>
               <span class="feedback" id="fb-9b"></span>
             </div>
           </div>
@@ -2355,7 +2376,7 @@
             34,2,42,10,50,18,58,26, 33,1,41,9,49,17,57,25}
           </div>
 
-          <div class="sub-section">
+          <div class="sub-section" id="sub-11a">
             <div class="bit-section-label">Gabungan R₁₆ ‖ L₁₆ (64 bit, 32-bit Swap)</div>
             <div class="bit-grid-wrapper">
               <span class="row-label-inline">Biner:</span>
@@ -2367,26 +2388,28 @@
             </div>
           </div>
 
-          <div class="sub-section" style="margin-top:14px;">
+          <div class="sub-section locked-sub" id="sub-11b" style="margin-top:14px;">
             <div class="bit-section-label">Hasil IP⁻¹ – Ciphertext Akhir (64 bit)</div>
             <div class="bit-grid-wrapper">
               <span class="row-label-inline">Biner:</span>
               <div class="bit-grid group-8" id="grid-ipm1-16"></div>
             </div>
             <div class="btn-section">
-              <button class="btn btn-check" onclick="checkSubSection('11b')">🔍 Cek Hasil IP⁻¹ (64-bit)</button>
+              <button class="btn btn-check" onclick="checkSubSection('11b')" disabled>🔍 Cek Hasil IP⁻¹
+                (64-bit)</button>
               <span class="feedback" id="fb-11b"></span>
             </div>
           </div>
 
-          <div class="sub-section" style="margin-top:14px;">
+          <div class="sub-section locked-sub" id="sub-11c" style="margin-top:14px;">
             <div class="bit-section-label">Ciphertext Akhir dalam Hexadesimal (16 karakter)</div>
             <div class="bit-grid-wrapper">
               <span class="row-label-inline" style="padding-top: 0; height: 32px;">HEXA:</span>
               <div class="hex-answer-grid" id="grid-final-hex-16"></div>
             </div>
             <div class="btn-section">
-              <button class="btn btn-check" onclick="checkSubSection('11c')">🔍 Cek Ciphertext Hexadesimal</button>
+              <button class="btn btn-check" onclick="checkSubSection('11c')" disabled>🔍 Cek Ciphertext
+                Hexadesimal</button>
               <span class="feedback" id="fb-11c"></span>
             </div>
           </div>
@@ -2576,6 +2599,56 @@
       return str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase());
     }
 
+    // Sub-section Sequential Locking mapping
+    const SUB_SECTION_CHAINS = {
+      1: ['1a', '1b', '1c', '1d'],
+      3: ['3a', '3b'],
+      5: ['5a', '5b', '5c', '5d'],
+      7: ['7a', '7b'],
+      9: ['9a', '9b'],
+      11: ['11a', '11b', '11c']
+    };
+
+    let subSectionDone = {};
+
+    function setSubSectionState(subId, unlocked) {
+      const container = document.getElementById(`sub-${subId}`);
+      if (!container) return;
+      if (unlocked) {
+        container.classList.remove('locked-sub');
+        container.querySelectorAll('input, select, textarea, button').forEach(el => {
+          el.disabled = false;
+        });
+      } else {
+        container.classList.add('locked-sub');
+        container.querySelectorAll('input, select, textarea, button').forEach(el => {
+          el.disabled = true;
+        });
+      }
+    }
+
+    function updateCardSubSections(cardNum) {
+      const chain = SUB_SECTION_CHAINS[cardNum];
+      if (!chain) return;
+
+      const card = document.getElementById(`card-s${cardNum}`);
+      const isCardUnlocked = card && !card.classList.contains('locked');
+
+      for (let i = 0; i < chain.length; i++) {
+        const subId = chain[i];
+        if (!isCardUnlocked) {
+          setSubSectionState(subId, false);
+        } else {
+          if (i === 0) {
+            setSubSectionState(subId, true);
+          } else {
+            const prevDone = !!subSectionDone[chain[i - 1]];
+            setSubSectionState(subId, prevDone);
+          }
+        }
+      }
+    }
+
     function getMemberLines() {
       let lines = [];
       for (let i = 1; i <= 4; i++) {
@@ -2618,6 +2691,7 @@
         },
         plaintext: document.getElementById('inputPlaintext')?.value || '',
         key: document.getElementById('inputKey')?.value || '',
+        subSectionDone: subSectionDone || {},
         inputs: {}
       };
 
@@ -2669,6 +2743,9 @@
       if (ptEl && saved.plaintext) ptEl.value = saved.plaintext;
       if (keyEl && saved.key) keyEl.value = saved.key;
 
+      // Restore sub-section completion state
+      subSectionDone = saved.subSectionDone || {};
+
       // If both plaintext and key were saved, re-run computation and restore answers
       if (saved.plaintext && saved.key &&
         saved.plaintext.length === 8 && saved.key.length === 8) {
@@ -2676,6 +2753,8 @@
         const pt = saved.plaintext;
         const key = saved.key;
         clearAllComputed();
+        subSectionDone = saved.subSectionDone || {};
+
         GT = computeDES(pt, key);
         computedInput = { plaintext: pt, key: key };
 
@@ -2735,7 +2814,7 @@
         }
 
         // Restore identity confirm status
-        if (saved.identity?.namaKelompok && saved.identity?.namaNIM) {
+        if (saved.identity?.namaKelompok && saved.identity?.nama1 && saved.identity?.nim1) {
           sectionDone[0] = true;
           showFeedback('identity', true, 'Identitas terkonfirmasi!');
           unlockSection(1);
@@ -3403,6 +3482,7 @@
     }
 
     // ============================================================
+    // ============================================================
     // SECTION UNLOCK / LOCK
     // ============================================================
     function unlockSection(n) {
@@ -3411,6 +3491,9 @@
       card.classList.remove('locked');
       const lock = document.getElementById(`lock-${n}`);
       if (lock) lock.textContent = '🔓';
+
+      // Update sub-section state in unlocked card
+      updateCardSubSections(n);
 
       // TUGAS 1: Populate reference values ONLY when section unlocks
       if (n === 2) populateRefDisplay('ref-pt-bin-display', GT.ptBin);
@@ -3451,6 +3534,7 @@
     // ============================================================
     function showFeedback(id, ok, msg) {
       const el = document.getElementById(`fb-${id}`);
+      if (!el) return;
       el.className = `feedback show ${ok ? 'ok' : 'err'}`;
       el.textContent = ok ? `✔ ${msg}` : `✘ ${msg}`;
     }
@@ -3513,6 +3597,10 @@
         const lock = document.getElementById(`lock-${i}`);
         if (lock) lock.textContent = '🔒';
       }
+      subSectionDone = {};
+      Object.keys(SUB_SECTION_CHAINS).forEach(cardNum => {
+        updateCardSubSections(cardNum);
+      });
       document.querySelectorAll('.feedback').forEach(fb => {
         fb.className = 'feedback';
         fb.textContent = '';
@@ -3589,6 +3677,9 @@
 
       document.getElementById('convSection').style.display = 'block';
       document.getElementById('convDivider').style.display = 'block';
+
+      // Update Card 1 sub-section initial unlock state
+      updateCardSubSections(1);
 
       updateFlowchart();
     }
@@ -3697,9 +3788,33 @@
           break;
       }
 
-      showFeedback(subId, ok, ok ? 'Jawaban sub-bagian ini benar! ✓' : 'Ada jawaban yg salah, silahkan diulangi.');
       if (ok) {
-        checkParentSectionComplete(subId);
+        subSectionDone[subId] = true;
+        const cardNum = parseInt(subId);
+        const chain = SUB_SECTION_CHAINS[cardNum];
+
+        let isLast = false;
+        if (chain) {
+          const idx = chain.indexOf(subId);
+          if (idx !== -1 && idx < chain.length - 1) {
+            const nextSubId = chain[idx + 1];
+            setSubSectionState(nextSubId, true);
+            showFeedback(subId, true, 'Jawaban benar! Silakan lanjut ke bagian di bawahnya. ✓');
+            const nextSubEl = document.getElementById(`sub-${nextSubId}`);
+            if (nextSubEl) setTimeout(() => nextSubEl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+          } else if (idx === chain.length - 1) {
+            isLast = true;
+          }
+        }
+
+        if (isLast || !chain) {
+          showFeedback(subId, true, 'Jawaban sub-bagian ini benar! Bagian ini selesai ✓');
+          checkParentSectionComplete(subId);
+        }
+
+        lsSaveLater();
+      } else {
+        showFeedback(subId, false, 'Ada jawaban yg salah, silahkan diulangi.');
       }
     }
 
@@ -5006,12 +5121,24 @@ h3{font-size:11pt;font-weight:bold;margin:15px 0 5px}
       else panel.classList.remove('visible');
     }
 
+    function adminUnlockAllSubSections() {
+      Object.keys(SUB_SECTION_CHAINS).forEach(cardNum => {
+        const chain = SUB_SECTION_CHAINS[cardNum];
+        chain.forEach(subId => {
+          subSectionDone[subId] = true;
+          setSubSectionState(subId, true);
+        });
+      });
+    }
+
     // Auto-fill ALL sections with correct answers
     function adminFillAll() {
       if (!GT || !GT.ptBin) {
         alert('⚠️ Klik "Hitung & Mulai Pengerjaan" terlebih dahulu dengan memasukkan Plaintext dan Kunci!');
         return;
       }
+
+      adminUnlockAllSubSections();
 
       // Fill identity if empty
       const kelompokEl = document.getElementById('namaKelompok');
@@ -5101,6 +5228,7 @@ h3{font-size:11pt;font-weight:bold;margin:15px 0 5px}
         alert('⚠️ Klik "Hitung & Mulai Pengerjaan" terlebih dahulu!');
         return;
       }
+      adminUnlockAllSubSections();
       // Find lowest incomplete section
       let targetSec = null;
       for (let i = 1; i <= 11; i++) {
