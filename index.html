@@ -227,8 +227,16 @@
       gap: 16px;
     }
 
+    .member-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
     @media (max-width: 600px) {
-      .identity-grid {
+
+      .identity-grid,
+      .member-row {
         grid-template-columns: 1fr;
       }
     }
@@ -1711,18 +1719,73 @@
           <h2>Identitas Kelompok</h2>
         </div>
         <div class="card-body">
-          <div class="identity-grid">
-            <div class="form-group">
-              <label for="namaKelompok">Nama Kelompok</label>
-              <input type="text" id="namaKelompok" placeholder="contoh: Kelompok 3" />
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            <div class="form-group" style="max-width: 250px;">
+              <label for="namaKelompok">Nomor Kelompok</label>
+              <input type="number" id="namaKelompok" min="1" placeholder="contoh: 3"
+                oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
             </div>
-            <div class="form-group">
-              <label for="namaNIM">Nama &amp; NIM Anggota</label>
-              <textarea id="namaNIM"
-                placeholder="contoh:&#10;1. Budi Santoso / 12340001&#10;2. Ani Putri / 12340002"></textarea>
+
+            <div class="sub-section" style="margin-bottom:0;">
+              <div class="bit-section-label" style="margin-bottom:12px;">Daftar Anggota Kelompok (Maksimal 4 Anggota)
+              </div>
+              <div style="display:flex; flex-direction:column; gap:12px;">
+                <!-- Anggota 1 -->
+                <div class="member-row">
+                  <div class="form-group">
+                    <label for="nama1">Nama Anggota 1 (Wajib)</label>
+                    <input type="text" id="nama1" placeholder="contoh: Budi Santoso"
+                      oninput="this.value=this.value.replace(/[^a-zA-Z\s\.\,\'-]/g,'')" />
+                  </div>
+                  <div class="form-group">
+                    <label for="nim1">NIM Anggota 1 (Wajib)</label>
+                    <input type="text" id="nim1" placeholder="contoh: 2304105010001"
+                      oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
+                  </div>
+                </div>
+                <!-- Anggota 2 -->
+                <div class="member-row">
+                  <div class="form-group">
+                    <label for="nama2">Nama Anggota 2 (Opsional)</label>
+                    <input type="text" id="nama2" placeholder="contoh: Ani Putri"
+                      oninput="this.value=this.value.replace(/[^a-zA-Z\s\.\,\'-]/g,'')" />
+                  </div>
+                  <div class="form-group">
+                    <label for="nim2">NIM Anggota 2 (Opsional)</label>
+                    <input type="text" id="nim2" placeholder="contoh: 2304105010002"
+                      oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
+                  </div>
+                </div>
+                <!-- Anggota 3 -->
+                <div class="member-row">
+                  <div class="form-group">
+                    <label for="nama3">Nama Anggota 3 (Opsional)</label>
+                    <input type="text" id="nama3" placeholder="Nama Anggota 3"
+                      oninput="this.value=this.value.replace(/[^a-zA-Z\s\.\,\'-]/g,'')" />
+                  </div>
+                  <div class="form-group">
+                    <label for="nim3">NIM Anggota 3 (Opsional)</label>
+                    <input type="text" id="nim3" placeholder="NIM Anggota 3"
+                      oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
+                  </div>
+                </div>
+                <!-- Anggota 4 -->
+                <div class="member-row">
+                  <div class="form-group">
+                    <label for="nama4">Nama Anggota 4 (Opsional)</label>
+                    <input type="text" id="nama4" placeholder="Nama Anggota 4"
+                      oninput="this.value=this.value.replace(/[^a-zA-Z\s\.\,\'-]/g,'')" />
+                  </div>
+                  <div class="form-group">
+                    <label for="nim4">NIM Anggota 4 (Opsional)</label>
+                    <input type="text" id="nim4" placeholder="NIM Anggota 4"
+                      oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="btn-section">
+          <div class="btn-section" style="margin-top:20px;">
             <button class="btn btn-primary" onclick="submitIdentity()">✔ Konfirmasi Identitas</button>
             <span class="feedback" id="fb-identity"></span>
           </div>
@@ -1860,7 +1923,7 @@
           <div id="ref-pt-bin-display"></div>
           <div class="bit-grid-wrapper">
             <span class="row-label-inline">Biner:</span>
-              <div class="bit-grid group-8" id="grid-ip"></div>
+            <div class="bit-grid group-8" id="grid-ip"></div>
           </div>
           <div class="btn-section">
             <button class="btn btn-check" onclick="checkSection(2)">🔍 Cek Jawaban Bagian 2</button>
@@ -1941,7 +2004,7 @@
           <div class="bit-section-label">E(R₀) – Hasil Expansion (48 bit)</div>
           <div class="bit-grid-wrapper">
             <span class="row-label-inline">Biner:</span>
-              <div class="bit-grid group-6" id="grid-er0"></div>
+            <div class="bit-grid group-6" id="grid-er0"></div>
           </div>
           <div class="btn-section">
             <button class="btn btn-check" onclick="checkSection(4)">🔍 Cek Jawaban Bagian 4</button>
@@ -1985,7 +2048,8 @@
               <div class="bit-grid group-8" id="grid-inputkey56"></div>
             </div>
             <div class="btn-section">
-              <button class="btn btn-check" onclick="checkSubSection('5a')">🔍 Cek Langkah 5a (Input Key 56-bit)</button>
+              <button class="btn btn-check" onclick="checkSubSection('5a')">🔍 Cek Langkah 5a (Input Key
+                56-bit)</button>
               <span class="feedback" id="fb-5a"></span>
             </div>
           </div>
@@ -2016,7 +2080,8 @@
               <div class="bit-grid group-4" id="grid-d0"></div>
             </div>
             <div class="btn-section">
-              <button class="btn btn-check" onclick="checkSubSection('5b')">🔍 Cek Langkah 5b (PC-1 Utuh & C₀, D₀)</button>
+              <button class="btn btn-check" onclick="checkSubSection('5b')">🔍 Cek Langkah 5b (PC-1 Utuh & C₀,
+                D₀)</button>
               <span class="feedback" id="fb-5b"></span>
             </div>
           </div>
@@ -2040,7 +2105,8 @@
               <div class="bit-grid group-4" id="grid-d1"></div>
             </div>
             <div class="btn-section">
-              <button class="btn btn-check" onclick="checkSubSection('5c')">🔍 Cek Langkah 5c (Left Shift C₁, D₁)</button>
+              <button class="btn btn-check" onclick="checkSubSection('5c')">🔍 Cek Langkah 5c (Left Shift C₁,
+                D₁)</button>
               <span class="feedback" id="fb-5c"></span>
             </div>
           </div>
@@ -2060,7 +2126,8 @@
               <div class="bit-grid group-6" id="grid-k1"></div>
             </div>
             <div class="btn-section">
-              <button class="btn btn-check" onclick="checkSubSection('5d')">🔍 Cek Langkah 5d (Hasil PC-2 / Key K₁)</button>
+              <button class="btn btn-check" onclick="checkSubSection('5d')">🔍 Cek Langkah 5d (Hasil PC-2 / Key
+                K₁)</button>
               <span class="feedback" id="fb-5d"></span>
             </div>
           </div>
@@ -2138,7 +2205,8 @@
               <div class="bit-grid group-8" id="grid-sbox-out"></div>
             </div>
             <div class="btn-section">
-              <button class="btn btn-check" onclick="checkSubSection('7b')">🔍 Cek Gabungan Output S-Box (32-bit)</button>
+              <button class="btn btn-check" onclick="checkSubSection('7b')">🔍 Cek Gabungan Output S-Box
+                (32-bit)</button>
               <span class="feedback" id="fb-7b"></span>
             </div>
           </div>
@@ -2170,7 +2238,7 @@
           <div class="bit-section-label">Hasil P-Box (32 bit)</div>
           <div class="bit-grid-wrapper">
             <span class="row-label-inline">Biner:</span>
-              <div class="bit-grid group-8" id="grid-pbox"></div>
+            <div class="bit-grid group-8" id="grid-pbox"></div>
           </div>
           <div class="btn-section">
             <button class="btn btn-check" onclick="checkSection(8)">🔍 Cek Jawaban Bagian 8</button>
@@ -2503,6 +2571,25 @@
     // ============================================================
     // STATE MANAGEMENT
     // ============================================================
+    function toTitleCase(str) {
+      if (!str) return '';
+      return str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase());
+    }
+
+    function getMemberLines() {
+      let lines = [];
+      for (let i = 1; i <= 4; i++) {
+        const namaEl = document.getElementById(`nama${i}`);
+        const nimEl = document.getElementById(`nim${i}`);
+        const namaVal = namaEl ? toTitleCase(namaEl.value.trim()) : '';
+        const nimVal = nimEl ? nimEl.value.trim() : '';
+        if (namaVal && nimVal) {
+          lines.push(`${lines.length + 1}. ${namaVal} / ${nimVal}`);
+        }
+      }
+      return lines.join('\n');
+    }
+
     let GT = {}; // ground truth object
     let sectionDone = new Array(12).fill(false); // index 0 = identity, 1..11 = sections
     sectionDone[0] = false;
@@ -2520,7 +2607,14 @@
       const data = {
         identity: {
           namaKelompok: document.getElementById('namaKelompok')?.value || '',
-          namaNIM: document.getElementById('namaNIM')?.value || ''
+          nama1: document.getElementById('nama1')?.value || '',
+          nim1: document.getElementById('nim1')?.value || '',
+          nama2: document.getElementById('nama2')?.value || '',
+          nim2: document.getElementById('nim2')?.value || '',
+          nama3: document.getElementById('nama3')?.value || '',
+          nim3: document.getElementById('nim3')?.value || '',
+          nama4: document.getElementById('nama4')?.value || '',
+          nim4: document.getElementById('nim4')?.value || ''
         },
         plaintext: document.getElementById('inputPlaintext')?.value || '',
         key: document.getElementById('inputKey')?.value || '',
@@ -2530,8 +2624,7 @@
       // Collect all named inputs with an id pattern we track
       document.querySelectorAll('input[id], textarea[id]').forEach(inp => {
         const id = inp.id;
-        // Skip buttons and unnamed/system inputs, also skip namaNIM as it's saved separately
-        if (inp.type === 'button' || inp.type === 'submit' || id === 'namaNIM') return;
+        if (inp.type === 'button' || inp.type === 'submit') return;
         if (inp.value !== '') data.inputs[id] = inp.value;
       });
 
@@ -2564,10 +2657,10 @@
 
       // Restore identity
       if (saved.identity) {
-        const namaEl = document.getElementById('namaKelompok');
-        const nimEl = document.getElementById('namaNIM');
-        if (namaEl && saved.identity.namaKelompok) namaEl.value = saved.identity.namaKelompok;
-        if (nimEl && saved.identity.namaNIM) nimEl.value = saved.identity.namaNIM;
+        ['namaKelompok', 'nama1', 'nim1', 'nama2', 'nim2', 'nama3', 'nim3', 'nama4', 'nim4'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el && saved.identity[id] !== undefined) el.value = saved.identity[id];
+        });
       }
 
       // Restore plaintext & key
@@ -2630,10 +2723,11 @@
         document.getElementById('convSection').style.display = 'block';
         document.getElementById('convDivider').style.display = 'block';
 
-        // Now restore saved answers into all grid inputs and textareas
+        // Restore all recorded inputs into grid elements
         if (saved.inputs) {
-          Object.entries(saved.inputs).forEach(([id, val]) => {
+          Object.keys(saved.inputs).forEach(id => {
             const el = document.getElementById(id);
+            const val = saved.inputs[id];
             if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') && el.type !== 'button' && el.type !== 'submit') {
               el.value = val;
             }
@@ -3392,10 +3486,12 @@
     // IDENTITY SUBMIT
     // ============================================================
     function submitIdentity() {
-      const nama = document.getElementById('namaKelompok').value.trim();
-      const nim = document.getElementById('namaNIM').value.trim();
-      if (!nama || !nim) {
-        showFeedback('identity', false, 'Isi Nama Kelompok dan Nama/NIM terlebih dahulu.');
+      const numKelompok = document.getElementById('namaKelompok').value.trim();
+      const nama1 = document.getElementById('nama1')?.value.trim();
+      const nim1 = document.getElementById('nim1')?.value.trim();
+
+      if (!numKelompok || !nama1 || !nim1) {
+        showFeedback('identity', false, 'Isi Nomor Kelompok serta Nama & NIM Anggota 1 terlebih dahulu.');
         return;
       }
       sectionDone[0] = true;
@@ -4015,7 +4111,10 @@
       const ptChars = Array.from(ptStr);
       const keyChars = Array.from(keyStr);
       const analisaText = document.getElementById('analisaMahasiswa') ? document.getElementById('analisaMahasiswa').value : '';
-      const nimLines = nim.split('\n').filter(l => l.trim().length > 0);
+
+      const rawKelompok = (document.getElementById('namaKelompok')?.value || nama || '').trim();
+      const kelompokStr = rawKelompok ? (rawKelompok.toLowerCase().startsWith('kelompok') ? rawKelompok : `Kelompok ${rawKelompok}`) : 'Kelompok -';
+      const memberLinesStr = getMemberLines() || (nim || '1. - / -');
 
       const inputKeyIndices = [], inputKeyValues = [];
       for (let i = 0; i < 64; i++) {
@@ -4038,13 +4137,12 @@
       doc.addImage(LOGO_USK_JPG_B64, 'JPEG', lcx - logoSize / 2, lcy - logoSize / 2, logoSize, logoSize);
 
       y = lcy + logoSize / 2 + 12;
-      const nimFive = Array.from({ length: 5 }, (_, i) => `${i + 1}. ${nimLines[i] || ''}`).join('\n');
       doc.autoTable({
         startY: y, margin: { left: PDF_MARGIN, right: PDF_MARGIN_RIGHT }, tableWidth: PDF_CONTENT_W,
         theme: 'grid',
         body: [
-          ['KELOMPOK', nama],
-          ['NAMA/NIM', nimFive],
+          ['KELOMPOK', kelompokStr],
+          ['NAMA/NIM', memberLinesStr],
           ['DOSEN PENGAMPU', 'Prof. Dr. Ir. Teuku Yuliar Arif, ST., M.Kom']
         ],
         styles: { font: 'times', fontSize: 11, cellPadding: 2.5, lineColor: PDF_COLOR_BLACK, lineWidth: 0.2, textColor: PDF_COLOR_BLACK, valign: 'top' },
@@ -4273,15 +4371,17 @@
     }
 
     async function submitReport() {
-      const nama = document.getElementById('namaKelompok').value.trim();
-      const nim = document.getElementById('namaNIM').value.trim();
-      if (!nama || !nim) { alert('Isi identitas kelompok terlebih dahulu!'); return; }
+      const numKelompok = document.getElementById('namaKelompok').value.trim();
+      const nama1 = document.getElementById('nama1')?.value.trim();
+      const nim1 = document.getElementById('nim1')?.value.trim();
+      if (!numKelompok || !nama1 || !nim1) { alert('Isi Nomor Kelompok serta Nama & NIM Anggota 1 terlebih dahulu!'); return; }
       if (!GT || !GT.ptBin) { alert('Selesaikan pengerjaan terlebih dahulu!'); return; }
 
-      const filename = `Laporan_CBL1_${nama.replace(/[^a-z0-9]/gi, '_')}.pdf`;
+      const kelompokStr = numKelompok.toLowerCase().startsWith('kelompok') ? numKelompok : `Kelompok ${numKelompok}`;
+      const memberStr = getMemberLines();
+      const filename = `Laporan_CBL1_${kelompokStr.replace(/[^a-z0-9]/gi, '_')}.pdf`;
 
       // Guard: pastikan library jsPDF (dari CDN) benar-benar sudah termuat.
-      // Kalau belum, jangan lempar error mentah — beri pesan yang jelas.
       if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF !== 'function') {
         alert('⚠️ Library pembuat PDF (jsPDF) belum berhasil dimuat.\n\n' +
           'Kemungkinan penyebab:\n' +
@@ -4294,8 +4394,7 @@
       showUploadOverlay('Sedang membuat PDF laporan (vektor)... (mohon tunggu)');
 
       try {
-        // Bangun PDF vektor native langsung dengan jsPDF (tanpa screenshot DOM)
-        const doc = buildVectorReportPDF(nama, nim);
+        const doc = buildVectorReportPDF(kelompokStr, memberStr);
 
         if (GOOGLE_SCRIPT_URL) {
           // === MODE: Download lokal + Upload ke Drive ===
@@ -4318,7 +4417,7 @@
             reader.readAsDataURL(pdfBlob);
           });
 
-          const payload = { nama, nim, filename, pdfBase64: base64data };
+          const payload = { nama: kelompokStr, nim: memberStr, filename, pdfBase64: base64data };
           try {
             const response = await fetch(GOOGLE_SCRIPT_URL, {
               method: 'POST',
@@ -4748,7 +4847,7 @@ h3{font-size:11pt;font-weight:bold;margin:15px 0 5px}
         </tr>
       </thead>
       <tbody>
-        ${(function() {
+        ${(function () {
           let rows = '';
           for (let r = 2; r <= 16; r++) {
             const L = (GT.roundLR && GT.roundLR[r]) ? chunkBits(GT.roundLR[r].L, 8) : '';
@@ -4915,10 +5014,16 @@ h3{font-size:11pt;font-weight:bold;margin:15px 0 5px}
       }
 
       // Fill identity if empty
-      const namaEl = document.getElementById('namaKelompok');
-      const nimEl = document.getElementById('namaNIM');
-      if (!namaEl.value) namaEl.value = '[Admin Preview]';
-      if (!nimEl.value) nimEl.value = '[Admin Preview]';
+      const kelompokEl = document.getElementById('namaKelompok');
+      if (!kelompokEl.value) kelompokEl.value = '3';
+      const nama1El = document.getElementById('nama1');
+      const nim1El = document.getElementById('nim1');
+      if (!nama1El.value) nama1El.value = 'Budi Santoso';
+      if (!nim1El.value) nim1El.value = '2304105010001';
+      const nama2El = document.getElementById('nama2');
+      const nim2El = document.getElementById('nim2');
+      if (!nama2El.value) nama2El.value = 'Ani Putri';
+      if (!nim2El.value) nim2El.value = '2304105010002';
       if (!sectionDone[0]) submitIdentity();
 
       // Section 1: Hex & Bin
@@ -5198,16 +5303,33 @@ h3{font-size:11pt;font-weight:bold;margin:15px 0 5px}
 
     function adminPreviewPDF() {
       // Temporarily fill identity if empty
-      const namaEl = document.getElementById('namaKelompok');
-      const nimEl = document.getElementById('namaNIM');
-      const prevNama = namaEl.value;
-      const prevNim = nimEl.value;
-      if (!namaEl.value) namaEl.value = '[Admin Preview]';
-      if (!nimEl.value) nimEl.value = '[Admin Preview]';
+      const kelompokEl = document.getElementById('namaKelompok');
+      const prevKelompok = kelompokEl.value;
+      if (!kelompokEl.value) kelompokEl.value = '3';
+
+      const prevMembers = [];
+      for (let i = 1; i <= 4; i++) {
+        const nEl = document.getElementById(`nama${i}`);
+        const mEl = document.getElementById(`nim${i}`);
+        prevMembers.push({ nama: nEl ? nEl.value : '', nim: mEl ? mEl.value : '' });
+      }
+
+      if (!document.getElementById('nama1').value) {
+        document.getElementById('nama1').value = 'Budi Santoso';
+        document.getElementById('nim1').value = '2304105010001';
+        document.getElementById('nama2').value = 'Ani Putri';
+        document.getElementById('nim2').value = '2304105010002';
+      }
+
       submitReport().then(() => {
         // Restore
-        namaEl.value = prevNama;
-        nimEl.value = prevNim;
+        kelompokEl.value = prevKelompok;
+        for (let i = 1; i <= 4; i++) {
+          const nEl = document.getElementById(`nama${i}`);
+          const mEl = document.getElementById(`nim${i}`);
+          if (nEl) nEl.value = prevMembers[i - 1].nama;
+          if (mEl) mEl.value = prevMembers[i - 1].nim;
+        }
       });
     }
 
