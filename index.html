@@ -443,6 +443,20 @@
       box-shadow: 0 0 0 2px rgba(37, 99, 235, .2);
     }
 
+    .hex-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .hex-index {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--gray-600);
+      line-height: 1;
+    }
+
     /* =============================================
        ASCII ROW – baris readonly di atas HEX
     ============================================= */
@@ -742,62 +756,187 @@
     ============================================= */
     .sbox-container {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 16px;
     }
 
     @media (max-width: 800px) {
       .sbox-container {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: 1fr;
       }
     }
 
     .sbox-unit {
       border: 1px solid var(--gray-200);
       border-radius: 8px;
+      background: var(--white);
       overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    .sbox-unit:hover {
+      box-shadow: var(--shadow-md);
     }
 
     .sbox-unit-header {
-      background: var(--navy);
+      background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy-mid) 100%);
       color: var(--white);
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
-      padding: 6px 10px;
-      text-transform: uppercase;
+      padding: 8px 12px;
       letter-spacing: .5px;
     }
 
     .sbox-unit-body {
-      padding: 10px;
-    }
-
-    .sbox-input-row {
+      padding: 12px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 10px;
     }
 
-    .sbox-input-row label {
+    .sbox-row-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .sbox-label {
       font-size: 11px;
-      color: var(--gray-600);
       font-weight: 600;
+      color: var(--gray-600);
+      white-space: nowrap;
     }
 
-    .sbox-input-row input {
-      width: 100%;
+    /* Grid 2 Kolom (Kiri: Bit/Biner, Kanan: Desimal) */
+    .sbox-two-col-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      background: var(--gray-50);
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid var(--gray-200);
+    }
+
+    @media (max-width: 480px) {
+      .sbox-two-col-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .sbox-col-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .sbox-col-cell.left-cell {
+      border-right: 1px dashed var(--gray-300);
+      padding-right: 8px;
+    }
+
+    @media (max-width: 480px) {
+      .sbox-col-cell.left-cell {
+        border-right: none;
+        border-bottom: 1px dashed var(--gray-300);
+        padding-right: 0;
+        padding-bottom: 8px;
+      }
+    }
+
+    .sbox-bit-inputs {
+      display: flex;
+      gap: 3px;
+      align-items: center;
+    }
+
+    .sbox-bit-box {
+      width: 26px;
+      height: 28px;
+      text-align: center;
       font-family: var(--font-mono);
       font-size: 13px;
-      padding: 6px 8px;
+      font-weight: 700;
+      color: var(--navy-dark);
       border: 1px solid var(--gray-400);
-      border-radius: 2px;
+      border-radius: 3px;
       outline: none;
+      background: var(--white);
+      transition: var(--transition);
+      padding: 0;
+    }
+
+    .sbox-bit-box:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, .2);
+    }
+
+    .sbox-dec-box {
+      width: 100%;
+      max-width: 80px;
+      height: 28px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border: 1px solid var(--gray-400);
+      border-radius: 3px;
+      outline: none;
+      background: var(--white);
       transition: var(--transition);
     }
 
-    .sbox-input-row input:focus {
+    .sbox-dec-box:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(37, 99, 235, .12);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, .2);
+    }
+
+    .sbox-top-bar {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .sbox-check-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 2px;
+    }
+
+    .btn-check-sunit {
+      background: var(--navy);
+      color: var(--white);
+      border: none;
+      padding: 6px 14px;
+      border-radius: var(--radius);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .btn-check-sunit:hover {
+      background: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    .sbox-unit-fb {
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .sbox-unit-fb.success {
+      color: var(--green);
+    }
+
+    .sbox-unit-fb.error {
+      color: var(--red);
     }
 
     /* =============================================
@@ -1018,6 +1157,97 @@
       font-size: 13px;
       opacity: .8;
       margin-bottom: 20px;
+    }
+
+    /* =============================================
+       RESULT SUMMARY GRID (3 COLUMNS)
+    ============================================= */
+    .result-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 24px 0;
+      text-align: left;
+    }
+
+    @media (max-width: 800px) {
+      .result-summary-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .res-col-card {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .res-col-card.highlight {
+      background: rgba(245, 158, 11, 0.12);
+      border-color: rgba(245, 158, 11, 0.4);
+    }
+
+    .res-col-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--white);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      padding-bottom: 8px;
+      letter-spacing: 0.3px;
+    }
+
+    .res-col-card.highlight .res-col-title {
+      color: var(--gold);
+      border-bottom-color: rgba(245, 158, 11, 0.3);
+    }
+
+    .res-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .res-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.7);
+      letter-spacing: 0.8px;
+    }
+
+    .res-val-hex {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: #93c5fd;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 6px 10px;
+      border-radius: 4px;
+      letter-spacing: 1.5px;
+      word-break: break-all;
+    }
+
+    .res-val-hex.gold {
+      color: #fde047;
+    }
+
+    .res-val-ascii {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--white);
+      background: rgba(0, 0, 0, 0.25);
+      padding: 6px 10px;
+      border-radius: 4px;
+      letter-spacing: 2px;
+      word-break: break-all;
+    }
+
+    .res-val-ascii.gold {
+      color: #fbbf24;
     }
 
     /* =============================================
@@ -2151,7 +2381,8 @@
           <div class="sub-section locked-sub" id="sub-5e">
             <div class="bit-section-label">Langkah 5e: Penggabungan C₁ dan D₁ (56 bit)</div>
             <div class="info-box">
-              Lakukan penggabungan hasil Left shift 28 bit C₁ (kiri) dan 28 bit D₁ (kanan) menjadi 56 bit. Nomor urut 1–56 di atas kotak ini menjadi referensi masukan untuk tabel PC-2.
+              Lakukan penggabungan hasil Left shift 28 bit C₁ (kiri) dan 28 bit D₁ (kanan) menjadi 56 bit. Nomor urut
+              1–56 di atas kotak ini menjadi referensi masukan untuk tabel PC-2.
             </div>
             <div class="row-label" style="margin-bottom:6px;">Hasil Penggabungan C₁ dan D₁ (56 bit)</div>
             <div class="bit-grid-wrapper">
@@ -2159,7 +2390,8 @@
               <div class="bit-grid group-8" id="grid-c1d1"></div>
             </div>
             <div class="btn-section">
-              <button class="btn btn-check" onclick="checkSubSection('5e')" disabled>🔍 Cek Langkah 5e (Penggabungan C₁ & D₁)</button>
+              <button class="btn btn-check" onclick="checkSubSection('5e')" disabled>🔍 Cek Langkah 5e (Penggabungan C₁
+                & D₁)</button>
               <span class="feedback" id="fb-5e"></span>
             </div>
           </div>
@@ -2234,10 +2466,14 @@
             Kemudian gabungkan untuk mendapatkan total 32-bit output Boks Subsitusi Ronde-1.
           </p>
           <div class="info-box">
-            Bagi 48-bit hasil XOR menjadi 8 kelompok 6-bit. Untuk tiap kelompok:<br />
-            • <strong>Baris</strong> = bit ke-1 dan ke-6 (gabungkan → desimal 0–3)<br />
-            • <strong>Kolom</strong> = bit ke-2 sampai ke-5 (gabungkan → desimal 0–15)<br />
-            Cari nilai dari tabel S-Box yang sesuai, tulis dalam 4-bit biner.
+            Bagi 48-bit hasil XOR menjadi 8 kelompok 6-bit. Untuk tiap kelompok (S1 s/d S8):<br />
+            • <strong>Input 6-bit</strong>: Isikan 6 bit biner.<br />
+            • <strong>Index Baris</strong>: Isikan biner (bit ke-1 & ke-6) di kolom kiri dan nilai Desimalnya (0–3) di
+            kolom kanan.<br />
+            • <strong>Index Kolom</strong>: Isikan biner (bit ke-2 s/d ke-5) di kolom kiri dan nilai Desimalnya (0–15)
+            di kolom kanan.<br />
+            • <strong>Output S-Box</strong>: Cari nilai S-Box, isikan 4-bit Biner di kolom kiri dan nilai Desimalnya
+            (0–15) di kolom kanan.
           </div>
 
           <!-- Tugas 3: Referensi 48-bit XOR di atas S-Box -->
@@ -2341,6 +2577,21 @@
             <div class="btn-section">
               <button class="btn btn-check" onclick="checkSubSection('9b')" disabled>🔍 Cek L₁ = R₀</button>
               <span class="feedback" id="fb-9b"></span>
+            </div>
+          </div>
+
+          <div class="sub-section locked-sub" id="sub-9c" style="margin-top:16px;">
+            <div class="bit-section-label">Ciphertext Ronde 1: L₁ ‖ R₁ (64 bit)</div>
+            <div class="info-box">Gabungkan 32-bit L₁ (kiri, bit 1–32) dan 32-bit R₁ (kanan, bit 33–64) untuk
+              mendapatkan 64-bit Ciphertext Ronde 1.</div>
+            <div class="bit-grid-wrapper">
+              <span class="row-label-inline">Biner:</span>
+              <div class="bit-grid group-8" id="grid-ciph1"></div>
+            </div>
+            <div class="btn-section">
+              <button class="btn btn-check" onclick="checkSubSection('9c')" disabled>🔍 Cek Ciphertext Ronde 1
+                (64-bit)</button>
+              <span class="feedback" id="fb-9c"></span>
             </div>
           </div>
 
@@ -2459,7 +2710,50 @@
   ================================================== -->
       <div class="result-box fade-in" id="resultBox">
         <h3>🎉 Selamat! Semua Tahapan Selesai dengan Benar!</h3>
-        <div class="cipher-display" id="finalCipherDisplay">????????????????????????</div>
+
+        <!-- Ringkasan 3 Kolom: Plaintext, Kunci, Ciphertext (Hexa & ASCII) -->
+        <div class="result-summary-grid">
+
+          <!-- Kolom 1: Plaintext Awal -->
+          <div class="res-col-card">
+            <div class="res-col-title">📄 Plaintext Awal</div>
+            <div class="res-block">
+              <div class="res-label">HEXADECIMAL</div>
+              <div class="res-val-hex" id="resPtHex">----</div>
+            </div>
+            <div class="res-block">
+              <div class="res-label">ASCII</div>
+              <div class="res-val-ascii" id="resPtAscii">----</div>
+            </div>
+          </div>
+
+          <!-- Kolom 2: Kunci Rahasia Awal -->
+          <div class="res-col-card">
+            <div class="res-col-title">🔑 Kunci Rahasia Awal</div>
+            <div class="res-block">
+              <div class="res-label">HEXADECIMAL</div>
+              <div class="res-val-hex" id="resKeyHex">----</div>
+            </div>
+            <div class="res-block">
+              <div class="res-label">ASCII</div>
+              <div class="res-val-ascii" id="resKeyAscii">----</div>
+            </div>
+          </div>
+
+          <!-- Kolom 3: Ciphertext Akhir DES (Ronde-16) -->
+          <div class="res-col-card highlight">
+            <div class="res-col-title">🔒 Ciphertext Akhir DES</div>
+            <div class="res-block">
+              <div class="res-label">HEXADECIMAL</div>
+              <div class="res-val-hex gold" id="resCiphHex">----</div>
+            </div>
+            <div class="res-block">
+              <div class="res-label">ASCII</div>
+              <div class="res-val-ascii gold" id="resCiphAscii">----</div>
+            </div>
+          </div>
+
+        </div>
 
         <div class="form-group"
           style="text-align: left; margin: 20px 0; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
@@ -2639,7 +2933,7 @@
       3: ['3a', '3b'],
       5: ['5a', '5b', '5c', '5d', '5e', '5f'],
       7: ['7a', '7b'],
-      9: ['9a', '9b'],
+      9: ['9a', '9b', '9c'],
       11: ['11a', '11b', '11c']
     };
 
@@ -2864,6 +3158,7 @@
         buildXorGrid('r1-stack-area', 'grid-r1', 32, 'r1', 'group-8',
           GT.pbox, 'P(S)', GT.L0, 'L₀', 'R₁');
         buildBitGrid('grid-l1', 32, 'l1', 'group-8');
+        buildBitGrid('grid-ciph1', 64, 'ciph1', 'group-8');
         // TUGAS 4: Bagian 10 — L16/R16 readonly (terisi otomatis saat unlockSection(10))
         buildRefDisplay('ref-l16-display', GT.L16, 8, 'L₁₆ (32-bit, otomatis)');
         buildRefDisplay('ref-r16-display', GT.R16, 8, 'R₁₆ (32-bit, otomatis)');
@@ -2941,6 +3236,9 @@
 
         updateProgress();
         updateFlowchart();
+        if (sectionDone[11]) {
+          showResult();
+        }
       }
     }
 
@@ -3110,6 +3408,7 @@
       const finalHex16 = bitsToHex(ipm1_16);
 
       return {
+        plaintext, key,
         ptBin, ptHex,
         keyBin, keyHex,
         ip, L0, R0,
@@ -3196,6 +3495,7 @@
 
     function buildHexGrid(containerId, count, idPrefix) {
       const container = document.getElementById(containerId);
+      if (!container) return;
       container.innerHTML = '';
       const subSec = container.closest('.sub-section');
       let isUnlocked = true;
@@ -3205,20 +3505,37 @@
       }
 
       for (let i = 0; i < count; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'hex-cell';
+
+        const idx = document.createElement('div');
+        idx.className = 'hex-index';
+        idx.textContent = i + 1;
+
         const inp = document.createElement('input');
         inp.type = 'text';
-        inp.maxLength = 2;
+        inp.maxLength = (count === 16 ? 1 : 2);
         inp.id = `${idPrefix}_${i}`;
         inp.style.textTransform = 'uppercase';
         inp.setAttribute('autocomplete', 'off');
         inp.disabled = !isUnlocked;
         inp.addEventListener('input', (e) => {
-          if (e.target.value.length === 2) {
-            const next = document.getElementById(`${idPrefix}_${parseInt(e.target.id.split('_').pop()) + 1}`);
+          e.target.value = e.target.value.replace(/[^0-9a-fA-F]/g, '').toUpperCase();
+          if (e.target.value.length >= inp.maxLength) {
+            const next = document.getElementById(`${idPrefix}_${i + 1}`);
             if (next) next.focus();
           }
         });
-        container.appendChild(inp);
+        inp.addEventListener('keydown', (e) => {
+          if (e.key === 'Backspace' && e.target.value === '') {
+            const prev = document.getElementById(`${idPrefix}_${i - 1}`);
+            if (prev) { prev.focus(); prev.select(); }
+          }
+        });
+
+        cell.appendChild(idx);
+        cell.appendChild(inp);
+        container.appendChild(cell);
       }
 
       if (subSec && subSec.id && subSec.id.startsWith('sub-')) {
@@ -3474,6 +3791,15 @@
         const table = document.createElement('table');
         table.className = 'xor-table';
 
+        // Header Row: Nomor Bit / Kotak di atas kolom (tanpa kotak border, tanpa label "No. Bit")
+        const trHead = document.createElement('tr');
+        const tdLabelHead = document.createElement('td');
+        tdLabelHead.className = 'label-col';
+        tdLabelHead.style.border = 'none';
+        tdLabelHead.style.background = 'transparent';
+        tdLabelHead.textContent = ''; // Tanpa tulisan No. Bit
+        trHead.appendChild(tdLabelHead);
+
         // Row 1: LabelA + bitsA
         const tr1 = document.createElement('tr');
         const tdLabelA = document.createElement('td');
@@ -3497,6 +3823,17 @@
 
         for (let i = 0; i < 16; i++) {
           const currentBitIdx = bitIdx + i;
+
+          const thBit = document.createElement('td');
+          thBit.textContent = currentBitIdx + 1;
+          thBit.style.fontSize = '10px';
+          thBit.style.fontWeight = '700';
+          thBit.style.color = 'var(--gray-600)';
+          thBit.style.background = 'transparent';
+          thBit.style.border = 'none';
+          thBit.style.textAlign = 'center';
+          thBit.style.paddingBottom = '3px';
+          trHead.appendChild(thBit);
 
           const td1 = document.createElement('td');
           td1.id = `ref-${idPrefix}-a-${currentBitIdx}`;
@@ -3526,6 +3863,7 @@
           tr3.appendChild(td3);
         }
 
+        table.appendChild(trHead);
         table.appendChild(tr1);
         table.appendChild(tr2);
         table.appendChild(tr3);
@@ -3807,6 +4145,7 @@
         GT.pbox, 'P(S)', GT.L0, 'L₀', 'R₁');
 
       buildBitGrid('grid-l1', 32, 'l1', 'group-8');
+      buildBitGrid('grid-ciph1', 64, 'ciph1', 'group-8');
 
       // TUGAS 4: Bagian 10 — L16/R16 readonly (terisi otomatis saat unlockSection(10))
       buildRefDisplay('ref-l16-display', GT.L16, 8, 'L₁₆ (32-bit, otomatis)');
@@ -3836,36 +4175,173 @@
     // ============================================================
     // BUILD S-BOX SECTION
     // ============================================================
+    // ============================================================
+    // BUILD S-BOX SECTION
+    // ============================================================
+    function handleBitInput(el) {
+      let val = el.value.replace(/[^01]/g, '');
+      if (val.length > 1) {
+        const parent = el.closest('.sbox-bit-inputs');
+        if (parent) {
+          const boxes = Array.from(parent.querySelectorAll('.sbox-bit-box'));
+          const idx = boxes.indexOf(el);
+          for (let i = 0; i < val.length && (idx + i) < boxes.length; i++) {
+            boxes[idx + i].value = val[i];
+          }
+          const nextIdx = Math.min(idx + val.length, boxes.length - 1);
+          boxes[nextIdx].focus();
+          boxes[nextIdx].select();
+        } else {
+          el.value = val[0] || '';
+        }
+      } else {
+        el.value = val;
+        if (val !== '') {
+          const parent = el.closest('.sbox-bit-inputs');
+          if (parent) {
+            const boxes = Array.from(parent.querySelectorAll('.sbox-bit-box'));
+            const idx = boxes.indexOf(el);
+            if (idx >= 0 && idx < boxes.length - 1) {
+              boxes[idx + 1].focus();
+              boxes[idx + 1].select();
+            }
+          }
+        }
+      }
+      lsSaveLater();
+    }
+
+    function handleBitKeyDown(evt, el) {
+      if (evt.key === 'Backspace' && el.value === '') {
+        const parent = el.closest('.sbox-bit-inputs');
+        if (parent) {
+          const boxes = Array.from(parent.querySelectorAll('.sbox-bit-box'));
+          const idx = boxes.indexOf(el);
+          if (idx > 0) {
+            boxes[idx - 1].focus();
+            boxes[idx - 1].select();
+          }
+        }
+      } else if (evt.key === 'ArrowRight') {
+        const parent = el.closest('.sbox-bit-inputs');
+        if (parent) {
+          const boxes = Array.from(parent.querySelectorAll('.sbox-bit-box'));
+          const idx = boxes.indexOf(el);
+          if (idx >= 0 && idx < boxes.length - 1) {
+            boxes[idx + 1].focus();
+          }
+        }
+      } else if (evt.key === 'ArrowLeft') {
+        const parent = el.closest('.sbox-bit-inputs');
+        if (parent) {
+          const boxes = Array.from(parent.querySelectorAll('.sbox-bit-box'));
+          const idx = boxes.indexOf(el);
+          if (idx > 0) {
+            boxes[idx - 1].focus();
+          }
+        }
+      }
+    }
+
+    function getBitGroupString(prefix, s, len) {
+      let str = '';
+      for (let i = 0; i < len; i++) {
+        const el = document.getElementById(`${prefix}-${s}_${i}`);
+        str += el ? el.value.trim() : '';
+      }
+      return str;
+    }
+
+    function setBitGroupString(prefix, s, str, len) {
+      const strVal = String(str || '');
+      for (let i = 0; i < len; i++) {
+        const el = document.getElementById(`${prefix}-${s}_${i}`);
+        if (el) el.value = strVal[i] !== undefined ? strVal[i] : '';
+      }
+    }
+
+    function setBitGroupValidation(prefix, s, len, isCorrect) {
+      // Inputs remain standard white without red/green backgrounds
+    }
+
     function buildSBoxSection() {
       const container = document.getElementById('sbox-container');
+      if (!container) return;
       container.innerHTML = '';
       for (let s = 0; s < 8; s++) {
         const unit = document.createElement('div');
         unit.className = 'sbox-unit';
+
+        let inBitBoxes = '';
+        for (let i = 0; i < 6; i++) {
+          inBitBoxes += `<input type="text" id="sbox-in-${s}_${i}" class="sbox-bit-box" maxlength="1" oninput="handleBitInput(this)" onkeydown="handleBitKeyDown(event, this)" placeholder="${i + 1}" />`;
+        }
+
+        let rowBitBoxes = '';
+        for (let i = 0; i < 2; i++) {
+          const bLabel = i === 0 ? '1' : '6';
+          rowBitBoxes += `<input type="text" id="sbox-row-bin-${s}_${i}" class="sbox-bit-box" maxlength="1" oninput="handleBitInput(this)" onkeydown="handleBitKeyDown(event, this)" placeholder="${bLabel}" />`;
+        }
+
+        let colBitBoxes = '';
+        for (let i = 0; i < 4; i++) {
+          colBitBoxes += `<input type="text" id="sbox-col-bin-${s}_${i}" class="sbox-bit-box" maxlength="1" oninput="handleBitInput(this)" onkeydown="handleBitKeyDown(event, this)" placeholder="${i + 2}" />`;
+        }
+
+        let outBitBoxes = '';
+        for (let i = 0; i < 4; i++) {
+          outBitBoxes += `<input type="text" id="sbox-out-${s}_${i}" class="sbox-bit-box" maxlength="1" oninput="handleBitInput(this)" onkeydown="handleBitKeyDown(event, this)" placeholder="b${i + 1}" />`;
+        }
+
         unit.innerHTML = `
       <div class="sbox-unit-header">S${s + 1} – Kelompok ${s + 1} (bit ${s * 6 + 1}–${s * 6 + 6})</div>
       <div class="sbox-unit-body">
-        <div class="sbox-input-row">
-          <label>Input 6-bit (mis: 101010)</label>
-          <input type="text" id="sbox-in-${s}" maxlength="6"
-                 placeholder="000000" style="font-family:var(--font-mono); letter-spacing:2px;"
-                 oninput="this.value=this.value.replace(/[^01]/g,'')"
-          />
+        <div class="sbox-top-bar">
+          <div class="sbox-row-item">
+            <label class="sbox-label">Input 6-bit (Biner)</label>
+            <div class="sbox-bit-inputs" data-group="sbox-in-${s}">
+              ${inBitBoxes}
+            </div>
+          </div>
+          <div class="sbox-check-group">
+            <button type="button" class="btn-check-sunit" onclick="checkSingleSBox(${s})">🔍 Cek S${s + 1}</button>
+            <span class="sbox-unit-fb" id="fb-sbox-${s}"></span>
+          </div>
         </div>
-        <div class="sbox-input-row" style="margin-top:8px;">
-          <label>Baris (bit 1+6, desimal)</label>
-          <input type="text" id="sbox-row-${s}" maxlength="1" placeholder="0–3" />
-        </div>
-        <div class="sbox-input-row" style="margin-top:6px;">
-          <label>Kolom (bit 2–5, desimal)</label>
-          <input type="text" id="sbox-col-${s}" maxlength="2" placeholder="0–15" />
-        </div>
-        <div class="sbox-input-row" style="margin-top:6px;">
-          <label>Output 4-bit S${s + 1}</label>
-          <input type="text" id="sbox-out-${s}" maxlength="4" placeholder="0000"
-                 style="font-family:var(--font-mono); letter-spacing:2px;"
-                 oninput="this.value=this.value.replace(/[^01]/g,'')"
-          />
+
+        <div class="sbox-two-col-grid">
+          <div class="sbox-col-cell left-cell">
+            <label class="sbox-label">Index Baris (Bit 1 & 6)</label>
+            <div class="sbox-bit-inputs" data-group="sbox-row-bin-${s}">
+              ${rowBitBoxes}
+            </div>
+          </div>
+          <div class="sbox-col-cell right-cell">
+            <label class="sbox-label">Desimal Baris (0–3)</label>
+            <input type="text" id="sbox-row-${s}" class="sbox-dec-box" maxlength="2" placeholder="0–3" oninput="this.value=this.value.replace(/[^0-9]/g,''); lsSaveLater();" />
+          </div>
+
+          <div class="sbox-col-cell left-cell">
+            <label class="sbox-label">Index Kolom (Bit 2–5)</label>
+            <div class="sbox-bit-inputs" data-group="sbox-col-bin-${s}">
+              ${colBitBoxes}
+            </div>
+          </div>
+          <div class="sbox-col-cell right-cell">
+            <label class="sbox-label">Desimal Kolom (0–15)</label>
+            <input type="text" id="sbox-col-${s}" class="sbox-dec-box" maxlength="2" placeholder="0–15" oninput="this.value=this.value.replace(/[^0-9]/g,''); lsSaveLater();" />
+          </div>
+
+          <div class="sbox-col-cell left-cell">
+            <label class="sbox-label">Output S${s + 1} (4-bit Biner)</label>
+            <div class="sbox-bit-inputs" data-group="sbox-out-${s}">
+              ${outBitBoxes}
+            </div>
+          </div>
+          <div class="sbox-col-cell right-cell">
+            <label class="sbox-label">Desimal Output (0–15)</label>
+            <input type="text" id="sbox-out-dec-${s}" class="sbox-dec-box" maxlength="2" placeholder="0–15" oninput="this.value=this.value.replace(/[^0-9]/g,''); lsSaveLater();" />
+          </div>
         </div>
       </div>`;
         container.appendChild(unit);
@@ -3929,6 +4405,9 @@
         case '9b':
           ok = validateBitGrid('l1', GT.L1);
           break;
+        case '9c':
+          ok = validateBitGrid('ciph1', (GT.L1 || []).concat(GT.R1 || []));
+          break;
         case '11a':
           ok = validateBitGrid('swap6416', GT.swap6416);
           break;
@@ -3968,25 +4447,64 @@
       }
     }
 
+    function checkSingleSBox(s) {
+      if (!GT || !GT.sboxInputGroups) {
+        alert('Klik "Hitung & Mulai Pengerjaan" terlebih dahulu!');
+        return false;
+      }
+
+      const expectedIn = GT.sboxInputGroups[s].join('');
+      const expectedRowBin = expectedIn[0] + expectedIn[5];
+      const expectedRowDec = String(GT.sboxRowArr[s]);
+      const expectedColBin = expectedIn.slice(1, 5);
+      const expectedColDec = String(GT.sboxColArr[s]);
+      const expectedOutBin = GT.sboxOutBits.slice(s * 4, s * 4 + 4).join('');
+      const expectedOutDec = String(parseInt(expectedOutBin, 2));
+
+      const userIn = getBitGroupString('sbox-in', s, 6);
+      const userRowBin = getBitGroupString('sbox-row-bin', s, 2);
+      const userRowDecEl = document.getElementById(`sbox-row-${s}`);
+      const userRowDec = userRowDecEl ? userRowDecEl.value.trim() : '';
+
+      const userColBin = getBitGroupString('sbox-col-bin', s, 4);
+      const userColDecEl = document.getElementById(`sbox-col-${s}`);
+      const userColDec = userColDecEl ? userColDecEl.value.trim() : '';
+
+      const userOutBin = getBitGroupString('sbox-out', s, 4);
+      const userOutDecEl = document.getElementById(`sbox-out-dec-${s}`);
+      const userOutDec = userOutDecEl ? userOutDecEl.value.trim() : '';
+
+      const okIn = (userIn === expectedIn);
+      const okRowBin = (userRowBin === expectedRowBin);
+      const okRowDec = (userRowDec === expectedRowDec);
+      const okColBin = (userColBin === expectedColBin);
+      const okColDec = (userColDec === expectedColDec);
+      const okOutBin = (userOutBin === expectedOutBin);
+      const okOutDec = (userOutDec === expectedOutDec);
+
+      const isUnitOk = okIn && okRowBin && okRowDec && okColBin && okColDec && okOutBin && okOutDec;
+
+      const fbEl = document.getElementById(`fb-sbox-${s}`);
+      if (fbEl) {
+        if (isUnitOk) {
+          fbEl.className = 'sbox-unit-fb success';
+          fbEl.textContent = `✓ S${s + 1} Benar!`;
+        } else {
+          fbEl.className = 'sbox-unit-fb error';
+          fbEl.textContent = `❌ Ada yg salah pada S${s + 1}`;
+        }
+      }
+
+      return isUnitOk;
+    }
+
     function checkSBoxUnitsOnly() {
+      if (!GT || !GT.sboxInputGroups) return false;
       let allOk = true;
+
       for (let s = 0; s < 8; s++) {
-        const inpIn = document.getElementById(`sbox-in-${s}`);
-        const inpRow = document.getElementById(`sbox-row-${s}`);
-        const inpCol = document.getElementById(`sbox-col-${s}`);
-        const inpOut = document.getElementById(`sbox-out-${s}`);
-
-        const expectedIn = GT.sboxInputGroups[s].join('');
-        const expectedRow = String(GT.sboxRowArr[s]);
-        const expectedCol = String(GT.sboxColArr[s]);
-        const expectedOut = GT.sboxOutBits.slice(s * 4, s * 4 + 4).join('');
-
-        const okIn = inpIn && inpIn.value.trim() === expectedIn;
-        const okRow = inpRow && inpRow.value.trim() === expectedRow;
-        const okCol = inpCol && inpCol.value.trim() === expectedCol;
-        const okOut = inpOut && inpOut.value.trim() === expectedOut;
-
-        if (!okIn || !okRow || !okCol || !okOut) allOk = false;
+        const ok = checkSingleSBox(s);
+        if (!ok) allOk = false;
       }
       return allOk;
     }
@@ -4036,7 +4554,7 @@
             allParentOk = checkSBoxUnitsOnly() && validateBitGrid('sout', GT.sboxOutBits);
             break;
           case 9:
-            allParentOk = validateBitGrid('r1', GT.R1) && validateBitGrid('l1', GT.L1);
+            allParentOk = validateBitGrid('r1', GT.R1) && validateBitGrid('l1', GT.L1) && validateBitGrid('ciph1', (GT.L1 || []).concat(GT.R1 || []));
             break;
           case 11:
             allParentOk = validateBitGrid('swap6416', GT.swap6416) &&
@@ -4104,7 +4622,7 @@
           ok = validateBitGrid('pbox', GT.pbox);
           break;
         case 9:
-          ok = validateBitGrid('r1', GT.R1) && validateBitGrid('l1', GT.L1);
+          ok = validateBitGrid('r1', GT.R1) && validateBitGrid('l1', GT.L1) && validateBitGrid('ciph1', (GT.L1 || []).concat(GT.R1 || []));
           break;
         case 11:
           ok = checkSection11();
@@ -4172,12 +4690,68 @@
     // ============================================================
     // SHOW RESULT
     // ============================================================
+    function formatHexGroup(hexArr) {
+      if (!hexArr) return '';
+      let str = '';
+      for (let i = 0; i < hexArr.length; i += 2) {
+        if (i > 0) str += ' ';
+        str += (hexArr[i] || '') + (hexArr[i + 1] || '');
+      }
+      return str;
+    }
+
+    function hexToAsciiString(hexStr) {
+      if (!hexStr) return '';
+      let str = '';
+      for (let i = 0; i < hexStr.length; i += 2) {
+        const code = parseInt(hexStr.substr(i, 2), 16);
+        if (isNaN(code)) continue;
+        if (code >= 32 && code <= 126) {
+          str += String.fromCharCode(code);
+        } else if (code >= 160) {
+          str += String.fromCharCode(code);
+        } else {
+          str += '·';
+        }
+      }
+      return str;
+    }
+
     function showResult() {
       const box = document.getElementById('resultBox');
+      if (!box) return;
       box.classList.add('show');
-      // Ciphertext akhir DES sesungguhnya (setelah 16 ronde penuh + IP^-1).
-      // Laporan PDF dan lembar kerja interaktif keduanya menggunakan GT.finalHex16 sebagai Ciphertext Akhir (Ronde-16).
-      document.getElementById('finalCipherDisplay').textContent = GT.finalHex16 || '????????????????';
+
+      const pt = (GT && GT.plaintext) ? GT.plaintext : (document.getElementById('inputPlaintext')?.value || '');
+      const key = (GT && GT.key) ? GT.key : (document.getElementById('inputKey')?.value || '');
+      const finalHex = (GT && GT.finalHex16) ? GT.finalHex16 : '';
+
+      const ptHexStr = GT && GT.ptHex ? formatHexGroup(GT.ptHex) : '';
+      const keyHexStr = GT && GT.keyHex ? formatHexGroup(GT.keyHex) : '';
+      const ciphHexStr = finalHex ? formatHexGroup(finalHex.split('')) : '';
+      const ciphAsciiStr = hexToAsciiString(finalHex);
+
+      const elPtHex = document.getElementById('resPtHex');
+      if (elPtHex) elPtHex.textContent = ptHexStr || '----';
+
+      const elPtAscii = document.getElementById('resPtAscii');
+      if (elPtAscii) elPtAscii.textContent = pt || '----';
+
+      const elKeyHex = document.getElementById('resKeyHex');
+      if (elKeyHex) elKeyHex.textContent = keyHexStr || '----';
+
+      const elKeyAscii = document.getElementById('resKeyAscii');
+      if (elKeyAscii) elKeyAscii.textContent = key || '----';
+
+      const elCiphHex = document.getElementById('resCiphHex');
+      if (elCiphHex) elCiphHex.textContent = ciphHexStr || '----';
+
+      const elCiphAscii = document.getElementById('resCiphAscii');
+      if (elCiphAscii) elCiphAscii.textContent = ciphAsciiStr || '----';
+
+      const elLegacy = document.getElementById('finalCipherDisplay');
+      if (elLegacy) elLegacy.textContent = finalHex || '????????????????';
+
       box.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
@@ -4530,18 +5104,23 @@
       bodyText('S-Box', PDF_MARGIN, y, { style: 'bold' }); y += 6;
       const nth = ['pertama', 'ke-dua', 'ke-tiga', 'ke-empat', 'ke-lima', 'ke-enam', 'ke-tujuh', 'ke-delapan'];
       for (let s = 0; s < 8; s++) {
-        const row = GT.sboxRowArr ? GT.sboxRowArr[s] : '';
-        const col = GT.sboxColArr ? GT.sboxColArr[s] : '';
-        const out = GT.sboxOutBits ? GT.sboxOutBits.slice(s * 4, s * 4 + 4).join('') : '';
-        y = ensureSpace(19, y);
-        bodyText(`Bagian 6-bit yang ${nth[s]} :`, PDF_MARGIN, y); y += 4.4;
-        bodyText(`Indek baris     : = ${row}`, PDF_MARGIN + 6, y); y += 4.2;
-        bodyText(`Indek kolom    : = ${col}`, PDF_MARGIN + 6, y); y += 4.2;
-        bodyText(`4-bit Output S${s + 1} : = ${out}`, PDF_MARGIN + 6, y); y += 5.5;
+        const inBits = GT.sboxInputGroups ? GT.sboxInputGroups[s].join('') : '';
+        const rowBin = inBits ? (inBits[0] + inBits[5]) : '';
+        const rowDec = GT.sboxRowArr ? GT.sboxRowArr[s] : '';
+        const colBin = inBits ? inBits.slice(1, 5) : '';
+        const colDec = GT.sboxColArr ? GT.sboxColArr[s] : '';
+        const outBin = GT.sboxOutBits ? GT.sboxOutBits.slice(s * 4, s * 4 + 4).join('') : '';
+        const outDec = outBin ? parseInt(outBin, 2) : '';
+
+        y = ensureSpace(25, y);
+        bodyText(`Bagian 6-bit yang ${nth[s]} (Input: ${inBits}) :`, PDF_MARGIN, y, { style: 'bold' }); y += 4.4;
+        bodyText(`Indeks baris (bit 1 & 6) : Biner = ${rowBin} | Desimal = ${rowDec}`, PDF_MARGIN + 6, y); y += 4.2;
+        bodyText(`Indeks kolom (bit 2-5)   : Biner = ${colBin} | Desimal = ${colDec}`, PDF_MARGIN + 6, y); y += 4.2;
+        bodyText(`4-bit Output S${s + 1}         : Biner = ${outBin} | Desimal = ${outDec}`, PDF_MARGIN + 6, y); y += 5.5;
       }
       y += 2;
       y = ensureSpace(38, y);
-      bodyText('Total 32-bit output Boks Subsitusi Ronde-1:', PDF_MARGIN, y, { style: 'bold' }); y += 4;
+      bodyText('Total 32-bit output Boks Substitusi Ronde-1:', PDF_MARGIN, y, { style: 'bold' }); y += 4;
       multiBlockTable(Array.from({ length: 32 }, (_, i) => i + 1), GT.sboxOutBits || [], 16, PDF_MARGIN, y);
 
       // ============================================================
@@ -4558,15 +5137,48 @@
       y = ensureSpace(24, y);
       y = xorTable('16-bit yang kedua:', (GT.pbox || []).slice(16, 32), (GT.L0 || []).slice(16, 32), (GT.R1 || []).slice(16, 32), 'P2', 'S2', PDF_MARGIN, y);
       y = ensureSpace(16, y);
-      y = wrappedText('Penggabungan 32-bit bagian sebelah kanan hasil split 32-bit pada Langkah awal dengan 32-bit hasil XOR 32-bit untuk mendapatkan ciphertext rounde-1 Kelompok Anda:', y);
+      y = wrappedText('Penggabungan 32-bit L₁ (kiri) dan 32-bit R₁ (kanan) untuk mendapatkan 64-bit Ciphertext Ronde-1 kelompok Anda:', y);
       y += 2;
       y = ensureSpace(50, y);
-      y = multiBlockTable(Array.from({ length: 64 }, (_, i) => i + 1), (GT.R0 || []).concat(GT.R1 || []), 16, PDF_MARGIN, y) + 6;
+      y = multiBlockTable(Array.from({ length: 64 }, (_, i) => i + 1), (GT.L1 || []).concat(GT.R1 || []), 16, PDF_MARGIN, y) + 6;
       y = ensureSpace(20, y);
       y = numberedParagraph('4', 'Tuliskan Ciphertext Akhir (Ronde-16) kelompok anda (Hexadecimal):', y);
       y += 3;
       y = ensureSpace(16, y);
       hexTableCipher(GT.finalHex16, PDF_MARGIN, y);
+      y += 8;
+
+      // Table Ringkasan Enkripsi DES (3 Kolom: Plaintext, Kunci, Ciphertext)
+      y = ensureSpace(45, y);
+      bodyText('Ringkasan Komparatif Hasil Enkripsi DES (Hexadecimal & ASCII):', PDF_MARGIN, y, { style: 'bold' }); y += 4;
+
+      const ciphHexFormatted = formatHexGroup((GT.finalHex16 || '').split(''));
+      const ciphAsciiStr = hexToAsciiString(GT.finalHex16 || '');
+      const ptHexFormatted = formatHexGroup(GT.ptHex || []);
+      const keyHexFormatted = formatHexGroup(GT.keyHex || []);
+      const summaryPtStr = GT.plaintext || ptStr || (document.getElementById('inputPlaintext')?.value || '');
+      const summaryKeyStr = GT.key || keyStr || (document.getElementById('inputKey')?.value || '');
+
+      doc.autoTable({
+        startY: y,
+        margin: { left: PDF_MARGIN, right: PDF_MARGIN_RIGHT },
+        tableWidth: PDF_CONTENT_W,
+        head: [['Komponen', 'Format Hexadecimal', 'Format ASCII']],
+        body: [
+          ['Plaintext Awal', ptHexFormatted, summaryPtStr],
+          ['Kunci Rahasia Awal', keyHexFormatted, summaryKeyStr],
+          ['Ciphertext Akhir (Ronde 16)', ciphHexFormatted, ciphAsciiStr]
+        ],
+        theme: 'grid',
+        styles: { font: 'courier', fontSize: 8, cellPadding: 2, lineColor: PDF_COLOR_BLACK, lineWidth: 0.2, textColor: PDF_COLOR_BLACK, halign: 'center', valign: 'middle' },
+        headStyles: { font: 'helvetica', fontSize: 8.5, fontStyle: 'bold', fillColor: 240, textColor: PDF_COLOR_BLACK, halign: 'center' },
+        columnStyles: {
+          0: { cellWidth: 42, font: 'helvetica', fontStyle: 'bold', halign: 'left' },
+          1: { cellWidth: 54, font: 'courier', fontStyle: 'bold' },
+          2: { cellWidth: 40, font: 'courier', fontStyle: 'bold' }
+        }
+      });
+      y = doc.lastAutoTable.finalY + 6;
 
       // ============================================================
       // HALAMAN REKAPITULASI RONDE 2-16 (TUGAS 4)
@@ -4892,11 +5504,15 @@ h3{font-size:11pt;font-weight:bold;margin:15px 0 5px}
       // SBox output
       let sboxDetails = '';
       for (let s = 0; s < 8; s++) {
-        const row = GT.sboxRowArr ? GT.sboxRowArr[s] : '';
-        const col = GT.sboxColArr ? GT.sboxColArr[s] : '';
-        const out = GT.sboxOutBits ? GT.sboxOutBits.slice(s * 4, s * 4 + 4).join('') : '';
+        const rowDec = GT.sboxRowArr ? GT.sboxRowArr[s] : '';
+        const colDec = GT.sboxColArr ? GT.sboxColArr[s] : '';
+        const outBin = GT.sboxOutBits ? GT.sboxOutBits.slice(s * 4, s * 4 + 4).join('') : '';
+        const inStr = GT.sboxInputGroups ? GT.sboxInputGroups[s].join('') : '';
+        const rowBin = inStr ? (inStr[0] + inStr[5]) : '';
+        const colBin = inStr ? inStr.slice(1, 5).join('') : '';
+        const outDec = outBin ? parseInt(outBin, 2) : '';
         const nth = ['pertama', 'ke-dua', 'ke-tiga', 'ke-empat', 'ke-lima', 'ke-enam', 'ke-tujuh', 'ke-delapan'][s];
-        sboxDetails += `<div class="sbox-row">Bagian 6-bit yang ${nth} :<div class="sbox-indent">Indek baris &nbsp;&nbsp;&nbsp;&nbsp;: = ${row}<br>Indek kolom &nbsp;&nbsp;&nbsp;: = ${col}<br>4-bit Output S${s + 1} : = ${out}</div></div>`;
+        sboxDetails += `<div class="sbox-row">Bagian 6-bit yang ${nth} (${inStr}) :<div class="sbox-indent">Indek baris &nbsp;&nbsp;&nbsp;&nbsp;: biner ${rowBin} = desimal ${rowDec}<br>Indek kolom &nbsp;&nbsp;&nbsp;: biner ${colBin} = desimal ${colDec}<br>4-bit Output S${s + 1} : biner ${outBin} = desimal ${outDec}</div></div>`;
       }
 
       const logoSVG = `<svg class="logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -5336,23 +5952,36 @@ h3{font-size:11pt;font-weight:bold;margin:15px 0 5px}
 
       // Section 7: S-Box
       for (let s = 0; s < 8; s++) {
-        const inEl = document.getElementById(`sbox-in-${s}`);
+        const expectedIn = GT.sboxInputGroups[s].join('');
+        const expectedRowBin = expectedIn[0] + expectedIn[5];
+        const expectedRowDec = String(GT.sboxRowArr[s]);
+        const expectedColBin = expectedIn.slice(1, 5);
+        const expectedColDec = String(GT.sboxColArr[s]);
+        const expectedOutBin = GT.sboxOutBits.slice(s * 4, s * 4 + 4).join('');
+        const expectedOutDec = String(parseInt(expectedOutBin, 2));
+
+        setBitGroupString('sbox-in', s, expectedIn, 6);
+        setBitGroupString('sbox-row-bin', s, expectedRowBin, 2);
         const rowEl = document.getElementById(`sbox-row-${s}`);
+        if (rowEl) rowEl.value = expectedRowDec;
+
+        setBitGroupString('sbox-col-bin', s, expectedColBin, 4);
         const colEl = document.getElementById(`sbox-col-${s}`);
-        const outEl = document.getElementById(`sbox-out-${s}`);
-        if (inEl) inEl.value = GT.sboxInputGroups[s].join('');
-        if (rowEl) rowEl.value = GT.sboxRowArr[s];
-        if (colEl) colEl.value = GT.sboxColArr[s];
-        if (outEl) outEl.value = GT.sboxOutBits.slice(s * 4, s * 4 + 4).join('');
+        if (colEl) colEl.value = expectedColDec;
+
+        setBitGroupString('sbox-out', s, expectedOutBin, 4);
+        const outDecEl = document.getElementById(`sbox-out-dec-${s}`);
+        if (outDecEl) outDecEl.value = expectedOutDec;
       }
       adminFillBitGrid('sout', GT.sboxOutBits, 32);
 
       // Section 8: P-Box
       adminFillBitGrid('pbox', GT.pbox, 32);
 
-      // Section 9: R1, L1
+      // Section 9: R1, L1, Ciphertext Ronde 1
       adminFillBitGrid('r1', GT.R1, 32);
       adminFillBitGrid('l1', GT.L1, 32);
+      adminFillBitGrid('ciph1', (GT.L1 || []).concat(GT.R1 || []), 64);
 
       // Section 10 (TUGAS 4): otomatis, tidak perlu isi apa pun — cukup tandai selesai lewat proceedSection10()
 
@@ -5426,14 +6055,26 @@ h3{font-size:11pt;font-weight:bold;margin:15px 0 5px}
         case 6: adminFillBitGrid('xor1', GT.xor1, 48); break;
         case 7:
           for (let s = 0; s < 8; s++) {
-            const inEl = document.getElementById(`sbox-in-${s}`);
+            const expectedIn = GT.sboxInputGroups[s].join('');
+            const expectedRowBin = expectedIn[0] + expectedIn[5];
+            const expectedRowDec = String(GT.sboxRowArr[s]);
+            const expectedColBin = expectedIn.slice(1, 5);
+            const expectedColDec = String(GT.sboxColArr[s]);
+            const expectedOutBin = GT.sboxOutBits.slice(s * 4, s * 4 + 4).join('');
+            const expectedOutDec = String(parseInt(expectedOutBin, 2));
+
+            setBitGroupString('sbox-in', s, expectedIn, 6);
+            setBitGroupString('sbox-row-bin', s, expectedRowBin, 2);
             const rowEl = document.getElementById(`sbox-row-${s}`);
+            if (rowEl) rowEl.value = expectedRowDec;
+
+            setBitGroupString('sbox-col-bin', s, expectedColBin, 4);
             const colEl = document.getElementById(`sbox-col-${s}`);
-            const outEl = document.getElementById(`sbox-out-${s}`);
-            if (inEl) inEl.value = GT.sboxInputGroups[s].join('');
-            if (rowEl) rowEl.value = GT.sboxRowArr[s];
-            if (colEl) colEl.value = GT.sboxColArr[s];
-            if (outEl) outEl.value = GT.sboxOutBits.slice(s * 4, s * 4 + 4).join('');
+            if (colEl) colEl.value = expectedColDec;
+
+            setBitGroupString('sbox-out', s, expectedOutBin, 4);
+            const outDecEl = document.getElementById(`sbox-out-dec-${s}`);
+            if (outDecEl) outDecEl.value = expectedOutDec;
           }
           adminFillBitGrid('sout', GT.sboxOutBits, 32);
           break;
@@ -5441,6 +6082,7 @@ h3{font-size:11pt;font-weight:bold;margin:15px 0 5px}
         case 9:
           adminFillBitGrid('r1', GT.R1, 32);
           adminFillBitGrid('l1', GT.L1, 32);
+          adminFillBitGrid('ciph1', (GT.L1 || []).concat(GT.R1 || []), 64);
           break;
         case 10:
           // TUGAS 4: otomatis sepenuhnya, tidak ada input untuk diisi
