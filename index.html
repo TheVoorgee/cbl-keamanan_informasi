@@ -2147,22 +2147,41 @@
 
           <hr class="section-divider">
 
-          <!-- PC-2 -->
+          <!-- Penggabungan C1 dan D1 -->
           <div class="sub-section locked-sub" id="sub-5e">
-            <div class="bit-section-label">Langkah 5e: Hasil PC-2 – Round Key K₁ (48-bit)</div>
+            <div class="bit-section-label">Langkah 5e: Penggabungan C₁ dan D₁ (56 bit)</div>
+            <div class="info-box">
+              Lakukan penggabungan hasil Left shift 28 bit C₁ (kiri) dan 28 bit D₁ (kanan) menjadi 56 bit. Nomor urut 1–56 di atas kotak ini menjadi referensi masukan untuk tabel PC-2.
+            </div>
+            <div class="row-label" style="margin-bottom:6px;">Hasil Penggabungan C₁ dan D₁ (56 bit)</div>
+            <div class="bit-grid-wrapper">
+              <span class="row-label-inline">Biner:</span>
+              <div class="bit-grid group-8" id="grid-c1d1"></div>
+            </div>
+            <div class="btn-section">
+              <button class="btn btn-check" onclick="checkSubSection('5e')" disabled>🔍 Cek Langkah 5e (Penggabungan C₁ & D₁)</button>
+              <span class="feedback" id="fb-5e"></span>
+            </div>
+          </div>
+
+          <hr class="section-divider">
+
+          <!-- PC-2 -->
+          <div class="sub-section locked-sub" id="sub-5f">
+            <div class="bit-section-label">Langkah 5f: Hasil PC-2 – Round Key K₁ (48-bit)</div>
             <div class="info-box">
               <strong>Tabel PC-2:</strong> {14,17,11,24,1,5, 3,28,15,6,21,10, 23,19,12,4,26,8, 16,7,27,20,13,2,
               41,52,31,37,47,55, 30,40,51,45,33,48, 44,49,39,56,34,53, 46,42,50,36,29,32}<br />
-              Aplikasikan PC-2 ke gabungan C₁+D₁ (56-bit) untuk mendapatkan K₁.
+              Aplikasikan PC-2 ke gabungan C₁+D₁ (56-bit) di atas untuk mendapatkan K₁.
             </div>
             <div class="bit-grid-wrapper">
               <span class="row-label-inline">Biner:</span>
               <div class="bit-grid group-6" id="grid-k1"></div>
             </div>
             <div class="btn-section">
-              <button class="btn btn-check" onclick="checkSubSection('5e')" disabled>🔍 Cek Langkah 5e (Hasil PC-2 / Key
+              <button class="btn btn-check" onclick="checkSubSection('5f')" disabled>🔍 Cek Langkah 5f (Hasil PC-2 / Key
                 K₁)</button>
-              <span class="feedback" id="fb-5e"></span>
+              <span class="feedback" id="fb-5f"></span>
             </div>
           </div>
 
@@ -2618,7 +2637,7 @@
     const SUB_SECTION_CHAINS = {
       1: ['1a', '1b', '1c', '1d'],
       3: ['3a', '3b'],
-      5: ['5a', '5b', '5c', '5d', '5e'],
+      5: ['5a', '5b', '5c', '5d', '5e', '5f'],
       7: ['7a', '7b'],
       9: ['9a', '9b'],
       11: ['11a', '11b', '11c']
@@ -2833,6 +2852,7 @@
         buildBitGrid('grid-d0', 28, 'd0', 'group-4');
         buildBitGrid('grid-c1', 28, 'c1', 'group-4');
         buildBitGrid('grid-d1', 28, 'd1', 'group-4');
+        buildBitGrid('grid-c1d1', 56, 'c1d1', 'group-8');
         buildBitGrid('grid-k1', 48, 'k1', 'group-6');
         buildBitGrid('grid-er0', 48, 'er0', 'group-6');
         // Tugas 4: XOR visual
@@ -3093,7 +3113,7 @@
         ptBin, ptHex,
         keyBin, keyHex,
         ip, L0, R0,
-        pc1Full, C0, D0, C1, D1, K1, inputKey56,
+        pc1Full, C0, D0, C1, D1, CD1, K1, inputKey56,
         ER0, xor1,
         sboxInputGroups, sboxRowArr, sboxColArr, sboxOutBits,
         pbox,
@@ -3767,6 +3787,7 @@
       buildBitGrid('grid-d0', 28, 'd0', 'group-4');
       buildBitGrid('grid-c1', 28, 'c1', 'group-4');
       buildBitGrid('grid-d1', 28, 'd1', 'group-4');
+      buildBitGrid('grid-c1d1', 56, 'c1d1', 'group-8');
       // Tugas 2: PC-2 dengan indeks permutasi asli
       buildBitGrid('grid-k1', 48, 'k1', 'group-6');
       // Tugas 2: E-Table dengan indeks permutasi asli
@@ -3891,6 +3912,9 @@
           ok = validateBitGrid('c1', GT.C1) && validateBitGrid('d1', GT.D1);
           break;
         case '5e':
+          ok = validateBitGrid('c1d1', GT.CD1);
+          break;
+        case '5f':
           ok = validateBitGrid('k1', GT.K1);
           break;
         case '7a':
@@ -4005,6 +4029,7 @@
               validateBitGrid('d0', GT.D0) &&
               validateBitGrid('c1', GT.C1) &&
               validateBitGrid('d1', GT.D1) &&
+              validateBitGrid('c1d1', GT.CD1) &&
               validateBitGrid('k1', GT.K1);
             break;
           case 7:
@@ -4066,6 +4091,7 @@
             validateBitGrid('d0', GT.D0) &&
             validateBitGrid('c1', GT.C1) &&
             validateBitGrid('d1', GT.D1) &&
+            validateBitGrid('c1d1', GT.CD1) &&
             validateBitGrid('k1', GT.K1);
           break;
         case 6:
@@ -5302,6 +5328,7 @@ h3{font-size:11pt;font-weight:bold;margin:15px 0 5px}
       adminFillBitGrid('d0', GT.D0, 28);
       adminFillBitGrid('c1', GT.C1, 28);
       adminFillBitGrid('d1', GT.D1, 28);
+      adminFillBitGrid('c1d1', GT.CD1, 56);
       adminFillBitGrid('k1', GT.K1, 48);
 
       // Section 6: XOR
@@ -5393,6 +5420,7 @@ h3{font-size:11pt;font-weight:bold;margin:15px 0 5px}
           adminFillBitGrid('d0', GT.D0, 28);
           adminFillBitGrid('c1', GT.C1, 28);
           adminFillBitGrid('d1', GT.D1, 28);
+          adminFillBitGrid('c1d1', GT.CD1, 56);
           adminFillBitGrid('k1', GT.K1, 48);
           break;
         case 6: adminFillBitGrid('xor1', GT.xor1, 48); break;
@@ -5507,10 +5535,11 @@ h3{font-size:11pt;font-weight:bold;margin:15px 0 5px}
           <div class="ak-value">${chunkBits(GT.D0, 7)}</div>
         </div>
         <div class="ak-section">
-          <h4>Bagian 4 – C₁ / D₁ / K₁ (48-bit)</h4>
+          <h4>Bagian 5 – C₁ / D₁ / Gabungan C₁D₁ / K₁</h4>
           <div class="ak-value">
             C₁: ${chunkBits(GT.C1, 7)}<br>
             D₁: ${chunkBits(GT.D1, 7)}<br>
+            Gabungan C₁D₁: ${chunkBits(GT.CD1, 7)}<br>
             K₁: ${chunkBits(GT.K1, 6)}
           </div>
         </div>
