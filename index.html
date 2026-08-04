@@ -2075,9 +2075,9 @@
 
           <hr class="section-divider">
 
-          <!-- PC-1 -->
+          <!-- PC-1 Utuh -->
           <div class="sub-section locked-sub" id="sub-5b">
-            <div class="bit-section-label">Langkah 5b: Hasil PC-1 Utuh (56-bit) & Pemisahan C₀, D₀</div>
+            <div class="bit-section-label">Langkah 5b: Hasil PC-1 Utuh (56-bit)</div>
             <div class="info-box">
               <strong>Tabel PC-1:</strong><br />
               C₀ (28-bit): {57,49,41,33,25,17,9, 1,58,50,42,34,26,18, 10,2,59,51,43,35,27, 19,11,3,60,52,44,36}<br />
@@ -2088,7 +2088,22 @@
               <span class="row-label-inline">Biner:</span>
               <div class="bit-grid group-8" id="grid-pc1-full"></div>
             </div>
-            <div class="row-label" style="margin-top:12px; margin-bottom:6px;">Pemisahan C₀ (28 bit pertama)</div>
+            <div class="btn-section">
+              <button class="btn btn-check" onclick="checkSubSection('5b')" disabled>🔍 Cek Langkah 5b (PC-1 Utuh
+                56-bit)</button>
+              <span class="feedback" id="fb-5b"></span>
+            </div>
+          </div>
+
+          <hr class="section-divider">
+
+          <!-- Pemisahan C0 & D0 -->
+          <div class="sub-section locked-sub" id="sub-5c">
+            <div class="bit-section-label">Langkah 5c: Pemisahan C₀ (28-bit) & D₀ (28-bit)</div>
+            <div class="info-box">
+              Pisahkan hasil PC-1 56-bit menjadi dua bagian sama besar: C₀ (28 bit pertama) dan D₀ (28 bit terakhir).
+            </div>
+            <div class="row-label" style="margin-bottom:6px;">Pemisahan C₀ (28 bit pertama)</div>
             <div class="bit-grid-wrapper">
               <span class="row-label-inline">Biner:</span>
               <div class="bit-grid group-4" id="grid-c0"></div>
@@ -2099,17 +2114,17 @@
               <div class="bit-grid group-4" id="grid-d0"></div>
             </div>
             <div class="btn-section">
-              <button class="btn btn-check" onclick="checkSubSection('5b')" disabled>🔍 Cek Langkah 5b (PC-1 Utuh & C₀,
+              <button class="btn btn-check" onclick="checkSubSection('5c')" disabled>🔍 Cek Langkah 5c (Pemisahan C₀ &
                 D₀)</button>
-              <span class="feedback" id="fb-5b"></span>
+              <span class="feedback" id="fb-5c"></span>
             </div>
           </div>
 
           <hr class="section-divider">
 
-          <!-- Shift -->
-          <div class="sub-section locked-sub" id="sub-5c">
-            <div class="bit-section-label">Langkah 5c: Left Shift (Ronde 1 = 1 posisi)</div>
+          <!-- Left Shift -->
+          <div class="sub-section locked-sub" id="sub-5d">
+            <div class="bit-section-label">Langkah 5d: Left Shift (Ronde 1 = 1 posisi)</div>
             <div class="info-box">
               Geser C₀ dan D₀ masing-masing 1 posisi ke kiri (circular). Hasilnya adalah C₁ dan D₁.
             </div>
@@ -2124,17 +2139,17 @@
               <div class="bit-grid group-4" id="grid-d1"></div>
             </div>
             <div class="btn-section">
-              <button class="btn btn-check" onclick="checkSubSection('5c')" disabled>🔍 Cek Langkah 5c (Left Shift C₁,
+              <button class="btn btn-check" onclick="checkSubSection('5d')" disabled>🔍 Cek Langkah 5d (Left Shift C₁,
                 D₁)</button>
-              <span class="feedback" id="fb-5c"></span>
+              <span class="feedback" id="fb-5d"></span>
             </div>
           </div>
 
           <hr class="section-divider">
 
           <!-- PC-2 -->
-          <div class="sub-section locked-sub" id="sub-5d">
-            <div class="bit-section-label">Langkah 5d: Hasil PC-2 – Round Key K₁ (48-bit)</div>
+          <div class="sub-section locked-sub" id="sub-5e">
+            <div class="bit-section-label">Langkah 5e: Hasil PC-2 – Round Key K₁ (48-bit)</div>
             <div class="info-box">
               <strong>Tabel PC-2:</strong> {14,17,11,24,1,5, 3,28,15,6,21,10, 23,19,12,4,26,8, 16,7,27,20,13,2,
               41,52,31,37,47,55, 30,40,51,45,33,48, 44,49,39,56,34,53, 46,42,50,36,29,32}<br />
@@ -2145,9 +2160,9 @@
               <div class="bit-grid group-6" id="grid-k1"></div>
             </div>
             <div class="btn-section">
-              <button class="btn btn-check" onclick="checkSubSection('5d')" disabled>🔍 Cek Langkah 5d (Hasil PC-2 / Key
+              <button class="btn btn-check" onclick="checkSubSection('5e')" disabled>🔍 Cek Langkah 5e (Hasil PC-2 / Key
                 K₁)</button>
-              <span class="feedback" id="fb-5d"></span>
+              <span class="feedback" id="fb-5e"></span>
             </div>
           </div>
 
@@ -2603,7 +2618,7 @@
     const SUB_SECTION_CHAINS = {
       1: ['1a', '1b', '1c', '1d'],
       3: ['3a', '3b'],
-      5: ['5a', '5b', '5c', '5d'],
+      5: ['5a', '5b', '5c', '5d', '5e'],
       7: ['7a', '7b'],
       9: ['9a', '9b'],
       11: ['11a', '11b', '11c']
@@ -2627,6 +2642,32 @@
       }
     }
 
+    function isSubSectionUnlocked(subId) {
+      const cardNum = parseInt(subId);
+      const chain = SUB_SECTION_CHAINS[cardNum];
+      if (!chain) return true;
+
+      const idx = chain.indexOf(subId);
+      if (idx === 0) return true;
+
+      const prevSubId = chain[idx - 1];
+      return subSectionDone[prevSubId] === true;
+    }
+
+    /**
+     * Reusable function to unlock next sub-section dynamically
+     * @param {string} currentSubId - ID of current sub-section (e.g. '5a')
+     * @param {string} nextSubId - ID of next sub-section to unlock (e.g. '5b')
+     */
+    function unlockNextSubSection(currentSubId, nextSubId) {
+      if (!nextSubId) return;
+      setSubSectionState(nextSubId, true);
+      const nextSubEl = document.getElementById(`sub-${nextSubId}`);
+      if (nextSubEl) {
+        setTimeout(() => nextSubEl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+      }
+    }
+
     function updateCardSubSections(cardNum) {
       const chain = SUB_SECTION_CHAINS[cardNum];
       if (!chain) return;
@@ -2637,12 +2678,17 @@
       for (let i = 0; i < chain.length; i++) {
         const subId = chain[i];
         if (!isCardUnlocked) {
+          // Jika Card masih terkunci, gembok semua sub-bab tanpa ampun
           setSubSectionState(subId, false);
         } else {
+          // Jika Card sudah terbuka
           if (i === 0) {
+            // Selalu buka langkah pertama (misal: 5a, 11a)
             setSubSectionState(subId, true);
           } else {
-            const prevDone = !!subSectionDone[chain[i - 1]];
+            // STRICT CHECK: Pastikan sub-bab sebelumnya BENAR-BENAR bernilai boolean 'true'
+            const prevSubId = chain[i - 1];
+            const prevDone = (subSectionDone[prevSubId] === true);
             setSubSectionState(subId, prevDone);
           }
         }
@@ -2719,6 +2765,17 @@
       el.classList.add('visible');
       clearTimeout(el._hideTimer);
       el._hideTimer = setTimeout(() => el.classList.remove('visible'), 2000);
+    }
+
+    function isSectionValid(sec) {
+      if (!GT || !GT.ptBin) return false;
+      switch (sec) {
+        case 2: return validateBitGrid('ip', GT.ip);
+        case 4: return validateBitGrid('er0', GT.ER0);
+        case 6: return validateBitGrid('xor1', GT.xor1);
+        case 8: return validateBitGrid('pbox', GT.pbox);
+        default: return false;
+      }
     }
 
     function lsRestore() {
@@ -2813,11 +2870,53 @@
           });
         }
 
-        // Restore identity confirm status
+        // Restore identity confirm status & section progression
         if (saved.identity?.namaKelompok && saved.identity?.nama1 && saved.identity?.nim1) {
           sectionDone[0] = true;
           showFeedback('identity', true, 'Identitas terkonfirmasi!');
-          unlockSection(1);
+
+          for (let sec = 1; sec <= 11; sec++) {
+            const canUnlock = sec === 1 || sectionDone[sec - 1];
+            if (!canUnlock) break;
+
+            unlockSection(sec);
+
+            if (SUB_SECTION_CHAINS[sec]) {
+              updateCardSubSections(sec);
+              const chain = SUB_SECTION_CHAINS[sec];
+              chain.forEach(subId => {
+                if (subSectionDone[subId]) {
+                  showFeedback(subId, true, 'Jawaban benar! ✓');
+                }
+              });
+              const allChainDone = chain.every(subId => !!subSectionDone[subId]);
+              if (allChainDone) {
+                sectionDone[sec] = true;
+                const badge = document.getElementById(`badge-${sec}`);
+                if (badge) {
+                  badge.textContent = '✔';
+                  badge.classList.add('done-badge');
+                }
+                showFeedback(sec, true, `Semua sub-bagian selesai dengan benar! Bagian ${sec} selesai ✓`);
+              }
+            } else {
+              if (sec === 10) {
+                if (sectionDone[9]) {
+                  sectionDone[10] = true;
+                  const badge = document.getElementById(`badge-10`);
+                  if (badge) { badge.textContent = '✔'; badge.classList.add('done-badge'); }
+                }
+              } else if (isSectionValid(sec)) {
+                sectionDone[sec] = true;
+                const badge = document.getElementById(`badge-${sec}`);
+                if (badge) {
+                  badge.textContent = '✔';
+                  badge.classList.add('done-badge');
+                }
+                showFeedback(sec, true, 'Semua jawaban benar! Bagian ini selesai ✓');
+              }
+            }
+          }
         }
 
         updateProgress();
@@ -3019,6 +3118,13 @@
       const container = document.getElementById(containerId);
       container.className = `bit-grid ${groupClass}`;
       container.innerHTML = '';
+      const subSec = container.closest('.sub-section');
+      let isUnlocked = true;
+      if (subSec && subSec.id && subSec.id.startsWith('sub-')) {
+        const subId = subSec.id.replace('sub-', '');
+        isUnlocked = isSubSectionUnlocked(subId);
+      }
+
       for (let i = 0; i < count; i++) {
         const cell = document.createElement('div');
         cell.className = 'bit-cell';
@@ -3031,6 +3137,7 @@
         inp.maxLength = 1;
         inp.id = `${idPrefix}_${i}`;
         inp.setAttribute('autocomplete', 'off');
+        inp.disabled = !isUnlocked;
         inp.addEventListener('input', (e) => {
           const v = e.target.value;
           if (!/^[01]$/.test(v)) e.target.value = '';
@@ -3042,6 +3149,11 @@
         cell.appendChild(idx);
         cell.appendChild(inp);
         container.appendChild(cell);
+      }
+
+      if (subSec && subSec.id && subSec.id.startsWith('sub-')) {
+        const subId = subSec.id.replace('sub-', '');
+        setSubSectionState(subId, isUnlocked);
       }
     }
 
@@ -3065,6 +3177,13 @@
     function buildHexGrid(containerId, count, idPrefix) {
       const container = document.getElementById(containerId);
       container.innerHTML = '';
+      const subSec = container.closest('.sub-section');
+      let isUnlocked = true;
+      if (subSec && subSec.id && subSec.id.startsWith('sub-')) {
+        const subId = subSec.id.replace('sub-', '');
+        isUnlocked = isSubSectionUnlocked(subId);
+      }
+
       for (let i = 0; i < count; i++) {
         const inp = document.createElement('input');
         inp.type = 'text';
@@ -3072,6 +3191,7 @@
         inp.id = `${idPrefix}_${i}`;
         inp.style.textTransform = 'uppercase';
         inp.setAttribute('autocomplete', 'off');
+        inp.disabled = !isUnlocked;
         inp.addEventListener('input', (e) => {
           if (e.target.value.length === 2) {
             const next = document.getElementById(`${idPrefix}_${parseInt(e.target.id.split('_').pop()) + 1}`);
@@ -3079,6 +3199,11 @@
           }
         });
         container.appendChild(inp);
+      }
+
+      if (subSec && subSec.id && subSec.id.startsWith('sub-')) {
+        const subId = subSec.id.replace('sub-', '');
+        setSubSectionState(subId, isUnlocked);
       }
     }
 
@@ -3610,6 +3735,7 @@
       document.getElementById('resultBox').classList.remove('show');
       updateProgress();
       GT = {};
+      lsSave();
     }
 
     function initCompute() {
@@ -3678,8 +3804,10 @@
       document.getElementById('convSection').style.display = 'block';
       document.getElementById('convDivider').style.display = 'block';
 
-      // Update Card 1 sub-section initial unlock state
-      updateCardSubSections(1);
+      // Update sub-section initial unlock state for all registered cards
+      Object.keys(SUB_SECTION_CHAINS).forEach(cardNum => {
+        updateCardSubSections(cardNum);
+      });
 
       updateFlowchart();
     }
@@ -3754,15 +3882,15 @@
           ok = validateBitGrid('inputkey56', GT.inputKey56);
           break;
         case '5b':
-          ok = validateBitGrid('pc1full', GT.pc1Full) &&
-            validateBitGrid('c0', GT.C0) &&
-            validateBitGrid('d0', GT.D0);
+          ok = validateBitGrid('pc1full', GT.pc1Full);
           break;
         case '5c':
-          ok = validateBitGrid('c1', GT.C1) &&
-            validateBitGrid('d1', GT.D1);
+          ok = validateBitGrid('c0', GT.C0) && validateBitGrid('d0', GT.D0);
           break;
         case '5d':
+          ok = validateBitGrid('c1', GT.C1) && validateBitGrid('d1', GT.D1);
+          break;
+        case '5e':
           ok = validateBitGrid('k1', GT.K1);
           break;
         case '7a':
@@ -3798,10 +3926,8 @@
           const idx = chain.indexOf(subId);
           if (idx !== -1 && idx < chain.length - 1) {
             const nextSubId = chain[idx + 1];
-            setSubSectionState(nextSubId, true);
+            unlockNextSubSection(subId, nextSubId);
             showFeedback(subId, true, 'Jawaban benar! Silakan lanjut ke bagian di bawahnya. ✓');
-            const nextSubEl = document.getElementById(`sub-${nextSubId}`);
-            if (nextSubEl) setTimeout(() => nextSubEl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
           } else if (idx === chain.length - 1) {
             isLast = true;
           }
@@ -5228,13 +5354,20 @@ h3{font-size:11pt;font-weight:bold;margin:15px 0 5px}
         alert('⚠️ Klik "Hitung & Mulai Pengerjaan" terlebih dahulu!');
         return;
       }
-      adminUnlockAllSubSections();
       // Find lowest incomplete section
       let targetSec = null;
       for (let i = 1; i <= 11; i++) {
         if (!sectionDone[i]) { targetSec = i; break; }
       }
       if (!targetSec) { alert('Semua section sudah selesai!'); return; }
+
+      // ONLY unlock sub-sections for the target section being filled
+      if (SUB_SECTION_CHAINS[targetSec]) {
+        SUB_SECTION_CHAINS[targetSec].forEach(subId => {
+          subSectionDone[subId] = true;
+          setSubSectionState(subId, true);
+        });
+      }
 
       switch (targetSec) {
         case 1:
