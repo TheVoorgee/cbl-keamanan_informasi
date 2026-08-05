@@ -169,9 +169,9 @@
     }
 
     .card.locked {
-      opacity: .55;
+      opacity: 0.95;
       pointer-events: none;
-      filter: grayscale(.3);
+      border-color: var(--gray-200);
     }
 
     .card-header {
@@ -242,18 +242,41 @@
     }
 
     /* Sub-section Sequential Locking */
+    .sub-section {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      transition: all 0.3s ease;
+    }
+
     .sub-section.locked-sub {
-      opacity: 0.5;
+      opacity: 0.9;
       pointer-events: none;
-      filter: grayscale(0.6);
       user-select: none;
-      transition: opacity 0.3s ease, filter 0.3s ease;
+    }
+
+    .sub-section.completed-sub {
+      opacity: 1;
+      background: var(--white);
+      border-color: var(--gray-300);
+    }
+
+    .card.completed-card {
+      border-color: var(--gray-300);
+      background-color: var(--white);
+      box-shadow: var(--shadow-sm);
+      opacity: 1;
+      transition: all 0.3s ease;
     }
 
     .sub-section.locked-sub input,
     .sub-section.locked-sub button,
     .sub-section.locked-sub select,
-    .sub-section.locked-sub textarea {
+    .sub-section.locked-sub textarea,
+    .sub-section.completed-sub input,
+    .sub-section.completed-sub button {
       cursor: not-allowed !important;
     }
 
@@ -287,6 +310,38 @@
     .form-group textarea:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+    }
+
+    input:disabled,
+    textarea:disabled,
+    select:disabled,
+    .bit-cell input:disabled,
+    .hex-answer-grid input:disabled,
+    .ascii-hex-wrapper .hex-row input:disabled,
+    .sbox-bit-box:disabled,
+    .sbox-dec-box:disabled,
+    .form-group input:disabled,
+    .input-row input.hex-input:disabled {
+      background-color: #f8fafc !important;
+      color: #1e293b !important;
+      border-color: #cbd5e1 !important;
+      cursor: not-allowed !important;
+      opacity: 1 !important;
+      font-weight: 600 !important;
+    }
+
+    input[readonly],
+    textarea[readonly],
+    .bit-cell input[readonly],
+    .hex-answer-grid input[readonly],
+    .sbox-bit-box[readonly],
+    .sbox-dec-box[readonly] {
+      background-color: #f8fafc !important;
+      color: #1e293b !important;
+      border-color: #cbd5e1 !important;
+      cursor: default !important;
+      opacity: 1 !important;
+      font-weight: 600 !important;
     }
 
     .form-group textarea {
@@ -327,6 +382,14 @@
     .input-row input.hex-input:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+    }
+
+    .input-row input.hex-input:disabled {
+      background-color: var(--gray-100);
+      color: var(--gray-600);
+      border-color: var(--gray-300);
+      cursor: not-allowed;
+      opacity: 0.85;
     }
 
     .hint-text {
@@ -990,6 +1053,36 @@
     .btn-success:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(22, 163, 74, .5);
+    }
+
+    .btn-secondary {
+      background: var(--gray-200);
+      color: var(--gray-800);
+      border: 1px solid var(--gray-300);
+    }
+
+    .btn-secondary:hover {
+      background: var(--gray-300);
+      color: var(--navy-dark);
+      transform: translateY(-1px);
+    }
+
+    /* Faded disabled buttons for completed sections and admin fill */
+    button:disabled,
+    .btn:disabled,
+    .btn-primary:disabled,
+    .btn-check:disabled,
+    .btn-check-sunit:disabled,
+    .btn-success:disabled,
+    .btn-secondary:disabled {
+      background: #e2e8f0 !important;
+      color: #334155 !important;
+      border-color: #cbd5e1 !important;
+      box-shadow: none !important;
+      cursor: not-allowed !important;
+      opacity: 0.9 !important;
+      transform: none !important;
+      font-weight: 600 !important;
     }
 
     .btn-section {
@@ -2032,7 +2125,10 @@
             </div>
           </div>
           <div class="btn-section" style="margin-top:20px;">
-            <button class="btn btn-primary" onclick="submitIdentity()">✔ Konfirmasi Identitas</button>
+            <button class="btn btn-primary" id="btnSubmitIdentity" onclick="submitIdentity()">✔ Konfirmasi
+              Identitas</button>
+            <button class="btn btn-secondary" id="btnEditIdentity" onclick="unlockIdentity()" style="display:none;">✏️
+              Ubah Identitas</button>
             <span class="feedback" id="fb-identity"></span>
           </div>
         </div>
@@ -2079,7 +2175,8 @@
               </div>
             </div>
             <div class="btn-section">
-              <button class="btn btn-primary" onclick="initCompute()">⚙ Hitung &amp; Mulai Pengerjaan</button>
+              <button class="btn btn-primary" id="btnInitCompute" onclick="initCompute()">⚙ Hitung &amp; Mulai
+                Pengerjaan</button>
             </div>
           </div>
 
@@ -2212,7 +2309,7 @@
             </div>
           </div>
 
-          <div class="sub-section locked-sub" id="sub-3b">
+          <div class="sub-section" id="sub-3b">
             <div class="bit-section-label">R₀ (bit 33–64)</div>
             <div class="bit-grid-wrapper">
               <span class="row-label-inline">Biner:</span>
@@ -2939,16 +3036,36 @@
 
     let subSectionDone = {};
 
-    function setSubSectionState(subId, unlocked) {
+    function setSubSectionState(subId, state) {
       const container = document.getElementById(`sub-${subId}`);
       if (!container) return;
-      if (unlocked) {
+
+      if (typeof state === 'boolean') {
+        if (!state) state = 'locked';
+        else if (subSectionDone[subId] === true) state = 'completed';
+        else state = 'active';
+      }
+
+      if (state === 'active') {
         container.classList.remove('locked-sub');
-        container.querySelectorAll('input, select, textarea, button').forEach(el => {
+        container.classList.remove('completed-sub');
+        container.querySelectorAll('input, select, textarea').forEach(el => {
+          if (!el.readOnly && !el.classList.contains('readonly-box')) {
+            el.disabled = false;
+          }
+        });
+        container.querySelectorAll('button').forEach(el => {
           el.disabled = false;
         });
-      } else {
+      } else if (state === 'completed') {
+        container.classList.remove('locked-sub');
+        container.classList.add('completed-sub');
+        container.querySelectorAll('input, select, textarea, button').forEach(el => {
+          el.disabled = true;
+        });
+      } else { // 'locked'
         container.classList.add('locked-sub');
+        container.classList.remove('completed-sub');
         container.querySelectorAll('input, select, textarea, button').forEach(el => {
           el.disabled = true;
         });
@@ -2967,14 +3084,9 @@
       return subSectionDone[prevSubId] === true;
     }
 
-    /**
-     * Reusable function to unlock next sub-section dynamically
-     * @param {string} currentSubId - ID of current sub-section (e.g. '5a')
-     * @param {string} nextSubId - ID of next sub-section to unlock (e.g. '5b')
-     */
     function unlockNextSubSection(currentSubId, nextSubId) {
       if (!nextSubId) return;
-      setSubSectionState(nextSubId, true);
+      setSubSectionState(nextSubId, 'active');
       const nextSubEl = document.getElementById(`sub-${nextSubId}`);
       if (nextSubEl) {
         setTimeout(() => nextSubEl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
@@ -2991,18 +3103,19 @@
       for (let i = 0; i < chain.length; i++) {
         const subId = chain[i];
         if (!isCardUnlocked) {
-          // Jika Card masih terkunci, gembok semua sub-bab tanpa ampun
-          setSubSectionState(subId, false);
+          setSubSectionState(subId, 'locked');
+        } else if (subSectionDone[subId] === true) {
+          setSubSectionState(subId, 'completed');
         } else {
-          // Jika Card sudah terbuka
           if (i === 0) {
-            // Selalu buka langkah pertama (misal: 5a, 11a)
-            setSubSectionState(subId, true);
+            setSubSectionState(subId, 'active');
           } else {
-            // STRICT CHECK: Pastikan sub-bab sebelumnya BENAR-BENAR bernilai boolean 'true'
             const prevSubId = chain[i - 1];
-            const prevDone = (subSectionDone[prevSubId] === true);
-            setSubSectionState(subId, prevDone);
+            if (subSectionDone[prevSubId] === true) {
+              setSubSectionState(subId, 'active');
+            } else {
+              setSubSectionState(subId, 'locked');
+            }
           }
         }
       }
@@ -3050,6 +3163,7 @@
         },
         plaintext: document.getElementById('inputPlaintext')?.value || '',
         key: document.getElementById('inputKey')?.value || '',
+        sectionDone0: sectionDone[0],
         subSectionDone: subSectionDone || {},
         inputs: {}
       };
@@ -3105,6 +3219,14 @@
           const el = document.getElementById(id);
           if (el && saved.identity[id] !== undefined) el.value = saved.identity[id];
         });
+      }
+
+      const isIdentityConfirmed = saved.sectionDone0 || (saved.identity?.namaKelompok && saved.identity?.nama1 && saved.identity?.nim1);
+      if (isIdentityConfirmed) {
+        sectionDone[0] = true;
+        lockIdentityFields(true);
+        showFeedback('identity', true, 'Identitas terkonfirmasi!');
+        unlockSection(1);
       }
 
       // Restore plaintext & key
@@ -3173,6 +3295,7 @@
 
         document.getElementById('convSection').style.display = 'block';
         document.getElementById('convDivider').style.display = 'block';
+        lockComputeInputs(true);
 
         // Restore all recorded inputs into grid elements
         if (saved.inputs) {
@@ -3201,6 +3324,7 @@
               const chain = SUB_SECTION_CHAINS[sec];
               chain.forEach(subId => {
                 if (subSectionDone[subId]) {
+                  setSubSectionState(subId, 'completed');
                   showFeedback(subId, true, 'Jawaban benar! ✓');
                 }
               });
@@ -3212,6 +3336,7 @@
                   badge.textContent = '✔';
                   badge.classList.add('done-badge');
                 }
+                lockSectionInputs(sec);
                 showFeedback(sec, true, `Semua sub-bagian selesai dengan benar! Bagian ${sec} selesai ✓`);
               }
             } else {
@@ -3220,6 +3345,7 @@
                   sectionDone[10] = true;
                   const badge = document.getElementById(`badge-10`);
                   if (badge) { badge.textContent = '✔'; badge.classList.add('done-badge'); }
+                  lockSectionInputs(10);
                 }
               } else if (isSectionValid(sec)) {
                 sectionDone[sec] = true;
@@ -3228,6 +3354,7 @@
                   badge.textContent = '✔';
                   badge.classList.add('done-badge');
                 }
+                lockSectionInputs(sec);
                 showFeedback(sec, true, 'Semua jawaban benar! Bagian ini selesai ✓');
               }
             }
@@ -3993,6 +4120,15 @@
       updateFlowchart();
     }
 
+    function lockSectionInputs(n) {
+      const card = document.getElementById(`card-s${n}`);
+      if (!card) return;
+      card.classList.add('completed-card');
+      card.querySelectorAll('input, select, textarea, button').forEach(el => {
+        el.disabled = true;
+      });
+    }
+
     function markSectionDone(n) {
       sectionDone[n] = true;
       const badge = document.getElementById(`badge-${n}`);
@@ -4000,6 +4136,7 @@
         badge.textContent = '✔';
         badge.classList.add('done-badge');
       }
+      lockSectionInputs(n);
       updateProgress();
       if (n < 11) unlockSection(n + 1);
       if (n === 11) showResult();
@@ -4052,6 +4189,52 @@
     // ============================================================
     // IDENTITY SUBMIT
     // ============================================================
+    function lockIdentityFields(isLocked) {
+      const fieldIds = ['namaKelompok', 'nama1', 'nim1', 'nama2', 'nim2', 'nama3', 'nim3', 'nama4', 'nim4'];
+      fieldIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.disabled = isLocked;
+      });
+
+      const btnSubmit = document.getElementById('btnSubmitIdentity');
+      const btnEdit = document.getElementById('btnEditIdentity');
+
+      if (btnSubmit) {
+        btnSubmit.disabled = isLocked;
+        if (isLocked) {
+          btnSubmit.innerHTML = '✔ Identitas Terkonfirmasi';
+          btnSubmit.style.opacity = '0.9';
+          btnSubmit.style.cursor = 'not-allowed';
+        } else {
+          btnSubmit.innerHTML = '✔ Konfirmasi Identitas';
+          btnSubmit.style.opacity = '1';
+          btnSubmit.style.cursor = 'pointer';
+        }
+      }
+
+      if (btnEdit) {
+        btnEdit.style.display = isLocked ? 'inline-flex' : 'none';
+      }
+
+      const badge0 = document.getElementById('badge-0');
+      if (badge0) {
+        if (isLocked) {
+          badge0.textContent = '✔';
+          badge0.classList.add('done-badge');
+        } else {
+          badge0.textContent = '✎';
+          badge0.classList.remove('done-badge');
+        }
+      }
+    }
+
+    function unlockIdentity() {
+      sectionDone[0] = false;
+      lockIdentityFields(false);
+      showFeedback('identity', false, 'Silakan perbarui identitas dan klik Konfirmasi Identitas kembali.');
+      lsSaveLater();
+    }
+
     function submitIdentity() {
       const numKelompok = document.getElementById('namaKelompok').value.trim();
       const nama1 = document.getElementById('nama1')?.value.trim();
@@ -4062,13 +4245,37 @@
         return;
       }
       sectionDone[0] = true;
+      lockIdentityFields(true);
       showFeedback('identity', true, 'Identitas terkonfirmasi!');
       unlockSection(1);
+      lsSaveLater();
     }
 
     // ============================================================
     // INIT COMPUTE (after plaintext + key entry)
     // ============================================================
+    function lockComputeInputs(isLocked) {
+      const ptEl = document.getElementById('inputPlaintext');
+      const keyEl = document.getElementById('inputKey');
+      if (ptEl) ptEl.disabled = isLocked;
+      if (keyEl) keyEl.disabled = isLocked;
+
+      const btnSubmit = document.getElementById('btnInitCompute');
+
+      if (btnSubmit) {
+        btnSubmit.disabled = isLocked;
+        if (isLocked) {
+          btnSubmit.innerHTML = '⚙ Perhitungan Dimulai';
+          btnSubmit.style.opacity = '0.9';
+          btnSubmit.style.cursor = 'not-allowed';
+        } else {
+          btnSubmit.innerHTML = '⚙ Hitung &amp; Mulai Pengerjaan';
+          btnSubmit.style.opacity = '1';
+          btnSubmit.style.cursor = 'pointer';
+        }
+      }
+    }
+
     function clearAllComputed() {
       // When plaintext/key changes, reset all sections
       for (let i = 1; i <= 11; i++) {
@@ -4163,6 +4370,9 @@
 
       document.getElementById('convSection').style.display = 'block';
       document.getElementById('convDivider').style.display = 'block';
+
+      lockComputeInputs(true);
+      lsSaveLater();
 
       // Update sub-section initial unlock state for all registered cards
       Object.keys(SUB_SECTION_CHAINS).forEach(cardNum => {
@@ -4421,6 +4631,7 @@
 
       if (ok) {
         subSectionDone[subId] = true;
+        setSubSectionState(subId, 'completed');
         const cardNum = parseInt(subId);
         const chain = SUB_SECTION_CHAINS[cardNum];
 
@@ -5901,12 +6112,15 @@ h3{font-size:11pt;font-weight:bold;margin:15px 0 5px}
 
     // Auto-fill ALL sections with correct answers
     function adminFillAll() {
-      if (!GT || !GT.ptBin) {
-        alert('⚠️ Klik "Hitung & Mulai Pengerjaan" terlebih dahulu dengan memasukkan Plaintext dan Kunci!');
-        return;
-      }
+      // Auto-fill Plaintext and Key if empty, then compute if GT not initialized
+      const ptEl = document.getElementById('inputPlaintext');
+      const keyEl = document.getElementById('inputKey');
+      if (ptEl && !ptEl.value) ptEl.value = 'STIK3051';
+      if (keyEl && !keyEl.value) keyEl.value = 'KEY3051';
 
-      adminUnlockAllSubSections();
+      if (!GT || !GT.ptBin) {
+        initCompute();
+      }
 
       // Fill identity if empty
       const kelompokEl = document.getElementById('namaKelompok');
@@ -6006,9 +6220,13 @@ h3{font-size:11pt;font-weight:bold;margin:15px 0 5px}
 
     // Fill only the current (lowest incomplete) section
     function adminFillSection() {
+      const ptEl = document.getElementById('inputPlaintext');
+      const keyEl = document.getElementById('inputKey');
+      if (ptEl && !ptEl.value) ptEl.value = 'STIK3051';
+      if (keyEl && !keyEl.value) keyEl.value = 'KEY3051';
+
       if (!GT || !GT.ptBin) {
-        alert('⚠️ Klik "Hitung & Mulai Pengerjaan" terlebih dahulu!');
-        return;
+        initCompute();
       }
       // Find lowest incomplete section
       let targetSec = null;
@@ -6016,14 +6234,6 @@ h3{font-size:11pt;font-weight:bold;margin:15px 0 5px}
         if (!sectionDone[i]) { targetSec = i; break; }
       }
       if (!targetSec) { alert('Semua section sudah selesai!'); return; }
-
-      // ONLY unlock sub-sections for the target section being filled
-      if (SUB_SECTION_CHAINS[targetSec]) {
-        SUB_SECTION_CHAINS[targetSec].forEach(subId => {
-          subSectionDone[subId] = true;
-          setSubSectionState(subId, true);
-        });
-      }
 
       switch (targetSec) {
         case 1:
@@ -6107,7 +6317,10 @@ h3{font-size:11pt;font-weight:bold;margin:15px 0 5px}
     function adminFillBitGrid(prefix, bits, count) {
       for (let i = 0; i < count; i++) {
         const el = document.getElementById(`${prefix}_${i}`);
-        if (el) el.value = bits[i];
+        if (el) {
+          el.value = bits[i];
+          el.dispatchEvent(new Event('input'));
+        }
       }
     }
 
@@ -6117,6 +6330,11 @@ h3{font-size:11pt;font-weight:bold;margin:15px 0 5px}
         if (el) {
           el.value = val;
           el.dispatchEvent(new Event('input'));
+        }
+        const targetBinPrefix = prefix.replace('hex', 'bin');
+        const slotEl = document.getElementById(`hex-slot-${targetBinPrefix}_${i}`);
+        if (slotEl) {
+          slotEl.textContent = val ? val.toUpperCase() : '';
         }
       });
     }
