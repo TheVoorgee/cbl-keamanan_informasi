@@ -3293,6 +3293,7 @@
           submitTimeVal.textContent = saved.submitTimestamp;
           submitTimeBox.style.display = 'inline-block';
         }
+        setReportSubmitted();
       }
 
       // If both plaintext and key were saved, re-run computation and restore answers
@@ -5409,8 +5410,10 @@
       // ============================================================
       // DATA
       // ============================================================
-      const ptStr = computedInput.plaintext || '        ';
-      const keyStr = computedInput.key || '        ';
+      const currentPt = document.getElementById('inputPlaintext')?.value || computedInput.plaintext || '';
+      const currentKey = document.getElementById('inputKey')?.value || computedInput.key || '';
+      const ptStr = currentPt.padEnd(8, ' ').slice(0, 8);
+      const keyStr = currentKey.padEnd(8, ' ').slice(0, 8);
       const ptChars = Array.from(ptStr);
       const keyChars = Array.from(keyStr);
       const analisaText = document.getElementById('analisaMahasiswa') ? document.getElementById('analisaMahasiswa').value : '';
@@ -5667,8 +5670,35 @@
       // Ciphertext akhir DES (16 ronde) — Hexadecimal
       y = ensureSpace(20, y);
       bodyText('Ciphertext Akhir DES (16 Ronde) – Hexadecimal:', PDF_MARGIN, y, { style: 'bold' }); y += 4;
-      hexTableCipher(GT.finalHex16, PDF_MARGIN, y);
-      y += 10;
+      y = hexTableCipher(GT.finalHex16, PDF_MARGIN, y) + 10;
+
+      // Judul dan tabel ringkasan akhir DES
+      bodyText('Tahapan Enkripsi Algoritma DES', PDF_MARGIN, y, { style: 'bold', size: 11 });
+      y += 7;
+      const ptHexLabel = ptStr.split('').map(c => c.charCodeAt(0).toString(16).toUpperCase().padStart(2, '0')).join(' ');
+      const keyHexLabel = keyStr.split('').map(c => c.charCodeAt(0).toString(16).toUpperCase().padStart(2, '0')).join(' ');
+      const ciphAsciiLabel = hexToAsciiString(GT.finalHex16 || '');
+      doc.autoTable({
+        startY: y,
+        margin: { left: PDF_MARGIN, right: PDF_MARGIN_RIGHT, top: PDF_MARGIN_TOP, bottom: PDF_MARGIN_BOTTOM },
+        tableWidth: PDF_CONTENT_W,
+        head: [['Jenis', 'Plaintext', 'Kunci', 'Ciphertext']],
+        body: [
+          ['Hexadecimal', ptHexLabel, keyHexLabel, GT.finalHex16 || ''],
+          ['ASCII', ptStr, keyStr, ciphAsciiLabel]
+        ],
+        theme: 'grid',
+        styles: { font: 'courier', fontSize: 9, cellPadding: 2.5, lineColor: PDF_COLOR_BLACK, lineWidth: 0.15, textColor: PDF_COLOR_BLACK, halign: 'center', valign: 'middle', overflow: 'linebreak' },
+        headStyles: { font: 'helvetica', fontSize: 9.5, fontStyle: 'bold', fillColor: 255, textColor: PDF_COLOR_BLACK, halign: 'center' },
+        columnStyles: {
+          0: { cellWidth: 24, font: 'helvetica', fontStyle: 'bold' },
+          1: { cellWidth: 38, font: 'courier' },
+          2: { cellWidth: 38, font: 'courier' },
+          3: { cellWidth: 40, font: 'courier' }
+        },
+        didDrawPage: (data) => { drawHeaderFooter(doc.internal.getCurrentPageInfo().pageNumber); }
+      });
+      y = doc.lastAutoTable.finalY + 10;
 
       // ============================================================
       // HALAMAN ANALISIS (panjang teks bisa bervariasi → auto lanjut halaman)
@@ -5787,6 +5817,7 @@
                 `Buka File di Drive</a>`,
                 true
               );
+              setReportSubmitted();
             } else {
               showUploadOverlay(`❌ PDF diunduh, tapi gagal kirim ke server: ${result.error}`, true);
             }
@@ -5799,11 +5830,24 @@
           // === MODE: Hanya Download lokal ===
           doc.save(filename);
           showUploadOverlay('✅ PDF berhasil diunduh ke laptop Anda!', true);
+          setReportSubmitted();
         }
 
       } catch (err) {
         console.error(err);
         showUploadOverlay(`❌ Terjadi kesalahan: ${err.message}`, true);
+        if (!window.savedSubmitTimestamp) {
+          const btnReport = document.getElementById('btnSubmitReport');
+          if (btnReport) btnReport.disabled = false;
+        }
+      }
+    }
+
+    function setReportSubmitted() {
+      const btnReport = document.getElementById('btnSubmitReport');
+      if (btnReport) {
+        btnReport.disabled = true;
+        btnReport.textContent = 'Laporan CBL-1 sudah diunduh dan dikumpulkan';
       }
     }
 
